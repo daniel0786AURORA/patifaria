@@ -1,5 +1,5 @@
 import { randomInt, randomUUID, createHash } from 'node:crypto';
-import {cards,cases,type Card} from './content.ts';
+import {cards,cases,type Card} from './content.js';
 export type Role='juiz'|'acusação'|'defesa'|'jurado';
 type Player={id:string;secret:string;name:string;role:Role;score:number;shame:number;penalty:number;used:number;swapped:boolean;denounced:boolean;hand:string[];seals:Record<string,boolean>;seen:number;question:boolean;mission:number};
 type Effect={id:string;card:string;author:string;target:string;kind:string;status:'active'|'consumed'|'cancelled'|'expired';turn:number;instruction:string};

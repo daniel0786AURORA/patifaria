@@ -1,5 +1,5 @@
 import {randomBytes, randomInt} from 'node:crypto';
-import {createGame,addPlayer,act,tick,view,hash,type Game} from '../src/engine.ts';
+import {createGame,addPlayer,act,tick,view,hash,type Game} from '../src/engine.js';
 import type {IncomingMessage,ServerResponse} from 'node:http';
 const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 async function rpc(operation:string,code:string,state:Game|null=null,revision=-1){
