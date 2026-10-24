@@ -1,0 +1,4 @@
+import {readFileSync} from 'node:fs';import assert from 'node:assert/strict';
+const env=Object.fromEntries(readFileSync('.env.local','utf8').trim().split('\n').map(l=>{const i=l.indexOf('=');return[l.slice(0,i),l.slice(i+1)];}));
+for(const key of [null,'','wrong']){const r=await fetch(env.SUPABASE_URL+'/rest/v1/rpc/patifaria_storage',{method:'POST',headers:{apikey:env.SUPABASE_PUBLISHABLE_KEY,'Content-Type':'application/json'},body:JSON.stringify({backend_key:key,operation:'get',room_code:'ABCDE'})});assert.ok(!r.ok,'Backend key must be checked including null');}
+const table=await fetch(env.SUPABASE_URL+'/rest/v1/rooms?select=*',{headers:{apikey:env.SUPABASE_PUBLISHABLE_KEY}});assert.ok(!table.ok);console.log('PASS: null, empty and incorrect backend credentials rejected; room table not exposed.');
