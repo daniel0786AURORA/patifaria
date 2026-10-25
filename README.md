@@ -23,7 +23,7 @@ Desafios recebidos usam instruções diretas (“Na sua próxima fala, encene…
 
 - **800 cartas**, 100 em cada categoria: Evidências, Testemunhas, Sabotagens, Corrupção, Ordens, Refutações, Interpretação e Reviravoltas.
 - **60 casos** independentes do baralho.
-- Cartas compostas por 25 conceitos-base em quatro variantes, com metadados de alvo, momento, duração, visibilidade e compatibilidade.
+- 100 objetos e 100 pessoas com relatos próprios; 100 papéis de atuação. O motor contém 43 tipos de efeito, com alvos, quantidades, condições de aplicação e combinações de tarefas. As 800 cartas não representam 800 mecânicas independentes: cartas narrativas compartilham apresentação e as cartas de apoio têm famílias de efeitos e variações explícitas.
 - Duelo com selo secreto aleatório ORIGINAL/TROCADO, sem pretender avaliar a fala.
 
 ## Pontuação
@@ -38,7 +38,11 @@ A tabela `patifaria_private.rooms` não é exposta pela API REST e tem RLS habil
 
 O armazenamento usa compare-and-swap por revisão; ações recebem IDs para deduplicação. O servidor resolve sorteios, limites, cronômetros e efeitos. Clientes buscam uma projeção privada a cada 1,2 segundo, com heartbeat a cada 7 segundos. A sincronização é por polling, não WebSocket. O relógio usa prazo absoluto e ajuste pelo horário do servidor. Salas expiram após 48 horas sem atividade e são removidas ao criar novas salas.
 
-Corrupção não gera evento público: somente remetente e juiz recebem o efeito. Denúncias consideram apenas o adversário no julgamento atual, inclusive cartas consumidas; revelam nomes das cartas e cancelam efeitos ativos. Conflitos de decisões: vence a ordem ativa mais recente. Ao final do caso, todos os envelopes são revelados.
+A distribuição garante uma Evidência, uma Testemunha e dois apoios de categorias e famílias diferentes. Mantém histórico de cartas por partida e prefere funções não vistas nos últimos apoios; recicla uma categoria somente se não houver opções inéditas disponíveis. Trocar uma prova ou testemunha preserva a categoria.
+
+O jurado pode fazer uma pergunta, abrir uma prova lacrada (Vista dos Autos) e votar. Com quatro pessoas, o único jurado decide o caso; recomendamos quatro julgamentos para todos passarem pelos quatro papéis.
+
+Corrupção não gera evento público: somente remetente e juiz recebem o efeito. Denúncias consideram apenas o adversário no julgamento atual, inclusive cartas consumidas; revelam nomes das cartas e cancelam efeitos ativos. Conflitos de decisões: vence a ordem ativa mais recente. Ao final do caso, todos os envelopes são revelados. O juiz recebe nomes, papéis, escopo e aplicações restantes das ordens; as projeções incluem as escolhas obrigatórias, e o servidor rejeita escolhas contrárias. Ordens consumidas mostram a decisão aplicada. Escopos restritos a evidência, testemunha ou atuação voluntária não são consumidos em eventos incompatíveis.
 
 ## Desenvolvimento
 
@@ -57,9 +61,9 @@ npm run build
 
 ## Validação
 
-`npm test`: 19 testes do motor, cobrindo conteúdo, privacidade, permissões, limites de cartas, blefe/cronômetro, denúncias, corrupção, desafios, refutação, término de fala, rodízio, júri e Duelo.
+`npm test`: 30 testes do motor, cobrindo conteúdo, privacidade, permissões, limites de cartas, blefe/cronômetro, denúncias, corrupção, desafios, refutação, término de fala, rodízio, júri e Duelo.
 
-`node --import tsx scripts/integration.ts`: cria uma sala real e três sessões independentes, testa entradas concorrentes, joga 3 julgamentos/18 falas, preparação e confirmação, bloqueio de cartas durante a fala, renovação conjunta das mãos, desafios e revisão, contestações, decisões, rodízio, placar final e rejeição de acesso indevido. Use `TEST_URL=https://seu-site` para verificar uma publicação. Cada execução cria uma sala de teste que expira normalmente.
+`node --import tsx scripts/integration.ts`: cria uma sala real e quatro sessões independentes, testa entradas concorrentes, joga 4 julgamentos/24 falas, preparação e confirmação, bloqueio de cartas durante a fala, renovação conjunta das mãos, desafios e revisão, contestações, decisões, rodízio, placar final e rejeição de acesso indevido. Use `TEST_URL=https://seu-site` para verificar uma publicação. Cada execução cria uma sala de teste que expira normalmente.
 
 ## Publicação
 

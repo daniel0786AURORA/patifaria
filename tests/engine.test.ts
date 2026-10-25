@@ -97,7 +97,7 @@ test('desafio próprio oculto ao juiz até a revisão; corrupção força decis�
  act(g,token(p.id),{type:'play',card:'6-0'});act(g,token(p.id),{type:'play',card:'3-1'});
  assert.ok(!view(g,judge()).effects.some(e=>e.kind==='challengeSelf'));
  begin(g,judge());assert.ok(!view(g,judge()).effects.some(e=>e.kind==='challengeSelf'));
- act(g,judge(),{type:'end'});assert.throws(()=>act(g,judge(),{type:'nextTurn'}));act(g,judge(),{type:'review',effect:g.effects[0].id,passed:false});assert.equal(p.score,1);act(g,judge(),{type:'nextTurn'});assert.equal(g.turn,1);
+ act(g,judge(),{type:'end'});assert.throws(()=>act(g,judge(),{type:'nextTurn'}));assert.throws(()=>act(g,judge(),{type:'review',effect:g.effects[0].id,passed:false}),/bloqueada/);act(g,judge(),{type:'review',effect:g.effects[0].id,passed:true});assert.equal(p.score,1);act(g,judge(),{type:'nextTurn'});assert.equal(g.turn,1);
 });
 test('refutação cancela o desafio recebido antes de começar a fala',()=>{
  const {g,token,judge}=setup();const a=speaker(g);hand(g,a.id,'2-14');act(g,token(a.id),{type:'play',card:'2-14'});begin(g,judge());close(g,judge());const d=speaker(g);hand(g,d.id,'5-0');act(g,token(d.id),{type:'play',card:'5-0'});assert.equal(g.effects[0].status,'cancelled');begin(g,judge());act(g,judge(),{type:'end'});act(g,judge(),{type:'nextTurn'});
@@ -130,3 +130,61 @@ test('Duelo mantém preparação, blefe de selo e renovação por par',()=>{
  for(let t=1;t<6;t++){const sp=speaker(g);begin(g,token(sp.id),5000+t);act(g,token(sp.id),{type:'end'},6000+t);}assert.equal(g.phase,'result');
 });
 test('sessão não autorizada não pode agir',()=>{const {g}=setup();assert.throws(()=>view(g,'impostor'));assert.throws(()=>act(g,'impostor',{type:'start'}));});
+
+test('evidências e testemunhas são 200 histórias diferentes; motor contém 43 efeitos',()=>{
+ for(const type of ['Evidências','Testemunhas']){const pool=cards.filter(c=>c.type===type);assert.equal(new Set(pool.map(c=>c.text)).size,100);assert.equal(new Set(pool.map(c=>c.name)).size,100);}
+ assert.equal(new Set(cards.map(c=>c.effect)).size,43);assert.equal(new Set(cards.map(c=>c.name)).size,800);
+});
+test('todas as mãos têm evidência, testemunha e dois apoios distintos, sem repetir na partida',()=>{
+ for(let sample=0;sample<20;sample++){
+  const {g,tokens,judge}=setup(4);const seen=new Set<string>();
+  for(let r=0;r<3;r++){
+   for(let t=0;t<6;t++){
+    if(t%2===0)for(const p of g.players.filter(p=>['acusação','defesa'].includes(p.role))){const hand=p.hand.map(card);assert.equal(hand.filter(c=>c.type==='Evidências').length,1);assert.equal(hand.filter(c=>c.type==='Testemunhas').length,1);const support=hand.filter(c=>c.effect!=='present');assert.equal(support.length,2);assert.notEqual(support[0].family,support[1].family);assert.notEqual(support[0].type,support[1].type);for(const c of hand){assert.ok(!seen.has(c.id),`Carta repetida: ${c.id}`);seen.add(c.id);}}
+    begin(g,judge());close(g,judge());
+   }
+   const juror=g.players.find(p=>p.role==='jurado')!;act(g,tokens[g.players.indexOf(juror)],{type:'vote',vote:'acusação'});act(g,tokens[0],{type:'nextRound'});
+  }
+  assert.equal(seen.size,72);
+ }
+});
+test('trocar uma testemunha mantém a categoria e recebe pessoa inédita',()=>{
+ const {g,token}=setup();const p=speaker(g),old=p.hand.find(id=>card(id).type==='Testemunhas')!;act(g,token(p.id),{type:'swap',card:old});assert.ok(!p.hand.includes(old));assert.equal(p.hand.filter(id=>card(id).type==='Testemunhas').length,1);
+});
+test('ordem de BLEFE nomeia favorecido, bloqueia escolha contrária e registra aplicação',()=>{
+ for(const claimant of ['author','challenger']){
+  const {g,token,judge}=setup();const a=speaker(g),d=g.players.find(p=>p.role==='defesa')!;hand(g,a.id,'3-2','0-0');act(g,token(a.id),{type:'play',card:'3-2'});act(g,token(a.id),{type:'play',card:'0-0'});
+  const order=view(g,judge()).effects[0];assert.ok(order.instruction.includes(a.name));assert.ok(!order.instruction.includes('você'));assert.equal(view(g,token(d.id)).effects.length,0);assert.equal(view(g,token(d.id)).judgeControls,undefined);
+  begin(g,judge());act(g,token(d.id),{type:'bluff',presentation:g.presentations[0].id});const lock=view(g,judge()).judgeControls!.bluff!;assert.equal(lock.lied,false);assert.throws(()=>act(g,judge(),{type:'judgeBluff',lied:true}),/bloqueada/);assert.equal(g.phase,'bluff');act(g,judge(),{type:'judgeBluff',lied:false});assert.equal(g.effects[0].status,'consumed');assert.ok(g.effects[0].note?.includes(a.name));assert.match(view(g,judge()).effects[0].instruction,/Ordem cumprida/);
+ }
+});
+test('reprovação automática identifica a tarefa do adversário e não o argumento',()=>{
+ const {g,token,judge}=setup();const a=speaker(g),d=g.players.find(p=>p.role==='defesa')!;hand(g,a.id,'3-0','2-50');act(g,token(a.id),{type:'play',card:'3-0'});act(g,token(a.id),{type:'play',card:'2-50'});const order=view(g,judge()).effects.find(e=>e.kind==='forceReject')!;assert.ok(order.instruction.includes(d.name));assert.ok(order.instruction.includes('Não é reprovar o argumento'));
+ begin(g,judge());close(g,judge());begin(g,judge());act(g,judge(),{type:'end'});const task=g.effects.find(e=>e.kind==='challenge')!;assert.equal(view(g,judge()).judgeControls!.reviews[task.id]!.passed,false);assert.throws(()=>act(g,judge(),{type:'review',effect:task.id,passed:true}),/bloqueada/);act(g,judge(),{type:'review',effect:task.id,passed:false});assert.equal(d.shame,1);assert.equal(g.effects.find(e=>e.kind==='forceReject')!.status,'consumed');
+});
+test('corrupção de testemunha ignora evidência, mas favorece autor quando ele contesta testemunha',()=>{
+ const {g,token,judge}=setup();const a=speaker(g),d=g.players.find(p=>p.role==='defesa')!;hand(g,a.id,'3-5','0-0');act(g,token(a.id),{type:'play',card:'3-5'});act(g,token(a.id),{type:'play',card:'0-0'});begin(g,judge());act(g,token(d.id),{type:'bluff',presentation:g.presentations[0].id});assert.equal(view(g,judge()).judgeControls!.bluff,null);act(g,judge(),{type:'judgeBluff',lied:false});close(g,judge());hand(g,d.id,'1-0');act(g,token(d.id),{type:'play',card:'1-0'});begin(g,judge());act(g,token(a.id),{type:'bluff',presentation:g.presentations.at(-1)!.id});assert.equal(view(g,judge()).judgeControls!.bluff!.lied,true);assert.throws(()=>act(g,judge(),{type:'judgeBluff',lied:false}));act(g,judge(),{type:'judgeBluff',lied:true});assert.equal(g.effects[0].status,'consumed');
+});
+test('ordem mais recente tem prioridade; quantidade e cancelamento por denúncia são respeitados',()=>{
+ const {g,token,judge}=setup();const a=speaker(g),d=g.players.find(p=>p.role==='defesa')!;hand(g,a.id,'3-12','0-0');act(g,token(a.id),{type:'play',card:'3-12'});act(g,token(a.id),{type:'play',card:'0-0'});begin(g,judge());act(g,token(d.id),{type:'bluff',presentation:g.presentations[0].id});act(g,judge(),{type:'judgeBluff',lied:false});assert.equal(g.effects[0].remaining,1);assert.equal(g.effects[0].status,'active');close(g,judge());hand(g,d.id,'3-2','1-0');act(g,token(d.id),{type:'play',card:'3-2'});act(g,token(d.id),{type:'play',card:'1-0'});begin(g,judge());act(g,token(a.id),{type:'bluff',presentation:g.presentations.at(-1)!.id});assert.equal(view(g,judge()).judgeControls!.bluff!.lied,false);act(g,judge(),{type:'judgeBluff',lied:false});act(g,token(d.id),{type:'denounce'});assert.equal(g.effects[0].status,'cancelled');
+});
+test('pausa do juiz pode ser bloqueada por ordem sem bloquear BLEFE nem fim de fala',()=>{
+ const {g,token,judge}=setup();const a=speaker(g),d=g.players.find(p=>p.role==='defesa')!;hand(g,a.id,'3-9','0-0');act(g,token(a.id),{type:'play',card:'3-9'});act(g,token(a.id),{type:'play',card:'0-0'});begin(g,judge());assert.equal(view(g,judge()).judgeControls!.pauseBlocked,true);assert.throws(()=>act(g,judge(),{type:'pause'}));act(g,token(d.id),{type:'bluff',presentation:g.presentations[0].id});assert.equal(g.phase,'bluff');act(g,judge(),{type:'judgeBluff',lied:false});act(g,judge(),{type:'end'});assert.equal(g.phase,'review');assert.equal(g.effects[0].status,'consumed');
+});
+test('sabotagens bloqueiam ações no servidor e proteção restaura a troca',()=>{
+ const {g,token,judge}=setup();const a=speaker(g);const block=cards.find(c=>c.effect==='blockSwap')!;hand(g,a.id,block.id);act(g,token(a.id),{type:'play',card:block.id});begin(g,judge());close(g,judge());const d=speaker(g);assert.equal(view(g,token(d.id)).me.swapBlocked,true);assert.throws(()=>act(g,token(d.id),{type:'swap',card:d.hand[0]}));const protect=cards.find(c=>c.effect==='protectSwap')!;hand(g,d.id,protect.id,'1-0');act(g,token(d.id),{type:'play',card:protect.id});assert.equal(view(g,token(d.id)).me.swapBlocked,false);act(g,token(d.id),{type:'swap',card:'1-0'});
+});
+test('todos os 43 tipos de efeito executam e permitem continuar o julgamento',()=>{
+ const representatives=[...new Map(cards.map(c=>[c.effect,c])).values()];
+ for(const c of representatives){const {g,token,judge}=setup(4);const a=speaker(g);hand(g,a.id,c.id,...['0-1','1-1','7-0'].filter(id=>id!==c.id));act(g,token(a.id),{type:'play',card:c.id});assert.ok(Number.isFinite(g.remaining));assert.ok(a.hand.length<=5);begin(g,judge());act(g,judge(),{type:'end'});for(const task of g.effects.filter(e=>e.status==='active'&&['challenge','challengeSelf'].includes(e.kind)&&e.turn===g.turn)){const lock=view(g,judge()).judgeControls!.reviews[task.id];act(g,judge(),{type:'review',effect:task.id,passed:lock?.passed??true});}act(g,judge(),{type:'nextTurn'});assert.equal(g.phase,'ready',c.effect);}
+});
+test('quatro jogadores: Júri Popular abre prova, pergunta, decide e entra no rodízio',()=>{
+ const {g,tokens,token,judge}=setup(4);g.rounds=4;const seenRoles=new Map(g.players.map(p=>[p.id,new Set([p.role])]));
+ for(let r=0;r<4;r++){
+  const a=speaker(g),jury=g.players.find(p=>p.role==='jurado')!;hand(g,a.id,'0-0','1-0');act(g,token(a.id),{type:'play',card:'0-0'});act(g,token(a.id),{type:'play',card:'1-0'});
+  act(g,token(jury.id),{type:'question',text:'Quem assinou o recibo?'});assert.throws(()=>act(g,token(jury.id),{type:'question'}));act(g,token(jury.id),{type:'juryReveal',presentation:g.presentations[0].id});assert.equal(g.presentations[0].revealed,true);assert.throws(()=>act(g,token(jury.id),{type:'juryReveal',presentation:g.presentations[1].id}));
+  for(let t=0;t<6;t++){begin(g,judge());close(g,judge());}
+  assert.throws(()=>act(g,judge(),{type:'vote',vote:'defesa'}));act(g,token(jury.id),{type:'vote',vote:'defesa'});assert.equal(g.winner,'defesa');act(g,tokens[0],{type:'nextRound'});if(r<3)for(const p of g.players)seenRoles.get(p.id)!.add(p.role);
+ }
+ assert.equal(g.phase,'finished');for(const roles of seenRoles.values())assert.equal(roles.size,4);
+});
