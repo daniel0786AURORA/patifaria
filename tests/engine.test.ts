@@ -117,7 +117,7 @@ test('temporizador termina no servidor; fala seguinte espera nova preparação',
 test('partida completa com rodízio e placar final',()=>{
  const {g,tokens,judge}=setup();const roles=new Map(g.players.map(p=>[p.id,new Set([p.role])]));
  for(let r=0;r<3;r++){for(let t=0;t<6;t++){begin(g,judge());close(g,judge());}assert.equal(g.phase,'verdict');act(g,judge(),{type:'vote',vote:'acusação'});assert.equal(g.phase,'result');act(g,tokens[0],{type:'nextRound'});if(r<2)for(const p of g.players)roles.get(p.id)!.add(p.role);}
- assert.equal(g.phase,'finished');for(const r of roles.values())assert.equal(r.size,3);assert.equal(g.players.reduce((a,p)=>a+p.score,0),9);
+ assert.equal(g.phase,'finished');for(const r of roles.values())assert.equal(r.size,3);assert.equal(g.players.reduce((a,p)=>a+p.score,0),12);
 });
 test('júri vota por maioria e juiz só desempata',()=>{
  const {g,token,judge}=setup(5);g.phase='verdict';const jury=g.players.filter(x=>x.role==='jurado');assert.throws(()=>act(g,judge(),{type:'vote',vote:'acusação'}));act(g,token(jury[0].id),{type:'vote',vote:'acusação'});act(g,token(jury[1].id),{type:'vote',vote:'defesa'});assert.equal(g.phase,'verdict');act(g,judge(),{type:'vote',vote:'defesa'});assert.equal(g.winner,'defesa');assert.equal(jury[1].score,1);
@@ -166,7 +166,7 @@ test('corrupção de testemunha ignora evidência, mas favorece autor quando ele
  const {g,token,judge}=setup();const a=speaker(g),d=g.players.find(p=>p.role==='defesa')!;hand(g,a.id,'3-5','0-0');act(g,token(a.id),{type:'play',card:'3-5'});act(g,token(a.id),{type:'play',card:'0-0'});begin(g,judge());act(g,token(d.id),{type:'bluff',presentation:g.presentations[0].id});assert.equal(view(g,judge()).judgeControls!.bluff,null);act(g,judge(),{type:'judgeBluff',lied:false});close(g,judge());hand(g,d.id,'1-0');act(g,token(d.id),{type:'play',card:'1-0'});begin(g,judge());act(g,token(a.id),{type:'bluff',presentation:g.presentations.at(-1)!.id});assert.equal(view(g,judge()).judgeControls!.bluff!.lied,true);assert.throws(()=>act(g,judge(),{type:'judgeBluff',lied:false}));act(g,judge(),{type:'judgeBluff',lied:true});assert.equal(g.effects[0].status,'consumed');
 });
 test('ordem mais recente tem prioridade; quantidade e cancelamento por denúncia são respeitados',()=>{
- const {g,token,judge}=setup();const a=speaker(g),d=g.players.find(p=>p.role==='defesa')!;hand(g,a.id,'3-12','0-0');act(g,token(a.id),{type:'play',card:'3-12'});act(g,token(a.id),{type:'play',card:'0-0'});begin(g,judge());act(g,token(d.id),{type:'bluff',presentation:g.presentations[0].id});act(g,judge(),{type:'judgeBluff',lied:false});assert.equal(g.effects[0].remaining,1);assert.equal(g.effects[0].status,'active');close(g,judge());hand(g,d.id,'3-2','1-0');act(g,token(d.id),{type:'play',card:'3-2'});act(g,token(d.id),{type:'play',card:'1-0'});begin(g,judge());act(g,token(a.id),{type:'bluff',presentation:g.presentations.at(-1)!.id});assert.equal(view(g,judge()).judgeControls!.bluff!.lied,false);act(g,judge(),{type:'judgeBluff',lied:false});act(g,token(d.id),{type:'denounce'});assert.equal(g.effects[0].status,'cancelled');
+ const {g,token,judge}=setup();const a=speaker(g),d=g.players.find(p=>p.role==='defesa')!;hand(g,a.id,'3-12','0-0');act(g,token(a.id),{type:'play',card:'3-12'});act(g,token(a.id),{type:'play',card:'0-0'});begin(g,judge());act(g,token(d.id),{type:'bluff',presentation:g.presentations[0].id});act(g,judge(),{type:'judgeBluff',lied:false});assert.equal(g.effects[0].remaining,1);assert.equal(g.effects[0].status,'active');close(g,judge());d.used=0; /* Isola a prioridade das ordens; a penalidade de BLEFE é coberta separadamente. */ hand(g,d.id,'3-2','1-0');act(g,token(d.id),{type:'play',card:'3-2'});act(g,token(d.id),{type:'play',card:'1-0'});begin(g,judge());act(g,token(a.id),{type:'bluff',presentation:g.presentations.at(-1)!.id});assert.equal(view(g,judge()).judgeControls!.bluff!.lied,false);act(g,judge(),{type:'judgeBluff',lied:false});act(g,token(d.id),{type:'denounce'});assert.equal(g.effects[0].status,'cancelled');
 });
 test('pausa do juiz pode ser bloqueada por ordem sem bloquear BLEFE nem fim de fala',()=>{
  const {g,token,judge}=setup();const a=speaker(g),d=g.players.find(p=>p.role==='defesa')!;hand(g,a.id,'3-9','0-0');act(g,token(a.id),{type:'play',card:'3-9'});act(g,token(a.id),{type:'play',card:'0-0'});begin(g,judge());assert.equal(view(g,judge()).judgeControls!.pauseBlocked,true);assert.throws(()=>act(g,judge(),{type:'pause'}));act(g,token(d.id),{type:'bluff',presentation:g.presentations[0].id});assert.equal(g.phase,'bluff');act(g,judge(),{type:'judgeBluff',lied:false});act(g,judge(),{type:'end'});assert.equal(g.phase,'review');assert.equal(g.effects[0].status,'consumed');
@@ -187,4 +187,69 @@ test('quatro jogadores: Júri Popular abre prova, pergunta, decide e entra no ro
   assert.throws(()=>act(g,judge(),{type:'vote',vote:'defesa'}));act(g,token(jury.id),{type:'vote',vote:'defesa'});assert.equal(g.winner,'defesa');act(g,tokens[0],{type:'nextRound'});if(r<3)for(const p of g.players)seenRoles.get(p.id)!.add(p.role);
  }
  assert.equal(g.phase,'finished');for(const roles of seenRoles.values())assert.equal(roles.size,4);
+});
+
+test('juiz acrescenta tempo sincronizado uma vez e não pode usar duas cartas na mesma fala',()=>{
+ const {g,token,judge}=setup();const a=speaker(g);assert.equal(view(g,judge()).judgePowers!.length,4);assert.equal(view(g,token(a.id)).judgePowers,undefined);
+ assert.throws(()=>act(g,token(a.id),{type:'judgePower',power:'extend'}));
+ begin(g,judge(),1000);act(g,judge(),{type:'judgePower',power:'extend'},11000);assert.equal(g.remaining,60000);assert.equal(g.deadline,71000);assert.equal(g.phase,'speaking');
+ assert.throws(()=>act(g,judge(),{type:'judgePower',power:'cut'},12000));
+ assert.ok(view(g,judge()).judgePowers!.find(p=>p.id==='extend')!.used);
+ act(g,judge(),{type:'end'},13000);act(g,judge(),{type:'nextTurn'},14000);assert.throws(()=>act(g,judge(),{type:'judgePower',power:'extend'},15000));
+ act(g,judge(),{type:'judgePower',power:'cut'},16000);assert.equal(g.remaining,50000);assert.equal(g.deadline,null);
+});
+test('corte do juiz preserva mínimo, respeita proteção e funciona com relógio pausado',()=>{
+ const {g,token,judge}=setup();const a=speaker(g);const shield=cards.find(c=>c.effect==='protectTime')!;hand(g,a.id,shield.id);act(g,token(a.id),{type:'play',card:shield.id});assert.throws(()=>act(g,judge(),{type:'judgePower',power:'cut'}));
+ g.effects[0].status='cancelled';begin(g,judge(),1000);act(g,judge(),{type:'pause'},51000);assert.equal(g.remaining,10000);assert.throws(()=>act(g,judge(),{type:'judgePower',power:'cut'},52000));
+ g.remaining=15000;act(g,judge(),{type:'judgePower',power:'cut'},53000);assert.equal(g.remaining,10000);assert.equal(g.deadline,null);assert.equal(g.paused,true);
+});
+test('carta do juiz abre somente uma prova lacrada da fala atual',()=>{
+ const {g,token,judge}=setup();const a=speaker(g);hand(g,a.id,'0-0');act(g,token(a.id),{type:'play',card:'0-0'});const pres=g.presentations[0];assert.equal(pres.revealed,false);
+ act(g,judge(),{type:'judgePower',power:'reveal',presentation:pres.id});assert.equal(pres.revealed,true);assert.ok(view(g,judge()).notices.some(n=>n.kind==='judgePower'));
+});
+test('improviso imposto pelo juiz só revela tarefa ao juiz depois da fala',()=>{
+ const {g,token,judge}=setup();const a=speaker(g);act(g,judge(),{type:'judgePower',power:'improv'});
+ assert.equal(view(g,judge()).effects.filter(e=>e.kind==='challengeSelf').length,0);
+ const received=view(g,token(a.id)).effects.find(e=>e.kind==='challengeSelf')!;assert.ok(received.instruction.startsWith('Na sua próxima fala'));
+ begin(g,judge());assert.equal(view(g,judge()).effects.length,0);act(g,judge(),{type:'end'});assert.ok(view(g,judge()).effects.some(e=>e.id===received.id));act(g,judge(),{type:'review',effect:received.id,passed:true});assert.equal(a.score,1);
+});
+test('juiz não impõe atuação depois da confirmação e poderes renovam no próximo caso',()=>{
+ const {g,tokens,token,judge}=setup();const a=speaker(g);act(g,token(a.id),{type:'prepared'});assert.throws(()=>act(g,judge(),{type:'judgePower',power:'improv'}));
+ act(g,judge(),{type:'judgePower',power:'extend'});g.phase='result';act(g,tokens[0],{type:'nextRound'});assert.deepEqual(g.judgePowersUsed,[]);assert.deepEqual(g.judgePowerTurns,[]);assert.equal(g.judgeUnderWatch,false);
+});
+test('pontos compram tempo sem gastar ação de carta e diminuem o placar',()=>{
+ const {g,token}=setup();const a=speaker(g);a.score=2;const actions=a.used;act(g,token(a.id),{type:'spendPoints',perk:'time'});assert.equal(a.score,1);assert.equal(a.used,actions);assert.equal(g.remaining,70000);assert.equal(g.deadline,null);assert.equal(g.scoreLedger!.at(-1)!.delta,-1);
+ assert.throws(()=>act(g,token(a.id),{type:'spendPoints',perk:'time'}));
+});
+test('compras não podem ser feitas sem saldo, fora da preparação ou depois da confirmação',()=>{
+ const {g,token,judge}=setup();const a=speaker(g);assert.throws(()=>act(g,token(a.id),{type:'spendPoints',perk:'time'}));a.score=10;act(g,token(a.id),{type:'prepared'});assert.throws(()=>act(g,token(a.id),{type:'spendPoints',perk:'draw'}));act(g,judge(),{type:'begin'});assert.throws(()=>act(g,token(a.id),{type:'spendPoints',perk:'clean'}));assert.equal(a.score,10);
+});
+test('pontos compram prova extra ou retiram vergonha com condições verificadas',()=>{
+ const first=setup();const a=speaker(first.g);a.score=3;const old=[...a.hand];act(first.g,first.token(a.id),{type:'spendPoints',perk:'draw'});assert.equal(a.hand.length,5);assert.equal(a.score,1);const added=a.hand.find(id=>!old.includes(id))!;assert.equal(card(added).effect,'present');
+ const second=setup();const b=speaker(second.g);b.score=2;assert.throws(()=>act(second.g,second.token(b.id),{type:'spendPoints',perk:'clean'}));b.shame=2;act(second.g,second.token(b.id),{type:'spendPoints',perk:'clean'});assert.equal(b.shame,1);assert.equal(b.score,1);
+});
+test('contestação errada perde troca na próxima preparação e dá pontos gastáveis ao vencedor',()=>{
+ const {g,token,judge}=setup();const a=speaker(g),d=g.players.find(p=>p.role==='defesa')!;hand(g,a.id,'0-0');act(g,token(a.id),{type:'play',card:'0-0'});begin(g,judge());act(g,token(d.id),{type:'bluff',presentation:g.presentations[0].id});act(g,judge(),{type:'judgeBluff',lied:false});assert.equal(d.swapPenalty,true);assert.equal(a.score,1);assert.ok(g.notices!.some(n=>n.kind==='bluff'&&n.message.includes(d.name)));close(g,judge());assert.equal(speaker(g).id,d.id);assert.equal(d.used,0);assert.equal(d.swapped,true);assert.throws(()=>act(g,token(d.id),{type:'swap',card:d.hand[0]}));
+});
+test('denúncia correta confisca poderes, pune remetente, dá recompensa prática e avisa a todos',()=>{
+ const {g,tokens,token,judge}=setup(4);const a=speaker(g),d=g.players.find(p=>p.role==='defesa')!,j=g.players.find(p=>p.role==='juiz')!;j.score=5;hand(g,a.id,'3-2');act(g,token(a.id),{type:'play',card:'3-2'});act(g,judge(),{type:'judgePower',power:'extend'});begin(g,judge(),1000);act(g,token(d.id),{type:'denounce'},11000);
+ assert.equal(g.judgeUnderWatch,true);assert.equal(j.score,3);assert.equal(a.penalty,1);assert.equal(d.score,2);assert.equal(d.pendingSeconds,10);assert.equal(g.effects[0].status,'cancelled');assert.equal(g.phase,'speaking');assert.equal(g.deadline,71000);
+ assert.throws(()=>act(g,judge(),{type:'judgePower',power:'cut'},12000));
+ for(const t of tokens){const v=view(g,t);assert.equal(v.judgeUnderWatch,true);assert.ok(v.notices.some(n=>n.kind==='denounced'&&n.message.includes(d.name)));const result=v.notices.find(n=>n.kind==='corruption')!;assert.ok(result.message.includes(j.name));assert.ok(result.details.some(text=>text.includes('Poderes')||text.includes('poderes')));}
+ act(g,judge(),{type:'end'},13000);act(g,judge(),{type:'nextTurn'},14000);assert.equal(g.remaining,70000);assert.equal(d.pendingSeconds,0);hand(g,d.id,'3-1');assert.ok(view(g,token(d.id)).me.hand[0].blockedReason?.includes('fiscalização'));assert.throws(()=>act(g,token(d.id),{type:'play',card:'3-1'},15000));
+});
+test('denúncia falsa avisa sem confiscar poderes; após flagrante não se repetem denúncias',()=>{
+ const {g,token,judge}=setup();const a=speaker(g),d=g.players.find(p=>p.role==='defesa')!;act(g,token(d.id),{type:'denounce'});assert.equal(g.judgeUnderWatch,false);assert.equal(d.penalty,1);assert.ok(g.notices!.some(n=>n.kind==='falseDenounce'));act(g,judge(),{type:'judgePower',power:'extend'});
+ hand(g,a.id,'3-0');act(g,token(a.id),{type:'play',card:'3-0'});assert.throws(()=>act(g,token(d.id),{type:'denounce'}));
+});
+test('flagrante anula ambos os lados sem revelar envelopes do próprio denunciante',()=>{
+ const {g,token,judge}=setup();const a=speaker(g),d=g.players.find(p=>p.role==='defesa')!;hand(g,a.id,'3-2');act(g,token(a.id),{type:'play',card:'3-2'});begin(g,judge());close(g,judge());hand(g,d.id,'3-1');act(g,token(d.id),{type:'play',card:'3-1'});act(g,token(a.id),{type:'denounce'});assert.ok(g.effects.every(e=>e.status==='cancelled'));const publicResult=g.notices!.find(n=>n.kind==='corruption')!;assert.ok(publicResult.details[0].includes(card('3-1').name));assert.ok(!publicResult.details[0].includes(card('3-2').name));assert.throws(()=>act(g,token(d.id),{type:'denounce'}));
+});
+test('juiz só ganha ponto de conclusão se não foi flagrado',()=>{
+ const clean=setup();const j=clean.g.players.find(p=>p.role==='juiz')!;clean.g.phase='verdict';act(clean.g,clean.judge(),{type:'vote',vote:'defesa'});assert.equal(j.score,1);
+ const caught=setup();const j2=caught.g.players.find(p=>p.role==='juiz')!;caught.g.judgeUnderWatch=true;caught.g.phase='verdict';act(caught.g,caught.judge(),{type:'vote',vote:'defesa'});assert.equal(j2.score,0);
+});
+
+test('blefe descoberto retira uma ação futura de quem mentiu sem alterar o tempo pausado',()=>{
+ const {g,token,judge}=setup();const a=speaker(g),d=g.players.find(p=>p.role==='defesa')!;hand(g,a.id,'0-0');act(g,token(a.id),{type:'play',card:'0-0'},500);begin(g,judge(),1000);act(g,token(d.id),{type:'bluff',presentation:g.presentations[0].id},11000);const remaining=g.remaining;act(g,judge(),{type:'judgeBluff',lied:true},21000);assert.equal(g.remaining,remaining);assert.equal(a.penalty,1);assert.equal(d.score,1);act(g,judge(),{type:'end'},22000);act(g,judge(),{type:'nextTurn'},23000);begin(g,judge());close(g,judge());assert.equal(speaker(g).id,a.id);assert.equal(a.used,1);
 });

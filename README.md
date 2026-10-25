@@ -26,9 +26,21 @@ Desafios recebidos usam instruções diretas (“Na sua próxima fala, encene…
 - 100 objetos e 100 pessoas com relatos próprios; 100 papéis de atuação. O motor contém 43 tipos de efeito, com alvos, quantidades, condições de aplicação e combinações de tarefas. As 800 cartas não representam 800 mecânicas independentes: cartas narrativas compartilham apresentação e as cartas de apoio têm famílias de efeitos e variações explícitas.
 - Duelo com selo secreto aleatório ORIGINAL/TROCADO, sem pretender avaliar a fala.
 
+## Cartas do juiz, pontos e consequências
+
+O juiz recebe quatro cartas de gabinete por julgamento: **Mais um Minutinho** (+10 segundos), **Chega de Enrolação** (−10 segundos, mínimo restante de 10), **Abram os Autos!** (revela uma prova atual) e **Intimação de Improviso** (atuações surpresa antes de confirmar a preparação). Cada carta só pode ser usada uma vez por caso; no máximo uma carta por fala. A proteção de tempo impede o corte. O juiz só vê a tarefa que impôs depois da fala do advogado, como nas outras atuações.
+
+Os mesmos pontos do placar podem ser gastos: **1 ponto** compra +10 segundos ou remove uma Ficha de Vergonha; **2 pontos** compram uma prova/testemunha inédita extra (mão máxima de cinco). Uma compra por preparação, somente como advogado e antes da confirmação. Comprar não consome uma ação de carta, mas diminui o placar que define o campeão. Ganhos e gastos aparecem num extrato.
+
+Um BLEFE descoberto gera uma Ficha de Vergonha **e uma ação a menos na próxima preparação como advogado** para quem mentiu. Uma contestação errada gera uma Ficha de Vergonha e **perda da troca opcional na próxima preparação** para quem contestou. O vencedor ganha um ponto utilizável. As penalidades de ação não se acumulam além de uma, e podem passar para o próximo caso se não houver nova fala daquele advogado no atual.
+
+Uma denúncia correta concede **2 pontos e +10 segundos** à fala atual ou à próxima fala do denunciante como advogado (bônus pendente limitado a 20 segundos). Quem enviou o favorecimento perde uma ação na próxima preparação. O juiz perde até dois pontos, perde todas as cartas de gabinete até o próximo caso e fica **sob fiscalização**: todos os favorecimentos ativos, de ambos os lados, são anulados, novas corrupções e novas denúncias são bloqueadas naquele caso. Só os envelopes do adversário que comprovaram a denúncia são identificados no aviso público. O juiz continua conduzindo a partida; ele não é removido nem substituído. Sem flagrante, concluir um julgamento rende +1 ponto ao juiz. Denúncia falsa mantém os poderes e custa uma ação futura ao denunciante.
+
+Avisos persistidos e públicos registram denúncia, resultado da investigação, consequência do BLEFE e poderes usados. Todos os dispositivos recebem os avisos pelo mesmo fluxo de sincronização; os sons dependem de áudio habilitado e permissão de reprodução do navegador. Os avisos não são modais e podem ser dispensados localmente. A faixa de fiscalização permanece visível até o fim do caso.
+
 ## Pontuação
 
-Vitória judicial +3; contestação vencida +1; desafio cumprido +1; denúncia correta +2; jurado que votou no lado vencedor +1. No Duelo, prova apresentada +1 e resultado do caso determinado por ações verificadas. Três fichas de vergonha custam uma ação na próxima fala. Denúncia falsa custa uma ação futura. Não existe análise de voz.
+Vitória judicial +3; juiz sem flagrante +1; contestação vencida +1; desafio cumprido +1; denúncia correta +2; jurado que votou no lado vencedor +1. No Duelo, prova apresentada +1 e resultado do caso determinado por ações verificadas. Três fichas de vergonha custam uma ação na próxima fala. Denúncia falsa custa uma ação futura. Não existe análise de voz.
 
 ## Arquitetura e privacidade
 
@@ -42,7 +54,7 @@ A distribuição garante uma Evidência, uma Testemunha e dois apoios de categor
 
 O jurado pode fazer uma pergunta, abrir uma prova lacrada (Vista dos Autos) e votar. Com quatro pessoas, o único jurado decide o caso; recomendamos quatro julgamentos para todos passarem pelos quatro papéis.
 
-Corrupção não gera evento público: somente remetente e juiz recebem o efeito. Denúncias consideram apenas o adversário no julgamento atual, inclusive cartas consumidas; revelam nomes das cartas e cancelam efeitos ativos. Conflitos de decisões: vence a ordem ativa mais recente. Ao final do caso, todos os envelopes são revelados. O juiz recebe nomes, papéis, escopo e aplicações restantes das ordens; as projeções incluem as escolhas obrigatórias, e o servidor rejeita escolhas contrárias. Ordens consumidas mostram a decisão aplicada. Escopos restritos a evidência, testemunha ou atuação voluntária não são consumidos em eventos incompatíveis.
+Corrupção não gera evento público: somente remetente e juiz recebem o efeito. Denúncias consideram apenas o adversário no julgamento atual, inclusive cartas consumidas; revelam nomes das cartas e cancelam todos os favorecimentos ativos após o flagrante. Conflitos de decisões: vence a ordem ativa mais recente. Ao final do caso, todos os envelopes são revelados. O juiz recebe nomes, papéis, escopo e aplicações restantes das ordens; as projeções incluem as escolhas obrigatórias, e o servidor rejeita escolhas contrárias. Ordens consumidas mostram a decisão aplicada. Escopos restritos a evidência, testemunha ou atuação voluntária não são consumidos em eventos incompatíveis.
 
 ## Desenvolvimento
 
@@ -61,9 +73,9 @@ npm run build
 
 ## Validação
 
-`npm test`: 30 testes do motor, cobrindo conteúdo, privacidade, permissões, limites de cartas, blefe/cronômetro, denúncias, corrupção, desafios, refutação, término de fala, rodízio, júri e Duelo.
+`npm test`: 44 testes do motor, cobrindo conteúdo, privacidade, permissões, limites de cartas, blefe/cronômetro, denúncias, corrupção, desafios, refutação, término de fala, rodízio, júri e Duelo.
 
-`node --import tsx scripts/integration.ts`: cria uma sala real e quatro sessões independentes, testa entradas concorrentes, joga 4 julgamentos/24 falas, preparação e confirmação, bloqueio de cartas durante a fala, renovação conjunta das mãos, desafios e revisão, contestações, decisões, rodízio, placar final e rejeição de acesso indevido. Use `TEST_URL=https://seu-site` para verificar uma publicação. Cada execução cria uma sala de teste que expira normalmente.
+`node --import tsx scripts/integration.ts`: cria uma sala real e quatro sessões independentes, testa entradas concorrentes, joga 4 julgamentos/24 falas, preparação e confirmação, bloqueio de cartas durante a fala, renovação conjunta das mãos, desafios e revisão, contestações, decisões, rodízio, placar final e rejeição de acesso indevido, cartas do juiz, gastos de pontos e denúncias com avisos públicos. Use `TEST_URL=https://seu-site` para verificar uma publicação. Cada execução cria uma sala de teste que expira normalmente.
 
 ## Publicação
 
