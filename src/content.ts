@@ -1,3 +1,4 @@
+import {caseContexts} from './case-contexts.js';
 export const categories = ['Evidências','Testemunhas','Sabotagens','Corrupção','Ordens','Refutações','Interpretação','Reviravoltas'] as const;
 export type Category = typeof categories[number];
 export type Card = {id:string;name:string;type:Category;icon:string;text:string;effect:string;target:string;timing:string;duration:string;visibility:string;duel:boolean};
@@ -18,11 +19,11 @@ for(let cat=0;cat<8;cat++) for(let i=0;i<100;i++){
  if(cat===1){name=witnesses[n]+['',' — depoimento no portão',' — ligação de madrugada',' — versão no cartório'][v];text=[`“Vi alguém correndo, mas meus óculos estavam na air fryer.”`,`“Ouvi três barulhos e pensei que era promoção de colchão.”`,`“Cheguei depois. Só posso confirmar que tinha gente comentando.”`,`“Reconheci a voz, ou talvez fosse a novela da vizinha.”`][(n+v)%4];}
  if(cat===2){name=sabotage[n]+['',' premium',' de plantão',' extraordinária'][v];text=`Na próxima fala, o adversário deve argumentar como ${acts[(n+v*7)%25]}. ${['Inclua uma rima.','Comece com “segundo minha avó”.','Encerre com um slogan.','Use uma metáfora culinária.'][v]}`;effect='challenge';target='adversário';duel=false;}
  if(cat===3){name=schemes[n]+['',' — favor urgente',' — despacho reservado',' — pacote executivo'][v];effect=['forceReject','forceApprove','forceBluff','favor'][n%4];text={forceReject:'O juiz reprova o próximo desafio do adversário automaticamente.',forceApprove:'O juiz aprova seu próximo desafio automaticamente.',forceBluff:'A próxima decisão de BLEFE é automaticamente favorável a você.',favor:'O juiz deve defender verbalmente seu próximo argumento. Uma utilização.'}[effect]!;target='juiz';visibility='somente autor e juiz';duel=false;}
- if(cat===4){name=orders[n]+['',' express',' da madrugada',' especial'][v];effect='time';text=`Acrescente ${[5,8,10,12][v]} segundos à sua fala atual. O teto é 90 segundos.`;}
+ if(cat===4){name=orders[n]+['',' express',' da madrugada',' especial'][v];effect='time';text=`Acrescente ${[5,8,10,12][v]} segundos à fala que você está preparando. O teto é 90 segundos.`;}
  if(cat===5){name=refutes[n]+['',' — segunda via',' — com firma reconhecida',' — recurso especial'][v];effect='shield';text='Cancele um desafio ativo sobre você. Se não houver desafio, remova uma Ficha de Vergonha. Sem cadeia de respostas.';}
  if(cat===6){name=['Interprete','Plantão','Sessão','Cena'][v]+': '+acts[n];effect='challengeSelf';text=`Interprete ${acts[n]}. ${['Inclua uma rima.','Comece com “Excelência, deu ruim”.','Termine com uma pergunta dramática.','Use três metáforas de comida.'][v]} O juiz avalia ao final: +1 ponto se cumprir.`;duel=false;}
  if(cat===7){name=twists[n]+['',' — edição do caos',' — sem aviso prévio',' — do além'][v];effect='redraw';text='Descarte uma carta aleatória restante e receba outra. Esta carta conta como uma das duas ações da fala.';}
- all.push({id:`${cat}-${i}`,name,type,icon:icons[cat],text,effect,target,timing:'durante sua fala',duration:effect.includes('force')||effect==='favor'?'até uma utilização ou fim do julgamento':effect.includes('challenge')?'uma fala':'imediata',visibility,duel});
+ all.push({id:`${cat}-${i}`,name,type,icon:icons[cat],text,effect,target,timing:'na preparação da sua fala, antes de confirmar que está pronto',duration:effect.includes('force')||effect==='favor'?'até uma utilização ou fim do julgamento':effect.includes('challenge')?'uma fala':'imediata',visibility,duel});
 }
 export const cards=all;
 const caseTitles = [
@@ -87,4 +88,5 @@ const caseTitles = [
 ['O leilão do último pudim','Vanderson Calda','vender o mesmo último pedaço de pudim para cinco tios'],
 ['O feriado particular','Sebastião Folga','decretar feriado municipal dentro do próprio quarto']
 ];
-export const cases=caseTitles.map(([title,defendant,charge],i)=>({id:i,title,defendant,charge:`${defendant} é acusado de ${charge}.`,context:`O fato ocorreu ${['na festa do bairro','durante uma assembleia','num domingo chuvoso','no intervalo do almoço','na inauguração de um salão'][i%5]}. ${['A defesa alega que era uma experiência social.','A acusação afirma que houve planejamento num guardanapo.','Uma testemunha garante que tudo começou com uma promoção.','O réu afirma que seguiu um tutorial da internet.','Os envolvidos se recusam a devolver o depósito de R$ 12,50.'][i%5]} Cabe a vocês conectar as provas a esta confusão.`}));
+if(caseContexts.length!==caseTitles.length)throw new Error('Cada caso precisa ter seu próprio contexto.');
+export const cases=caseTitles.map(([title,defendant,charge],i)=>({id:i,title,defendant,charge:`${defendant} é acusado de ${charge}.`,context:caseContexts[i]}));

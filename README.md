@@ -11,6 +11,14 @@ Party game de tribunal absurdo para 2–10 pessoas. React + TypeScript + Vite, A
 5. O juiz inicia cada fala. Acusação e defesa alternam três vezes; cartas e blefes movimentam o processo.
 6. Jurados votam por maioria; juiz desempata. Os papéis giram a cada caso.
 
+### Preparação, falas e renovação
+
+Antes de cada fala, o advogado da vez joga até duas cartas e pode trocar uma. Ao confirmar **PRONTO PARA FALAR**, encerra sua preparação; só então o juiz pode iniciar o relógio. Cartas e trocas são bloqueadas pelo servidor durante o discurso.
+
+As mãos de ambos permanecem iguais entre acusação e defesa. Depois da fala da defesa **e da avaliação dos desafios**, as duas mãos são renovadas juntas para o próximo par de falas. Após o terceiro par, o jogo vai ao veredito sem uma distribuição extra.
+
+Desafios recebidos usam instruções diretas (“Na sua próxima fala, encene…”). Durante o discurso a pessoa vê “Nesta fala, encene…”. O juiz não recebe o efeito nem a descrição antes de terminar a fala da pessoa desafiada; só recebe a avaliação na fase de revisão, identificando nome e papel do alvo. Corrupções continuam restritas ao remetente e juiz. Os 60 casos têm contextos próprios, sem o antigo resumo genérico.
+
 ## Conteúdo
 
 - **800 cartas**, 100 em cada categoria: Evidências, Testemunhas, Sabotagens, Corrupção, Ordens, Refutações, Interpretação e Reviravoltas.
@@ -49,9 +57,9 @@ npm run build
 
 ## Validação
 
-`npm test`: 12 testes do motor, cobrindo conteúdo, privacidade, permissões, limites de cartas, blefe/cronômetro, denúncias, corrupção, desafios, refutação, término de fala, rodízio, júri e Duelo.
+`npm test`: 19 testes do motor, cobrindo conteúdo, privacidade, permissões, limites de cartas, blefe/cronômetro, denúncias, corrupção, desafios, refutação, término de fala, rodízio, júri e Duelo.
 
-`node --import tsx scripts/integration.ts`: cria uma sala real e três sessões independentes, testa entradas concorrentes, joga 3 julgamentos/18 falas, contestações, decisões, rodízio, placar final e rejeição de acesso indevido. Use `TEST_URL=https://seu-site` para verificar uma publicação. Cada execução cria uma sala de teste que expira normalmente.
+`node --import tsx scripts/integration.ts`: cria uma sala real e três sessões independentes, testa entradas concorrentes, joga 3 julgamentos/18 falas, preparação e confirmação, bloqueio de cartas durante a fala, renovação conjunta das mãos, desafios e revisão, contestações, decisões, rodízio, placar final e rejeição de acesso indevido. Use `TEST_URL=https://seu-site` para verificar uma publicação. Cada execução cria uma sala de teste que expira normalmente.
 
 ## Publicação
 
