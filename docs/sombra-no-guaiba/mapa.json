@@ -1,0 +1,986 @@
+{
+ "versao": 1,
+ "rodadas": {
+  "total": 24,
+  "hora_da_rodada_1": 6,
+  "revelacoes": [
+   3,
+   8,
+   13,
+   18,
+   23
+  ]
+ },
+ "zonas": {
+  "Z1": "Centro Histórico",
+  "Z2": "Cidade Baixa & Menino Deus",
+  "Z3": "Bom Fim & Farroupilha",
+  "Z4": "Moinhos de Vento & Petrópolis",
+  "Z5": "Zona Norte",
+  "Z6": "Zona Leste",
+  "Z7": "Orla Sul",
+  "Z8": "Ilhas & Travessia"
+ },
+ "locais": [
+  {
+   "id": 1,
+   "nome": "Mercado Público / Largo Glênio Peres",
+   "zona": "Z1",
+   "aglomeracao_base": 4,
+   "etiquetas": [
+    "CAM",
+    "T",
+    "EMERGENCIA"
+   ]
+  },
+  {
+   "id": 2,
+   "nome": "Praça da Alfândega / Rua da Praia",
+   "zona": "Z1",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "CON",
+    "CAM"
+   ]
+  },
+  {
+   "id": 3,
+   "nome": "Usina do Gasômetro",
+   "zona": "Z1",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "B"
+   ]
+  },
+  {
+   "id": 4,
+   "nome": "Cais Mauá",
+   "zona": "Z1",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "EXT:agua",
+    "B"
+   ]
+  },
+  {
+   "id": 5,
+   "nome": "Praça da Matriz / Catedral",
+   "zona": "Z1",
+   "aglomeracao_base": 2,
+   "etiquetas": []
+  },
+  {
+   "id": 6,
+   "nome": "Rodoviária",
+   "zona": "Z1",
+   "aglomeracao_base": 4,
+   "etiquetas": [
+    "EXT:terra",
+    "CAM",
+    "ATM",
+    "T"
+   ]
+  },
+  {
+   "id": 7,
+   "nome": "Casa de Cultura Mario Quintana",
+   "zona": "Z1",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "CON"
+   ]
+  },
+  {
+   "id": 8,
+   "nome": "Cidade Baixa / Largo Zumbi dos Palmares",
+   "zona": "Z2",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "NOITE+1"
+   ]
+  },
+  {
+   "id": 9,
+   "nome": "Parque Harmonia / Anfiteatro Pôr do Sol",
+   "zona": "Z2",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "PARQUE"
+   ]
+  },
+  {
+   "id": 10,
+   "nome": "Shopping Praia de Belas",
+   "zona": "Z2",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "CAM",
+    "ATM",
+    "LOJ"
+   ]
+  },
+  {
+   "id": 11,
+   "nome": "Estádio Beira-Rio",
+   "zona": "Z2",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "ESTADIO"
+   ]
+  },
+  {
+   "id": 12,
+   "nome": "Menino Deus / Av. Getúlio Vargas",
+   "zona": "Z2",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "CON"
+   ]
+  },
+  {
+   "id": 13,
+   "nome": "Parque da Redenção / Brique",
+   "zona": "Z3",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "CON",
+    "PARQUE"
+   ]
+  },
+  {
+   "id": 14,
+   "nome": "Hospital de Clínicas",
+   "zona": "Z3",
+   "aglomeracao_base": 3,
+   "etiquetas": []
+  },
+  {
+   "id": 15,
+   "nome": "UFRGS – Campus Centro",
+   "zona": "Z3",
+   "aglomeracao_base": 2,
+   "etiquetas": []
+  },
+  {
+   "id": 16,
+   "nome": "Bom Fim / Av. Osvaldo Aranha",
+   "zona": "Z3",
+   "aglomeracao_base": 2,
+   "etiquetas": []
+  },
+  {
+   "id": 17,
+   "nome": "Auditório Araújo Vianna",
+   "zona": "Z3",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "ESC"
+   ]
+  },
+  {
+   "id": 18,
+   "nome": "Parcão",
+   "zona": "Z4",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "PARQUE"
+   ]
+  },
+  {
+   "id": 19,
+   "nome": "Rua Padre Chagas",
+   "zona": "Z4",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "CON",
+    "NOITE+1"
+   ]
+  },
+  {
+   "id": 20,
+   "nome": "Shopping Moinhos",
+   "zona": "Z4",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "ATM",
+    "LOJ"
+   ]
+  },
+  {
+   "id": 21,
+   "nome": "Av. Independência",
+   "zona": "Z4",
+   "aglomeracao_base": 2,
+   "etiquetas": []
+  },
+  {
+   "id": 22,
+   "nome": "Shopping Iguatemi",
+   "zona": "Z4",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "CAM",
+    "ATM",
+    "LOJ"
+   ]
+  },
+  {
+   "id": 23,
+   "nome": "Petrópolis / Praça da Encol",
+   "zona": "Z4",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "CON"
+   ]
+  },
+  {
+   "id": 24,
+   "nome": "Navegantes / Estação São Pedro–Farrapos",
+   "zona": "Z5",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "T"
+   ]
+  },
+  {
+   "id": 25,
+   "nome": "Av. Farrapos / Igreja dos Navegantes",
+   "zona": "Z5",
+   "aglomeracao_base": 2,
+   "etiquetas": []
+  },
+  {
+   "id": 26,
+   "nome": "Arena do Grêmio (Humaitá)",
+   "zona": "Z5",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "ESTADIO"
+   ]
+  },
+  {
+   "id": 27,
+   "nome": "Aeroporto Salgado Filho",
+   "zona": "Z5",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "EXT:ar",
+    "CAM",
+    "ATM",
+    "T"
+   ]
+  },
+  {
+   "id": 28,
+   "nome": "Ceasa",
+   "zona": "Z5",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "CON",
+    "T",
+    "MADRUGADA+2"
+   ]
+  },
+  {
+   "id": 29,
+   "nome": "Av. Assis Brasil / Sarandi",
+   "zona": "Z5",
+   "aglomeracao_base": 2,
+   "etiquetas": []
+  },
+  {
+   "id": 30,
+   "nome": "Porto Seco",
+   "zona": "Z5",
+   "aglomeracao_base": 0,
+   "etiquetas": []
+  },
+  {
+   "id": 31,
+   "nome": "PUCRS",
+   "zona": "Z6",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "CON"
+   ]
+  },
+  {
+   "id": 32,
+   "nome": "Jardim Botânico",
+   "zona": "Z6",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "CON",
+    "PARQUE"
+   ]
+  },
+  {
+   "id": 33,
+   "nome": "Bourbon Ipiranga / Av. Ipiranga",
+   "zona": "Z6",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "CAM",
+    "ATM",
+    "LOJ"
+   ]
+  },
+  {
+   "id": 34,
+   "nome": "Palácio da Polícia",
+   "zona": "Z6",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "HQ"
+   ]
+  },
+  {
+   "id": 35,
+   "nome": "Morro Santana",
+   "zona": "Z6",
+   "aglomeracao_base": 0,
+   "etiquetas": [
+    "ESC"
+   ]
+  },
+  {
+   "id": 36,
+   "nome": "Partenon / Av. Bento Gonçalves",
+   "zona": "Z6",
+   "aglomeracao_base": 2,
+   "etiquetas": []
+  },
+  {
+   "id": 37,
+   "nome": "Fundação Iberê Camargo",
+   "zona": "Z7",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "CON"
+   ]
+  },
+  {
+   "id": 38,
+   "nome": "BarraShoppingSul / Cristal",
+   "zona": "Z7",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "CAM",
+    "ATM",
+    "LOJ"
+   ]
+  },
+  {
+   "id": 39,
+   "nome": "Hipódromo do Cristal",
+   "zona": "Z7",
+   "aglomeracao_base": 1,
+   "etiquetas": []
+  },
+  {
+   "id": 40,
+   "nome": "Orla de Ipanema",
+   "zona": "Z7",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "B"
+   ]
+  },
+  {
+   "id": 41,
+   "nome": "Morro do Osso",
+   "zona": "Z7",
+   "aglomeracao_base": 0,
+   "etiquetas": [
+    "ESC"
+   ]
+  },
+  {
+   "id": 42,
+   "nome": "Píer de Belém Novo",
+   "zona": "Z7",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "EXT:agua",
+    "B"
+   ]
+  },
+  {
+   "id": 43,
+   "nome": "Reserva Biológica do Lami",
+   "zona": "Z7",
+   "aglomeracao_base": 0,
+   "etiquetas": [
+    "CON",
+    "ESC"
+   ]
+  },
+  {
+   "id": 44,
+   "nome": "Ilha da Pintada",
+   "zona": "Z8",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "EXT:agua",
+    "B"
+   ]
+  },
+  {
+   "id": 45,
+   "nome": "Ponte do Guaíba / Travessia BR-290",
+   "zona": "Z8",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "EXT:terra"
+   ]
+  },
+  {
+   "id": 46,
+   "nome": "Ilha Grande dos Marinheiros",
+   "zona": "Z8",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "CON",
+    "ESC",
+    "B"
+   ]
+  },
+  {
+   "id": 47,
+   "nome": "Morro da Polícia (antenas)",
+   "zona": "Z6",
+   "aglomeracao_base": 0,
+   "etiquetas": [
+    "ESC",
+    "ANT"
+   ]
+  }
+ ],
+ "conexoes": {
+  "ruas": [
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    1,
+    6
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    2,
+    5
+   ],
+   [
+    2,
+    7
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    3,
+    5
+   ],
+   [
+    3,
+    7
+   ],
+   [
+    3,
+    9
+   ],
+   [
+    5,
+    8
+   ],
+   [
+    5,
+    13
+   ],
+   [
+    5,
+    15
+   ],
+   [
+    6,
+    21
+   ],
+   [
+    6,
+    25
+   ],
+   [
+    8,
+    9
+   ],
+   [
+    8,
+    10
+   ],
+   [
+    8,
+    12
+   ],
+   [
+    8,
+    13
+   ],
+   [
+    9,
+    10
+   ],
+   [
+    10,
+    11
+   ],
+   [
+    10,
+    12
+   ],
+   [
+    11,
+    12
+   ],
+   [
+    11,
+    37
+   ],
+   [
+    11,
+    39
+   ],
+   [
+    12,
+    34
+   ],
+   [
+    13,
+    14
+   ],
+   [
+    13,
+    15
+   ],
+   [
+    13,
+    16
+   ],
+   [
+    13,
+    17
+   ],
+   [
+    14,
+    16
+   ],
+   [
+    14,
+    34
+   ],
+   [
+    14,
+    36
+   ],
+   [
+    15,
+    16
+   ],
+   [
+    16,
+    17
+   ],
+   [
+    16,
+    21
+   ],
+   [
+    18,
+    19
+   ],
+   [
+    18,
+    20
+   ],
+   [
+    18,
+    21
+   ],
+   [
+    19,
+    20
+   ],
+   [
+    20,
+    22
+   ],
+   [
+    20,
+    23
+   ],
+   [
+    21,
+    23
+   ],
+   [
+    22,
+    23
+   ],
+   [
+    22,
+    29
+   ],
+   [
+    22,
+    32
+   ],
+   [
+    23,
+    32
+   ],
+   [
+    23,
+    33
+   ],
+   [
+    24,
+    25
+   ],
+   [
+    24,
+    26
+   ],
+   [
+    26,
+    28
+   ],
+   [
+    26,
+    45
+   ],
+   [
+    27,
+    28
+   ],
+   [
+    27,
+    29
+   ],
+   [
+    27,
+    30
+   ],
+   [
+    29,
+    30
+   ],
+   [
+    29,
+    35
+   ],
+   [
+    30,
+    35
+   ],
+   [
+    31,
+    33
+   ],
+   [
+    31,
+    35
+   ],
+   [
+    31,
+    36
+   ],
+   [
+    32,
+    33
+   ],
+   [
+    32,
+    35
+   ],
+   [
+    33,
+    34
+   ],
+   [
+    33,
+    36
+   ],
+   [
+    36,
+    38
+   ],
+   [
+    36,
+    47
+   ],
+   [
+    37,
+    38
+   ],
+   [
+    38,
+    39
+   ],
+   [
+    38,
+    40
+   ],
+   [
+    39,
+    41
+   ],
+   [
+    39,
+    47
+   ],
+   [
+    40,
+    41
+   ],
+   [
+    40,
+    42
+   ],
+   [
+    42,
+    43
+   ],
+   [
+    44,
+    45
+   ],
+   [
+    44,
+    46
+   ],
+   [
+    45,
+    46
+   ]
+  ],
+  "barco": {
+   "rodadas": [
+    2,
+    16
+   ],
+   "arestas": [
+    [
+     3,
+     4
+    ],
+    [
+     3,
+     40
+    ],
+    [
+     3,
+     44
+    ],
+    [
+     4,
+     44
+    ],
+    [
+     40,
+     42
+    ],
+    [
+     44,
+     46
+    ]
+   ]
+  },
+  "trensurb": {
+   "rodadas": [
+    1,
+    18
+   ],
+   "estacoes": [
+    1,
+    6,
+    24,
+    27,
+    28
+   ]
+  },
+  "onibus": {
+   "rodadas": [
+    1,
+    18
+   ],
+   "corujao_rodadas": [
+    19,
+    23
+   ],
+   "linhas": [
+    {
+     "id": "L1",
+     "nome": "Assis Brasil",
+     "corujao": true,
+     "paradas": [
+      1,
+      6,
+      21,
+      22,
+      29,
+      30
+     ]
+    },
+    {
+     "id": "L2",
+     "nome": "Bento Gonçalves",
+     "corujao": false,
+     "paradas": [
+      1,
+      5,
+      13,
+      14,
+      36,
+      31,
+      35
+     ]
+    },
+    {
+     "id": "L3",
+     "nome": "Ipiranga / Perimetral",
+     "corujao": false,
+     "paradas": [
+      10,
+      12,
+      34,
+      33,
+      23,
+      22
+     ]
+    },
+    {
+     "id": "L4",
+     "nome": "Zona Sul",
+     "corujao": true,
+     "paradas": [
+      1,
+      9,
+      10,
+      11,
+      37,
+      38,
+      40,
+      42
+     ]
+    },
+    {
+     "id": "L5",
+     "nome": "Lotação Extremo Sul",
+     "corujao": false,
+     "paradas": [
+      40,
+      42,
+      43
+     ]
+    },
+    {
+     "id": "L6",
+     "nome": "Navegantes / Humaitá",
+     "corujao": false,
+     "paradas": [
+      2,
+      1,
+      25,
+      24,
+      26,
+      28
+     ]
+    },
+    {
+     "id": "L7",
+     "nome": "Independência / Moinhos",
+     "corujao": false,
+     "paradas": [
+      5,
+      16,
+      21,
+      18,
+      20,
+      22
+     ]
+    }
+   ]
+  },
+  "bike": {
+   "rodadas": [
+    1,
+    18
+   ],
+   "zonas": [
+    "Z1",
+    "Z2",
+    "Z3",
+    "Z4"
+   ]
+  }
+ },
+ "janelas_extracao": {
+  "A": [
+   9,
+   10
+  ],
+  "B": [
+   13,
+   14
+  ],
+  "C": [
+   17,
+   18
+  ],
+  "D": [
+   21,
+   22
+  ]
+ },
+ "pontos_extracao": [
+  4,
+  6,
+  27,
+  42,
+  44,
+  45
+ ],
+ "contatos_candidatos": [
+  2,
+  7,
+  12,
+  13,
+  19,
+  23,
+  28,
+  31,
+  32,
+  37,
+  43,
+  46
+ ],
+ "contatos_sorteados": 8,
+ "inicio_detetives": {
+  "fixo": 34,
+  "opcoes": [
+   1,
+   13,
+   27,
+   38,
+   22
+  ]
+ }
+}
