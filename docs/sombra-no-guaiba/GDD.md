@@ -54,129 +54,213 @@ O espião **não sabe** o plano no início. Os detetives **também não**. Os do
 
 ## 4. O mapa de Porto Alegre
 
-### 4.1 Zonas e locais
+O tabuleiro é um **mapa próprio**, desenhado a partir da posição real de 94 lugares de Porto Alegre: pontos turísticos, parques, estádios, shoppings, terminais, estações e bairros. Cada local tem um **território** (a área da cidade mais próxima dele), colorido pelo **tipo de bairro**. O mapa é gerado por `gerar_mapa.py`, que produz `mapa.json` (regras) e `mapa-arte.json` (desenho). A prévia da TV está em `tabuleiro-tv.html`.
 
-Aglomeração base (Agl) vai de 0 (deserto) a 5 (lotado). Etiquetas:
-`EXT` ponto de extração possível · `CON` candidato a Ponto de Contato · `CAM` câmera CEIC · `ATM` caixa eletrônico · `LOJ` loja (disfarce) · `ESC` esconderijo · `HQ` base policial · `ANT` antenas · `T` estação Trensurb · `B` atracadouro.
+### 4.1 Escala e distâncias
 
-**Z1 — Centro Histórico**
+- **94 locais** ligados por **176 ligações a pé**. Uma ligação mede em média **1.6 km** (de 0,4 km no Centro a 4.7 km no Extremo Sul).
+- As ligações são geradas automaticamente entre vizinhos naturais (grafo de Gabriel), **sem atravessar o Guaíba**. As ilhas só se ligam por ponte ou barco.
+- Atravessar a cidade é lento: o maior trajeto a pé tem **21 ligações**. Saindo do Mercado Público:
 
-| # | Local | Agl | Etiquetas |
-|---|---|---|---|
-| 1 | Mercado Público / Largo Glênio Peres | 4 | CAM, T, (Contato de Emergência) |
-| 2 | Praça da Alfândega / Rua da Praia | 3 | CON, CAM |
-| 3 | Usina do Gasômetro | 3 | B |
-| 4 | Cais Mauá | 2 | EXT (água), B |
-| 5 | Praça da Matriz / Catedral | 2 | — |
-| 6 | Rodoviária | 4 | EXT (terra), CAM, ATM, T |
-| 7 | Casa de Cultura Mario Quintana | 2 | CON |
+| Destino | Ligações a pé | Rodadas a pé (2 por rodada) |
+|---|---|---|
+| Aeroporto | 6 | 3 |
+| Arena | 5 | 3 |
+| Beira-Rio | 5 | 3 |
+| Restinga | 9 | 5 |
+| Belém Novo | 13 | 7 |
+| Lami | 16 | 8 |
+| Rubem Berta | 10 | 5 |
 
-**Z2 — Cidade Baixa & Menino Deus**
+Ônibus, Trensurb e aplicativo encurtam essas distâncias, mas custam dinheiro e deixam bilhete público.
 
-| # | Local | Agl | Etiquetas |
-|---|---|---|---|
-| 8 | Cidade Baixa / Largo Zumbi dos Palmares | 3 | — (noite +1) |
-| 9 | Parque Harmonia / Anfiteatro Pôr do Sol | 1 | — |
-| 10 | Shopping Praia de Belas | 3 | CAM, ATM, LOJ |
-| 11 | Estádio Beira-Rio | 1 | (jogo +3) |
-| 12 | Menino Deus / Av. Getúlio Vargas | 2 | CON |
+### 4.2 Tipos de bairro
 
-**Z3 — Bom Fim & Farroupilha**
+Cada local tem um tipo. O tipo muda o risco e as ações ali (detalhes em §7.4).
 
-| # | Local | Agl | Etiquetas |
-|---|---|---|---|
-| 13 | Parque da Redenção / Brique | 3 | CON, (LOJ no Brique) |
-| 14 | Hospital de Clínicas | 3 | — |
-| 15 | UFRGS – Campus Centro | 2 | — |
-| 16 | Bom Fim / Av. Osvaldo Aranha | 2 | — |
-| 17 | Auditório Araújo Vianna | 1 | ESC |
-
-**Z4 — Moinhos de Vento & Petrópolis**
-
-| # | Local | Agl | Etiquetas |
-|---|---|---|---|
-| 18 | Parcão | 2 | — |
-| 19 | Rua Padre Chagas | 2 | CON (noite +1) |
-| 20 | Shopping Moinhos | 2 | ATM, LOJ |
-| 21 | Av. Independência | 2 | — |
-| 22 | Shopping Iguatemi | 3 | CAM, ATM, LOJ |
-| 23 | Petrópolis / Praça da Encol | 1 | CON |
-
-**Z5 — Zona Norte**
-
-| # | Local | Agl | Etiquetas |
-|---|---|---|---|
-| 24 | Navegantes / Estação São Pedro–Farrapos | 2 | T |
-| 25 | Av. Farrapos / Igreja dos Navegantes | 2 | — |
-| 26 | Arena do Grêmio (Humaitá) | 1 | (jogo +3) |
-| 27 | Aeroporto Salgado Filho | 3 | EXT (ar), CAM, ATM, T |
-| 28 | Ceasa | 1 | CON, T (madrugada +2) |
-| 29 | Av. Assis Brasil / Sarandi | 2 | — |
-| 30 | Porto Seco | 0 | (carnaval +4) |
-
-**Z6 — Zona Leste**
-
-| # | Local | Agl | Etiquetas |
-|---|---|---|---|
-| 31 | PUCRS | 3 | CON |
-| 32 | Jardim Botânico | 1 | CON |
-| 33 | Bourbon Ipiranga / Av. Ipiranga | 2 | CAM, ATM, LOJ |
-| 34 | Palácio da Polícia | 2 | HQ |
-| 35 | Morro Santana | 0 | ESC |
-| 36 | Partenon / Av. Bento Gonçalves | 2 | — |
-| 47 | Morro da Polícia (antenas) | 0 | ESC, ANT |
-
-**Z7 — Orla Sul**
-
-| # | Local | Agl | Etiquetas |
-|---|---|---|---|
-| 37 | Fundação Iberê Camargo | 1 | CON |
-| 38 | BarraShoppingSul / Cristal | 3 | CAM, ATM, LOJ |
-| 39 | Hipódromo do Cristal | 1 | — |
-| 40 | Orla de Ipanema | 2 | B |
-| 41 | Morro do Osso | 0 | ESC |
-| 42 | Píer de Belém Novo | 1 | EXT (água), B |
-| 43 | Reserva Biológica do Lami | 0 | CON, ESC |
-
-**Z8 — Ilhas & Travessia**
-
-| # | Local | Agl | Etiquetas |
-|---|---|---|---|
-| 44 | Ilha da Pintada | 1 | EXT (água), B |
-| 45 | Ponte do Guaíba / Travessia (BR-290) | 1 | EXT (terra) |
-| 46 | Ilha Grande dos Marinheiros | 1 | CON, ESC, B |
-
-### 4.2 Conexões
-
-**Ruas** (bidirecionais; usadas a pé, de bike, de viatura e por aplicativo):
-
-```
-1-2  1-4  1-6   2-4  2-5  2-7   3-4  3-5  3-7  3-9   5-8  5-13 5-15
-6-21 6-25  8-9  8-10 8-12 8-13  9-10  10-11 10-12  11-12 11-37 11-39
-12-34  13-14 13-15 13-16 13-17  14-16 14-34 14-36  15-16  16-17 16-21
-18-19 18-20 18-21  19-20  20-22 20-23  21-23  22-23 22-29 22-32
-23-32 23-33  24-25 24-26  26-28 26-45  27-28 27-29 27-30  29-30 29-35
-30-35  31-33 31-35 31-36  32-33 32-35  33-34 33-36  36-38 36-47
-37-38  38-39 38-40  39-41 39-47  40-41 40-42  42-43  44-45 44-46 45-46
-```
-
-**Trensurb** (linha única, opera 06h–23h = rodadas 1–18): `1 Mercado → 6 Rodoviária → 24 São Pedro/Farrapos → 27 Aeroporto → 28 Anchieta/Ceasa`
-
-**Ônibus** (operam rodadas 1–18; as linhas marcadas com 🌙 são *Corujão* e também operam nas rodadas 19–23):
-
-| Linha | Paradas |
+| Tipo | Locais |
 |---|---|
-| L1 Assis Brasil 🌙 | 1 – 6 – 21 – 22 – 29 – 30 |
-| L2 Bento Gonçalves | 1 – 5 – 13 – 14 – 36 – 31 – 35 |
-| L3 Ipiranga / Perimetral | 10 – 12 – 34 – 33 – 23 – 22 |
-| L4 Zona Sul 🌙 | 1 – 9 – 10 – 11 – 37 – 38 – 40 – 42 |
-| L5 Lotação Extremo Sul | 40 – 42 – 43 |
-| L6 Navegantes / Humaitá | 2 – 1 – 25 – 24 – 26 – 28 |
-| L7 Independência / Moinhos | 5 – 16 – 21 – 18 – 20 – 22 |
+| **Comercial / Centro** | Mercado Público, Alfândega, Casa de Cultura, Matriz, Rodoviária, Praia de Belas, Azenha, Palácio da Polícia, Bourbon Ipiranga, Aeroporto, Passo d'Areia, Bourbon Wallig, BarraShopping |
+| **Boêmio** | Embarcadero, Cidade Baixa, Bom Fim |
+| **Bairro nobre** | Padre Chagas, Parcão, Mont'Serrat, Bela Vista, Auxiliadora, Três Figueiras, Iguatemi, Chácara das Pedras, Boa Vista, Vila Assunção |
+| **Residencial** | Floresta, Menino Deus, Medianeira, Independência, Petrópolis, Partenon, São José, Jardim Carvalho, São João, Cristo Redentor, Lindóia, Sarandi, Passo das Pedras, Jardim Itu, Cristal, Glória, Teresópolis, Nonoai, Cascata, Tristeza, Cavalhada, Vila Nova, Guarujá, Hípica |
+| **Universitário / Hospitalar** | UFRGS, Clínicas, PUCRS, Campus do Vale |
+| **Industrial / Logístico** | Navegantes, São Pedro, Ponte do Guaíba, Farrapos, Humaitá, Ceasa |
+| **Zona quente** | Vila Cruzeiro, Bom Jesus, Lomba do Pinheiro, Rubem Berta, Mário Quintana, Restinga |
+| **Parque / Orla** | Cais Mauá, Gasômetro, Harmonia, Pôr do Sol, Parque Marinha, Beira-Rio, Morro Santa Tereza, Redenção, Jardim Botânico, Morro Santana, Arena, Porto Seco, Iberê Camargo, Hipódromo, Morro da Polícia, Morro do Osso, Ipanema, Reserva do Lami |
+| **Rural / Extremo Sul** | Belém Velho, Serraria, Ponta Grossa, Belém Novo, Chapéu do Sol, Lageado, Lami |
+| **Ilhas** | Ilha dos Marinheiros, Ilha da Pintada, Ilha das Flores |
 
-**Barco / Catamarã** (opera rodadas 2–16 = 07h–21h): `3-4  3-40  3-44  4-44  40-42  44-46`
+> A "zona quente" é uma regra de jogo (pouca presença policial, moradores que não falam com a polícia), não um retrato dos moradores. Os locais marcados podem ser trocados em `gerar_mapa.py` sem mudar nenhuma outra regra.
 
-**BikePOA**: disponível nas zonas Z1–Z4 (locais 1–23), rodadas 1–18.
+### 4.3 Locais por zona
+
+Lotação base (Agl) de 0 a 5. Etiquetas: extração, contato (candidato a Ponto de Contato), câmera, caixa eletrônico, loja (disfarce), esconderijo, base policial, antenas (interceptar), Trensurb, barco, bike, turístico, terminal de ônibus.
+
+**Centro Histórico**
+
+| # | Local | Tipo | Agl | Etiquetas |
+|---|---|---|---|---|
+| 1 | Mercado Público / Largo Glênio Peres | Comercial / Centro | 4 | Trensurb, terminal, câmera, turístico, bike, contato de emergência |
+| 2 | Praça da Alfândega / Rua da Praia | Comercial / Centro | 3 | contato, câmera, turístico, bike |
+| 3 | Cais Mauá | Parque / Orla | 2 | **extração (água)**, barco, turístico |
+| 4 | Casa de Cultura Mario Quintana | Comercial / Centro | 2 | contato, turístico, bike |
+| 5 | Cais Embarcadero | Boêmio | 2 | barco, turístico |
+| 6 | Usina do Gasômetro | Parque / Orla | 3 | turístico, bike |
+| 7 | Praça da Matriz / Catedral / Theatro São Pedro | Comercial / Centro | 2 | turístico |
+| 8 | Estação Rodoviária | Comercial / Centro | 4 | **extração (terra)**, Trensurb, terminal, câmera, caixa |
+| 9 | Floresta / Av. Cristóvão Colombo | Residencial | 2 | — |
+
+**Cidade Baixa e Menino Deus**
+
+| # | Local | Tipo | Agl | Etiquetas |
+|---|---|---|---|---|
+| 10 | Cidade Baixa / Rua da República | Boêmio | 3 | contato, bike, noite +1 |
+| 11 | Parque Harmonia | Parque / Orla | 1 | parque, esconderijo |
+| 12 | Orla do Guaíba / Anfiteatro Pôr do Sol | Parque / Orla | 2 | turístico, bike |
+| 13 | Shopping Praia de Belas | Comercial / Centro | 3 | câmera, caixa, loja |
+| 14 | Parque Marinha do Brasil | Parque / Orla | 1 | parque, esconderijo, bike |
+| 15 | Estádio Beira-Rio | Parque / Orla | 1 | estádio, turístico |
+| 16 | Menino Deus / Av. Getúlio Vargas | Residencial | 2 | contato, bike |
+| 17 | Azenha / Av. da Azenha | Comercial / Centro | 2 | — |
+| 18 | Palácio da Polícia | Comercial / Centro | 2 | base policial |
+| 19 | Medianeira / Santo Antônio | Residencial | 2 | — |
+| 20 | Vila Cruzeiro / Santa Tereza | Zona quente | 2 | esconderijo |
+| 21 | Morro Santa Tereza (torres de TV) | Parque / Orla | 0 | antenas, esconderijo, morro |
+
+**Bom Fim e Farroupilha**
+
+| # | Local | Tipo | Agl | Etiquetas |
+|---|---|---|---|---|
+| 22 | Parque da Redenção / Brique / Araújo Vianna | Parque / Orla | 3 | contato, parque, turístico, bike |
+| 23 | UFRGS – Campus Centro | Universitário / Hospitalar | 2 | bike |
+| 24 | Bom Fim / Av. Osvaldo Aranha | Boêmio | 2 | bike, noite +1 |
+| 25 | Hospital de Clínicas / Santa Cecília | Universitário / Hospitalar | 3 | — |
+| 26 | Av. Independência | Residencial | 2 | bike |
+
+**Moinhos e bairros nobres**
+
+| # | Local | Tipo | Agl | Etiquetas |
+|---|---|---|---|---|
+| 27 | Rua Padre Chagas | Bairro nobre | 2 | contato, bike, noite +1 |
+| 28 | Parcão / Shopping Moinhos | Bairro nobre | 2 | parque, loja, caixa, bike |
+| 29 | Mont'Serrat | Bairro nobre | 1 | — |
+| 30 | Bela Vista / Praça da Encol | Bairro nobre | 1 | contato |
+| 31 | Petrópolis / Av. Protásio Alves | Residencial | 2 | — |
+| 32 | Auxiliadora / Av. Plínio Brasil Milano | Bairro nobre | 2 | — |
+| 33 | Três Figueiras | Bairro nobre | 1 | — |
+| 34 | Shopping Iguatemi | Bairro nobre | 3 | câmera, caixa, loja |
+| 35 | Chácara das Pedras | Bairro nobre | 1 | — |
+| 36 | Boa Vista / Country Club | Bairro nobre | 1 | — |
+
+**Zona Norte**
+
+| # | Local | Tipo | Agl | Etiquetas |
+|---|---|---|---|---|
+| 47 | Igreja dos Navegantes / Av. Farrapos | Industrial / Logístico | 2 | turístico |
+| 48 | Estação São Pedro | Industrial / Logístico | 2 | Trensurb |
+| 49 | Ponte do Guaíba (Travessia Régis Bittencourt) | Industrial / Logístico | 1 | **extração (terra)** |
+| 50 | Estação Farrapos | Industrial / Logístico | 2 | Trensurb |
+| 51 | Humaitá | Industrial / Logístico | 1 | esconderijo |
+| 52 | Arena do Grêmio | Parque / Orla | 1 | estádio, turístico |
+| 53 | São João / Higienópolis | Residencial | 2 | — |
+| 54 | Aeroporto Salgado Filho | Comercial / Centro | 3 | **extração (ar)**, Trensurb, câmera, caixa |
+| 55 | Anchieta / Ceasa | Industrial / Logístico | 1 | contato, Trensurb, madrugada +2 |
+| 56 | Passo d'Areia / Av. Assis Brasil | Comercial / Centro | 3 | terminal |
+| 57 | Bourbon Wallig | Comercial / Centro | 3 | câmera, caixa, loja |
+| 58 | Cristo Redentor | Residencial | 2 | — |
+| 59 | Jardim Lindóia | Residencial | 1 | — |
+| 60 | Sarandi | Residencial | 2 | — |
+| 61 | Passo das Pedras | Residencial | 2 | — |
+| 62 | Complexo Cultural do Porto Seco | Parque / Orla | 0 | esconderijo |
+| 63 | Rubem Berta | Zona quente | 2 | esconderijo, terminal |
+| 64 | Jardim Itu-Sabará | Residencial | 2 | — |
+| 65 | Mário Quintana | Zona quente | 2 | esconderijo |
+
+**Zona Leste**
+
+| # | Local | Tipo | Agl | Etiquetas |
+|---|---|---|---|---|
+| 37 | Jardim Botânico | Parque / Orla | 1 | contato, parque, turístico |
+| 38 | Bourbon Ipiranga / Av. Ipiranga | Comercial / Centro | 2 | câmera, caixa, loja |
+| 39 | PUCRS | Universitário / Hospitalar | 3 | contato |
+| 40 | Partenon / Av. Bento Gonçalves | Residencial | 2 | — |
+| 41 | São José | Residencial | 2 | — |
+| 42 | Vila Bom Jesus | Zona quente | 2 | esconderijo |
+| 43 | Jardim Carvalho / Protásio Alves | Residencial | 2 | — |
+| 44 | Morro Santana | Parque / Orla | 0 | esconderijo, morro |
+| 45 | Agronomia / UFRGS Campus do Vale | Universitário / Hospitalar | 1 | — |
+| 46 | Lomba do Pinheiro | Zona quente | 2 | esconderijo |
+
+**Zona Sul**
+
+| # | Local | Tipo | Agl | Etiquetas |
+|---|---|---|---|---|
+| 69 | Fundação Iberê Camargo | Parque / Orla | 1 | contato, turístico |
+| 70 | BarraShoppingSul | Comercial / Centro | 3 | câmera, caixa, loja |
+| 71 | Cristal / Av. Diário de Notícias | Residencial | 2 | — |
+| 72 | Hipódromo do Cristal | Parque / Orla | 1 | esconderijo |
+| 73 | Glória / Av. Oscar Pereira | Residencial | 2 | — |
+| 74 | Teresópolis | Residencial | 2 | — |
+| 75 | Morro da Polícia | Parque / Orla | 0 | esconderijo, antenas, morro |
+| 76 | Nonoai | Residencial | 2 | — |
+| 77 | Cascata | Residencial | 1 | — |
+| 78 | Vila Assunção | Bairro nobre | 1 | — |
+| 79 | Tristeza / Av. Wenceslau Escobar | Residencial | 2 | contato |
+| 80 | Cavalhada | Residencial | 2 | — |
+| 81 | Morro do Osso | Parque / Orla | 0 | esconderijo, morro |
+| 82 | Orla de Ipanema | Parque / Orla | 2 | barco, turístico |
+| 83 | Vila Nova | Residencial | 1 | — |
+| 84 | Belém Velho | Rural / Extremo Sul | 1 | — |
+| 85 | Espírito Santo / Guarujá | Residencial | 1 | — |
+| 86 | Hípica / Aberta dos Morros | Residencial | 1 | — |
+| 87 | Restinga | Zona quente | 3 | esconderijo, terminal |
+
+**Extremo Sul**
+
+| # | Local | Tipo | Agl | Etiquetas |
+|---|---|---|---|---|
+| 88 | Serraria | Rural / Extremo Sul | 1 | — |
+| 89 | Ponta Grossa | Rural / Extremo Sul | 0 | esconderijo |
+| 90 | Píer de Belém Novo | Rural / Extremo Sul | 1 | **extração (água)**, barco |
+| 91 | Chapéu do Sol | Rural / Extremo Sul | 1 | — |
+| 92 | Lageado | Rural / Extremo Sul | 0 | esconderijo |
+| 93 | Lami | Rural / Extremo Sul | 1 | — |
+| 94 | Reserva Biológica do Lami | Parque / Orla | 0 | contato, esconderijo |
+
+**Ilhas**
+
+| # | Local | Tipo | Agl | Etiquetas |
+|---|---|---|---|---|
+| 66 | Ilha Grande dos Marinheiros | Ilhas | 1 | contato, esconderijo, barco |
+| 67 | Ilha da Pintada | Ilhas | 1 | **extração (água)**, barco |
+| 68 | Ilha das Flores | Ilhas | 0 | esconderijo |
+
+### 4.4 Transporte
+
+**Trensurb** (opera 06h–23h, rodadas 1–18): Mercado Público → Rodoviária → São Pedro → Farrapos → Aeroporto → Ceasa
+
+**Ônibus** (operam 06h–23h; as linhas 🌙 também rodam de madrugada, rodadas 19–23). Cada linha corre pela avenida principal do corredor:
+
+| Linha | Corredor | Paradas |
+|---|---|---|
+| L1 🌙 | Assis Brasil | Mercado Público → Rodoviária → Floresta → São João → Passo d'Areia → Bourbon Wallig → Cristo Redentor → Sarandi → Passo das Pedras → Rubem Berta |
+| L2 | Protásio Alves | Mercado Público → UFRGS → Bom Fim → Bela Vista → Petrópolis → Três Figueiras → Chácara das Pedras → Jardim Carvalho → Mário Quintana |
+| L3 🌙 | Bento Gonçalves | Mercado Público → Matriz → Redenção → Clínicas → Partenon → PUCRS → São José → Campus do Vale → Lomba do Pinheiro |
+| L4 | Ipiranga / III Perimetral | Praia de Belas → Menino Deus → Palácio da Polícia → Bourbon Ipiranga → Jardim Botânico → Três Figueiras → Iguatemi → Boa Vista → Passo d'Areia → Aeroporto |
+| L5 🌙 | Zona Sul / Orla | Mercado Público → Gasômetro → Pôr do Sol → Parque Marinha → Beira-Rio → Iberê Camargo → BarraShopping → Vila Assunção → Tristeza → Ipanema → Guarujá → Serraria → Belém Novo |
+| L6 | Cavalhada / Restinga | Azenha → Medianeira → Teresópolis → Cavalhada → Vila Nova → Hípica → Restinga |
+| L7 | Farrapos / Arena | Mercado Público → Rodoviária → Navegantes → Farrapos → Humaitá → Arena → Ceasa |
+| L8 | Independência / Moinhos | Matriz → Independência → Padre Chagas → Parcão → Auxiliadora → São João → Passo d'Areia |
+| L9 | Oscar Pereira / Belém Velho | Azenha → Glória → Cascata → Belém Velho → Restinga |
+| L10 | Lotação Extremo Sul | Restinga → Chapéu do Sol → Belém Novo → Lageado → Lami → Reserva do Lami |
+| L11 | Nilo Peçanha / Sertório | Iguatemi → Boa Vista → Lindóia → Aeroporto → Sarandi → Porto Seco |
+
+**Barco** (07h–21h, rodadas 2–16): Cais Mauá ↔ Ilha da Pintada · Embarcadero ↔ Ilha da Pintada · Embarcadero ↔ Ipanema · Ipanema ↔ Belém Novo · Ilha dos Marinheiros ↔ Ilha da Pintada · Cais Mauá ↔ Ilha das Flores
+
+**Bike compartilhada** (06h–23h, só na região central): estações em Mercado Público, Alfândega, Casa de Cultura, Gasômetro, Cidade Baixa, Pôr do Sol, Parque Marinha, Menino Deus, Redenção, UFRGS, Bom Fim, Independência, Padre Chagas, Parcão.
+
+A lista completa de ligações a pé está em `mapa.json` (`conexoes.a_pe`).
 
 ---
 
@@ -198,11 +282,11 @@ Cada **rodada = 1 hora** da cidade. Rodada 1 = 06h; rodada 13 = 18h; rodada 19 =
 
 | Período | Rodadas (hora) | Efeito |
 |---|---|---|
-| Rush da manhã | 2–4 (07h–09h) | Z1 e estações Trensurb **+1 Agl**; viatura em Z1/Z5 custa **+1 PA** |
+| Rush da manhã | 2–4 (07h–09h) | Centro e estações Trensurb **+1 Agl**; viatura no Centro e na Zona Norte custa **+1 PA** |
 | Dia | 5–11 | sem modificador |
-| Rush da tarde / pôr do sol | 12–14 (17h–19h) | igual ao rush da manhã; Gasômetro (3) e Harmonia (9) **+1 Agl** |
-| Noite | 15–18 (20h–23h) | Cidade Baixa (8) e Padre Chagas (19) **+1 Agl**; parques (9, 13, 18, 32) **−1 Agl** |
-| Madrugada | 19–24 (00h–05h) | **todos −2 Agl**, exceto Cidade Baixa (8, −0), Rodoviária e Aeroporto (−1) e **Ceasa (+2)**. Trensurb, barcos, BikePOA e ônibus comuns fechados; só Corujão (L1, L4) até a rodada 23 |
+| Rush da tarde / pôr do sol | 12–14 (17h–19h) | igual ao rush da manhã; Gasômetro e Harmonia **+1 Agl** |
+| Noite | 15–18 (20h–23h) | Cidade Baixa e Padre Chagas **+1 Agl**; parques **−1 Agl** |
+| Madrugada | 19–24 (00h–05h) | **todos −2 Agl**, exceto Cidade Baixa (−0), Rodoviária e Aeroporto (−1) e **Ceasa (+2)**. Trensurb, barcos, BikePOA e ônibus comuns fechados; só as linhas de madrugada (L1, L3, L5) até a rodada 23 |
 
 A Aglomeração efetiva é sempre limitada a **0–5**.
 
@@ -258,19 +342,21 @@ O espião escolhe **um** modo de deslocamento por rodada:
 
 | Modo | Alcance | Custo | Bilhete público | Restrições |
 |---|---|---|---|---|
-| **A pé** | 1 conexão de rua | grátis | 🚶 A pé | — |
-| **BikePOA** | até 2 conexões de rua | R$ 1 | 🚲 Bike | Só em Z1–Z4, rodadas 1–18 |
-| **Ônibus** | até 3 paradas na mesma linha | R$ 1 | 🚌 Ônibus | Horários de operação; a linha usada não é mostrada |
+| **A pé** | até 2 ligações | grátis | 🚶 A pé | — |
+| **Bike** | até 4 ligações, de uma estação de bike a outra | R$ 1 | 🚲 Bike | Só na região central (Centro, Cidade Baixa, Bom Fim, Moinhos), rodadas 1–18 |
+| **Ônibus** | até 5 paradas na mesma linha | R$ 1 | 🚌 Ônibus | Precisa começar numa parada da linha; horários de operação; a linha usada não é mostrada |
 | **Trensurb** | qualquer número de estações | R$ 1 | 🚆 Trensurb | Rodadas 1–18 |
-| **Aplicativo** | qualquer local a até 3 conexões de rua | R$ 3 | 🚗 App | Deixa registro digital (ver *Quebra de Sigilo*) |
-| **Barco** | 1 conexão fluvial | R$ 2 | ⛴️ Barco | Rodadas 2–16; bloqueado por *Chuva Forte* e *Minuano* |
-| **Esconder-se** | permanece no local | grátis | 🕳️ Escondido | Só em local com `ESC` ou Agl efetiva ≤ 1; máx. 2 rodadas seguidas |
+| **Aplicativo** | qualquer local a até 4 ligações | R$ 3 (R$ 6 se sair ou chegar no Extremo Sul) | 🚗 App | Deixa registro digital (ver *Quebra de Sigilo*) |
+| **Barco** | 1 travessia | R$ 2 | ⛴️ Barco | Rodadas 2–16; bloqueado por *Chuva Forte* e *Minuano* |
+| **Esconder-se** | permanece no local | grátis | 🕳️ Escondido | Só em local com esconderijo ou Agl efetiva ≤ 1; máx. 2 rodadas seguidas |
+
+Andando 2 ligações (cerca de 1 a 3 km) por rodada, o espião cruza o Centro numa hora, mas leva o dia inteiro para ir do Mercado ao Lami. Para longas distâncias ele precisa de transporte, que custa dinheiro e aparece no Painel de Bilhetes.
 
 **Regras de movimento:**
 
 - O espião **não pode terminar** o movimento em um local ocupado por um detetive.
 - Ele **pode passar** por um local com detetive dentro de um veículo (ônibus, Trensurb, App, Barco), **exceto** se esse detetive tiver montado um **Bloqueio** ali.
-- A pé ou de bike, ele **não pode atravessar** locais com detetives.
+- A pé ou de bike, ele **não pode atravessar** locais com detetives (o caminho de 2 ligações precisa passar por um local livre).
 - Se o espião não tiver nenhum movimento legal e não puder se esconder, está **Encurralado** → capturado.
 - Sem dinheiro, só resta andar a pé ou se esconder.
 
@@ -282,8 +368,8 @@ O espião escolhe **um** modo de deslocamento por rodada:
 | **Trocar Disfarce** | local `LOJ` | R$ 2 | Exposição −2; ignora a próxima Denúncia ou alerta de câmera; teste de Denúncia ×0,5 por 3 rodadas |
 | **Sacar Dinheiro** | local `ATM` | Exposição +1 | +R$ 4; na Fase 4 da próxima rodada, a **zona** desse saque é revelada (alerta bancário) |
 | **Mensagem Falsa** | qualquer | R$ 2 | Coloca uma transmissão falsa na fila (máx. 2 por partida) |
-| **Pagar Informante** | local com Agl ≥ 2 | R$ 2 | Descobre Grampos e Bloqueios a até 2 conexões |
-| **Contato de Emergência** | Mercado Público (1) | Exposição +3 | Obtém 1 Credencial; a zona é revelada imediatamente. Só se não houver mais credenciais disponíveis no mapa |
+| **Pagar Informante** | local com Agl ≥ 2 | R$ 2 | Descobre Grampos e Bloqueios a até 2 ligações |
+| **Contato de Emergência** | Mercado Público | Exposição +3 | Obtém 1 Credencial; a zona é revelada imediatamente. Só se não houver mais credenciais disponíveis no mapa |
 | **Declarar Hora H** | ponto de extração, durante uma janela | 1 Credencial | Inicia a extração (§8) |
 
 ### 6.4 Exposição (0–10)
@@ -335,11 +421,26 @@ Se o espião termina o turno em um local `CAM`: **25%** de alerta facial (50% se
 
 ---
 
+### 7.4 Efeitos do tipo de bairro
+
+| Tipo | Efeito no jogo |
+|---|---|
+| Comercial / Centro | +1 Agl de dia (rodadas 2–12), −1 extra de madrugada. Câmeras e caixas eletrônicos frequentes |
+| Boêmio | +1 Agl à noite (rodadas 15–20). Bom para se misturar: Disfarce dura 1 rodada a mais |
+| Bairro nobre | Câmeras de prédio: alerta de câmera +15% mesmo sem etiqueta de câmera. Disfarce custa +R$ 1. Denúncia de transeunte −5% (pouca gente na rua) |
+| Residencial | Sem modificador |
+| Universitário / Hospitalar | +1 Agl de dia, −1 à noite |
+| Industrial / Logístico | −1 Agl à noite; todos os locais industriais contam como esconderijo à noite |
+| Zona quente | Denúncia ×0,5 e *Interrogar* não funciona. Viatura gasta +1 PA para entrar. Ao terminar o turno ali, o espião tem 15% de chance de ser assaltado (perde R$ 2) |
+| Parque / Orla | Lota em eventos e no pôr do sol; à noite (rodadas 15+) conta como esconderijo |
+| Rural / Extremo Sul | Ligações longas. App custa o dobro. Sem câmeras |
+| Ilhas | Só se entra e sai por ponte ou barco. Bloquear a ponte isola as ilhas por terra |
+
 ## 8. Pistas, Credenciais e Extração
 
 ### 8.1 Preparação secreta (servidor)
 
-1. Sorteia o **Ponto de Extração** entre 6: Cais Mauá (4, água), Rodoviária (6, terra), Aeroporto (27, ar), Píer de Belém Novo (42, água), Ilha da Pintada (44, água), Ponte do Guaíba (45, terra).
+1. Sorteia o **Ponto de Extração** entre 6: Cais Mauá (água), Rodoviária (terra), Aeroporto (ar), Píer de Belém Novo (água), Ilha da Pintada (água), Ponte do Guaíba (terra).
 2. Sorteia a **Janela** entre 4:
 
 | Janela | Rodadas | Horário |
@@ -415,7 +516,7 @@ O time sempre controla **4 detetives** (5 com 6 jogadores). Com menos jogadores,
 | **Delegada (Comando)** | 1×/rodada, transfere 1 PA próprio para outro detetive. Acusação de Plano custa 2 PA e pode ser feita de qualquer lugar. Itens custam 1 crédito a menos. | — |
 | **Perito Criminal (Forense)** | *Investigar* também revela o **próximo local** do espião se o rastro tem ≤ 3 rodadas. *Periciar Contato* custa 1 PA. | — |
 | **Analista de Inteligência** | *Interceptar* custa 1 PA, +15%, de qualquer lugar. | Não pode Abordar. |
-| **Agente Tático** | *Abordar* custa 1 PA e ignora 1 nível de Agl. Viatura alcança 4 conexões. | *Interceptar* custa 3 PA. |
+| **Agente Tático** | *Abordar* custa 1 PA e ignora 1 nível de Agl. Viatura alcança 5 ligações. | *Interceptar* custa 3 PA. |
 | **Investigadora de Rua** *(só com 6 jogadores)* | *Interrogar* grátis 1×/rodada, com alcance 3. Um *Retrato Falado* grátis por partida. | — |
 
 ### 9.2 Tabela de Pontos de Ação (4 PA por detetive)
@@ -424,20 +525,20 @@ O time sempre controla **4 detetives** (5 com 6 jogadores). Com menos jogadores,
 
 | Ação | PA | Efeito |
 |---|---|---|
-| A pé | 1 | 1 conexão de rua |
-| Viatura | 2 | até 3 conexões de rua (+1 PA no rush em Z1/Z5; eventos de trânsito podem bloquear) |
-| Transporte público | 1 | até 3 paradas de ônibus ou qualquer trecho de Trensurb, respeitando horários |
-| Barco (Patrulha Fluvial) | 2 | 1 conexão fluvial (precisa do item *Lancha* ativo; ignora horário) |
+| A pé | 1 | 1 ligação |
+| Viatura | 2 | até 4 ligações (+1 PA no rush no Centro e na Zona Norte, e para entrar em zona quente; eventos de trânsito podem bloquear) |
+| Transporte público | 1 | até 5 paradas de ônibus ou qualquer trecho de Trensurb, respeitando horários |
+| Barco (Patrulha Fluvial) | 2 | 1 travessia de barco (precisa do item *Lancha* ativo; ignora horário) |
 
 **Investigação**
 
 | Ação | PA | Efeito |
 |---|---|---|
 | **Investigar Local** | 1 | Se o espião passou ali nas últimas 8 rodadas: revela **em qual rodada**, **o bilhete com que saiu** e se fez alguma ação (ex.: "um envelope foi recolhido aqui"). 1× por local por rodada |
-| **Interrogar Testemunhas** | 1 | Só com Agl ≥ 2. Responde: "o espião está a até 2 conexões daqui **agora**?" (sim/não) |
+| **Interrogar Testemunhas** | 1 | Só com Agl ≥ 2. Responde: "o espião está a até 2 ligações daqui **agora**?" (sim/não) |
 | **Periciar Contato** | 2 | Num Ponto de Contato **ainda fechado**: o time lê o envelope (vai ao Dossiê). O envelope continua lá |
 | **Confiscar Contato** | +1 (após Periciar) | Remove o envelope do jogo. O espião recebe a mensagem privada "Contato em [local] caiu" |
-| **Interceptar Transmissão** | 2 | Só no Palácio da Polícia (34), no Morro da Polícia (47) ou com *Escuta Móvel*. Escolhe uma transmissão da fila. Chance = **40%** + 15% por tentativa anterior falha nessa transmissão + bônus. Sucesso: conteúdo + zona de origem; **+2 créditos** |
+| **Interceptar Transmissão** | 2 | Só no Palácio da Polícia, nos morros com antenas (Morro da Polícia, Morro Santa Tereza) ou com *Escuta Móvel*. Escolhe uma transmissão da fila. Chance = **40%** + 15% por tentativa anterior falha nessa transmissão + bônus. Sucesso: conteúdo + zona de origem; **+2 créditos** |
 
 **Confronto e controle**
 
@@ -464,12 +565,12 @@ Orçamento inicial: **8 créditos**. Renda: **+2/rodada**, **+2 por interceptaç
 | **Escuta Móvel** | 3 | O detetive pode Interceptar de qualquer lugar (permanente) |
 | **Decodificador** | 5 | +20% em todas as interceptações (permanente, time) |
 | **Cones de Barreira** | 2 | Põe um Bloqueio sem detetive num local adjacente. O espião pode entrar a pé, mas é **avistado** (local revelado). Dura 3 rodadas |
-| **Lancha da Patrulha Fluvial** | 3 | Nesta rodada, o time usa conexões fluviais (2 PA) |
+| **Lancha da Patrulha Fluvial** | 3 | Nesta rodada, o time usa as travessias de barco (2 PA) |
 | **Helicóptero Águia** | 6 | Uso único: um detetive vai a qualquer local por 0 PA. Proibido com *Chuva Forte* |
 
 ### 9.4 Posições iniciais
 
-Um detetive começa no **Palácio da Polícia (34)**. Os outros escolhem entre **Mercado Público (1)**, **Redenção (13)**, **Aeroporto (27)**, **BarraShoppingSul (38)** e **Iguatemi (22)**, um por local. Depois o espião escolhe o ponto de partida (§6.1).
+Um detetive começa no **Palácio da Polícia**. Os outros escolhem entre **Mercado Público**, **Redenção**, **Aeroporto**, **BarraShoppingSul** e **Iguatemi**, um por local. Depois o espião escolhe o ponto de partida (§6.1).
 
 ---
 
@@ -479,27 +580,27 @@ Um detetive começa no **Palácio da Polícia (34)**. Os outros escolhem entre *
 
 | Evento | Rodadas | Efeito |
 |---|---|---|
-| **Gre-Nal** (Arena *ou* Beira-Rio, sorteado) | 10–12 | Estádio +3 Agl; vizinhos +1; viatura em Z2/Z5 +1 PA |
-| **Show no Anfiteatro Pôr do Sol** | 12–14 | Harmonia (9) e Gasômetro (3) +2 |
-| **Feira do Livro** | 4–12 | Praça da Alfândega (2) +2; Casa de Cultura (7) +1 |
-| **Brique da Redenção** (domingo) | 3–8 | Redenção (13) +2 e vira `LOJ` |
-| **Acampamento Farroupilha** | 8–16 | Harmonia (9) +3; cavalgadas: viatura em Z2 +1 PA |
-| **Carnaval no Porto Seco** | 19–23 | Porto Seco (30) +5 (ignora a madrugada); L1 Corujão até a rodada 24 |
-| **Procissão de Navegantes** | 5–8 | Locais 24, 25 e 4 +2; Av. Farrapos fechada para viaturas |
-| **Maratona de Porto Alegre** | 1–4 | Orla (3, 9, 11, 37) +1; conexões 3-9, 9-10 e 11-37 fechadas para viaturas |
+| **Gre-Nal** (Arena *ou* Beira-Rio, sorteado) | 10–12 | Estádio +3 Agl; vizinhos +1; viatura na Cidade Baixa/Menino Deus e na Zona Norte +1 PA |
+| **Show no Anfiteatro Pôr do Sol** | 12–14 | Harmonia e Gasômetro +2 |
+| **Feira do Livro** | 4–12 | Praça da Alfândega +2; Casa de Cultura +1 |
+| **Brique da Redenção** (domingo) | 3–8 | Redenção +2 e vira `LOJ` |
+| **Acampamento Farroupilha** | 8–16 | Harmonia +3; cavalgadas: viatura na Cidade Baixa/Menino Deus +1 PA |
+| **Carnaval no Porto Seco** | 19–23 | Porto Seco +5 (ignora a madrugada); L1 roda até a rodada 24 |
+| **Procissão de Navegantes** | 5–8 | Navegantes, São Pedro e Cais Mauá +2; Av. Farrapos fechada para viaturas |
+| **Maratona de Porto Alegre** | 1–4 | Gasômetro, Pôr do Sol, Parque Marinha e Beira-Rio +1; viaturas proibidas na orla |
 
 ### 10.2 Baralho de eventos aleatórios (30 cartas)
 
 | # | Evento | Duração | Efeito |
 |---|---|---|---|
-| 1–2 | **Engarrafamento na Terceira Perimetral** | ⏳2 | Viatura em Z4/Z6 +1 PA |
-| 3 | **Freeway parada** | ⏳2 | Conexões 26-45 e 44-45 fechadas para veículos |
+| 1–2 | **Engarrafamento na Terceira Perimetral** | ⏳2 | Viatura em Moinhos e na Zona Leste +1 PA |
+| 3 | **Freeway parada** | ⏳2 | Ponte do Guaíba fechada para veículos |
 | 4 | **Greve de ônibus** | ⏳3 | Ônibus fechados; estações Trensurb +1 Agl |
 | 5 | **Pane no Trensurb** | ⏳2 | Trensurb fechado |
 | 6–7 | **Chuva forte** | ⏳2 | Todos −1 Agl; barcos e Helicóptero proibidos; Investigar só lê 4 rodadas (o rastro é lavado) |
-| 8 | **Alagamento no Centro** | ⏳3 | Locais 1, 3, 4 e 6: viatura proibida; Agl −2; Trensurb não para no Mercado |
+| 8 | **Alagamento no Centro** | ⏳3 | Mercado, Cais Mauá, Embarcadero, Gasômetro e Rodoviária: viatura proibida; Agl −2; Trensurb não para no Mercado |
 | 9 | **Minuano** | ⏳2 | Locais ao ar livre −1 Agl; barcos cancelados |
-| 10 | **Manifestação na Esquina Democrática** | ⏳2 | Locais 1 e 2 +3 Agl; viaturas proibidas em Z1 |
+| 10 | **Manifestação na Esquina Democrática** | ⏳2 | Mercado Público e Alfândega +3 Agl; viaturas proibidas no Centro |
 | 11 | **Apagão no bairro** (zona sorteada) | ⏳2 | Câmeras e ATMs da zona desligados |
 | 12 | **Queda de sinal** | 1 | Interceptar impossível; transmissões não envelhecem nesta rodada |
 | 13 | **Vazamento na imprensa** | — | Exposição +1; a manchete revela o **tipo** da última pista recolhida |
@@ -509,10 +610,10 @@ Um detetive começa no **Palácio da Polícia (34)**. Os outros escolhem entre *
 | 17 | **Simpatizante da rede** | — | O espião pode mover 2 vezes nesta rodada (2 bilhetes públicos) |
 | 18 | **Carona de um caminhoneiro** | — | O espião pode viajar de App de graça nesta rodada |
 | 19 | **Envelope extra** | — | Um contato candidato não sorteado recebe uma cópia de uma pista ONDE ainda não recolhida (local público) |
-| 20 | **Pôr do sol no Gasômetro** (só rodadas 11–14) | 1 | Gasômetro (3) +2; se sair fora dessas rodadas, descarta e compra outra |
-| 21 | **Festa na Cidade Baixa** | ⏳2 | Local 8 +2 |
+| 20 | **Pôr do sol no Gasômetro** (só rodadas 11–14) | 1 | Gasômetro +2; se sair fora dessas rodadas, descarta e compra outra |
+| 21 | **Festa na Cidade Baixa** | ⏳2 | Cidade Baixa +2 |
 | 22 | **Feirão no Shopping** (shopping sorteado) | ⏳2 | +2 Agl; disfarce custa R$ 1 ali |
-| 23 | **Operação na Orla** | — | Os detetives podem mover 1 peão de graça até um local de Z7 |
+| 23 | **Operação na Orla** | — | Os detetives podem mover 1 peão de graça até um local da Zona Sul |
 | 24 | **Corte de verbas** | — | Orçamento −3 |
 | 25 | **Reforço da Brigada** | — | Um Bloqueio extra gratuito por 3 rodadas |
 | 26 | **Câmera quebrada** | ⏳3 | Um local `CAM` sorteado fica sem câmera |
@@ -548,14 +649,14 @@ Um detetive começa no **Palácio da Polícia (34)**. Os outros escolhem entre *
 
 **Rodada 11 (16h).** Evento agendado: *Gre-Nal na Arena* (Arena 1 → 4 Agl). Carta aleatória: *Greve de ônibus*.
 
-**Espião** (Perfil Corredor, R$ 6, Exposição 3, no Navegantes 24). Ele sabe que a extração não é por água nem por ar. Restam Rodoviária (6) e Ponte do Guaíba (45). Vai **a pé** até a Arena (26), no meio da torcida, e não faz ação.
+**Espião** (Perfil Corredor, R$ 6, Exposição 3, no Humaitá). Ele sabe que a extração não é por água nem por ar. Restam Rodoviária e Ponte do Guaíba. Vai **a pé** até a Arena (1 ligação), no meio da torcida, e não faz ação.
 - Bilhete público: 🚶 *A pé*.
 - Denúncia: Agl 4 → 30% + 6% = 36%. O servidor rola 52: **sem denúncia**.
 
-**Detetives.** O último registro foi uma interceptação na rodada 9, zona Z5.
-- Analista (no Palácio): *Interceptar* a Transmissão #3 (1 PA, 40% + 15% + 15% = 70%) → **sucesso**: "Nada de estrada desta vez" + zona Z5. O time descobre que o espião sabe que **não é terra**... mas é uma **Mensagem Falsa** que o espião plantou na rodada 9. O Dossiê marca 6 e 45 como eliminados, erroneamente.
-- Agente Tático (em 29): *A pé* até 27 (1 PA; a viatura custaria 3 com o Gre-Nal), *Montar Bloqueio* no Aeroporto (2 PA) e *Investigar* (1 PA): nada.
-- Perito (em 25): *A pé* até 24 (1 PA), *Investigar* (1 PA) → "esteve aqui na rodada 10, saiu **A pé**". *A pé* até 26 (1 PA, mas a viatura pagaria +1 pelo jogo). *Interrogar* (1 PA, Agl 4 permite) → "**Sim**, a até 2 conexões".
+**Detetives.** O último registro foi uma interceptação na rodada 9, Zona Norte.
+- Analista (no Palácio): *Interceptar* a Transmissão #3 (1 PA, 40% + 15% + 15% = 70%) → **sucesso**: "Nada de estrada desta vez" + Zona Norte. O time descobre que o espião sabe que **não é terra**... mas é uma **Mensagem Falsa** que o espião plantou na rodada 9. O Dossiê marca Rodoviária e Ponte do Guaíba como eliminados, erroneamente.
+- Agente Tático (no Lindóia): *A pé* até o Aeroporto (1 PA; a viatura custaria 3 com o Gre-Nal), *Montar Bloqueio* no Aeroporto (2 PA) e *Investigar* (1 PA): nada.
+- Perito (em Farrapos): *A pé* até Humaitá (1 PA), *Investigar* (1 PA) → "esteve aqui na rodada 10, saiu **A pé**". *A pé* até a Arena (1 PA; a viatura pagaria +1 pelo jogo). *Interrogar* (1 PA, Agl 4 permite) → "**Sim**, a até 2 ligações".
 - Delegada: compra um **Drone** (4 créditos), que chega na próxima rodada.
 
 **Fechamento.** Sem revelação programada. A tensão sobe: o Perito está **no mesmo local** que o espião, mas sem PA para Abordar. Na próxima rodada, o espião precisa sair da Arena, e o Perito vai ler o rastro.
@@ -584,6 +685,8 @@ Um detetive começa no **Palácio da Polícia (34)**. Os outros escolhem entre *
 | 4 | 4 (um jogador controla 2) | — |
 | 5 | 4 | — |
 | 6 | 5 (+ Investigadora de Rua) | Espião +R$ 4 e +1 Mensagem Falsa |
+
+**Efeito do mapa grande:** com 94 locais, o espião tem muito mais espaço para sumir. Para compensar, a viatura dos detetives anda até 4 ligações e os detetives começam espalhados (Palácio da Polícia + 3 de: Mercado, Redenção, Aeroporto, BarraShopping, Iguatemi, Passo d'Areia). Se nos testes o espião vencer demais, os primeiros ajustes são: Interrogar com alcance 3, ou uma revelação programada extra na rodada 16.
 
 **Efeito do formato presencial:** como o espião ouve a mesa, e os detetives precisam digitar no celular o que é secreto, o time fica um pouco mais lento. Por isso o cronômetro padrão dos detetives é 120 s, e não 90 s. Se o espião vencer acima da meta nos testes, subir para 150 s ou dar +1 crédito por rodada ao time.
 
