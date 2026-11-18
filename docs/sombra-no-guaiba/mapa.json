@@ -148,7 +148,8 @@
    "tipo": "comercial",
    "aglomeracao_base": 2,
    "etiquetas": [
-    "TUR"
+    "TUR",
+    "BIKE"
    ],
    "lat": -30.0335,
    "lon": -51.23,
@@ -181,7 +182,9 @@
    "zona": "CEN",
    "tipo": "residencial",
    "aglomeracao_base": 2,
-   "etiquetas": [],
+   "etiquetas": [
+    "BIKE"
+   ],
    "lat": -30.0205,
    "lon": -51.208,
    "x": -2698,
@@ -246,7 +249,8 @@
    "etiquetas": [
     "CAM",
     "ATM",
-    "LOJ"
+    "LOJ",
+    "BIKE"
    ],
    "lat": -30.05,
    "lon": -51.229,
@@ -279,7 +283,8 @@
    "aglomeracao_base": 1,
    "etiquetas": [
     "ESTADIO",
-    "TUR"
+    "TUR",
+    "BIKE"
    ],
    "lat": -30.0655,
    "lon": -51.236,
@@ -309,7 +314,9 @@
    "zona": "CBX",
    "tipo": "comercial",
    "aglomeracao_base": 2,
-   "etiquetas": [],
+   "etiquetas": [
+    "BIKE"
+   ],
    "lat": -30.059,
    "lon": -51.2125,
    "x": -3131,
@@ -508,7 +515,8 @@
    "tipo": "nobre",
    "aglomeracao_base": 1,
    "etiquetas": [
-    "CON"
+    "CON",
+    "BIKE"
    ],
    "lat": -30.0352,
    "lon": -51.1848,
@@ -522,7 +530,9 @@
    "zona": "MOI",
    "tipo": "residencial",
    "aglomeracao_base": 2,
-   "etiquetas": [],
+   "etiquetas": [
+    "BIKE"
+   ],
    "lat": -30.0442,
    "lon": -51.1858,
    "x": -559,
@@ -1445,6 +1455,155 @@
    "lon": -51.088,
    "x": 8864,
    "y": 20395
+  },
+  {
+   "id": 95,
+   "nome": "Santana / Av. Ipiranga",
+   "curto": "Santana",
+   "zona": "CBX",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "BIKE"
+   ],
+   "lat": -30.0492,
+   "lon": -51.2005,
+   "x": -1975,
+   "y": -1194
+  },
+  {
+   "id": 96,
+   "nome": "Coronel Aparício Borges",
+   "curto": "Aparício Borges",
+   "zona": "LES",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -30.0712,
+   "lon": -51.1858,
+   "x": -559,
+   "y": 1238
+  },
+  {
+   "id": 97,
+   "nome": "Vila Ipiranga",
+   "curto": "Vila Ipiranga",
+   "zona": "NOR",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -30.015,
+   "lon": -51.153,
+   "x": 2601,
+   "y": -4974
+  },
+  {
+   "id": 98,
+   "nome": "Santa Maria Goretti",
+   "curto": "Maria Goretti",
+   "zona": "NOR",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -29.9985,
+   "lon": -51.189,
+   "x": -867,
+   "y": -6798
+  },
+  {
+   "id": 99,
+   "nome": "Anchieta (distrito industrial)",
+   "curto": "Anchieta",
+   "zona": "NOR",
+   "tipo": "industrial",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "ESC"
+   ],
+   "lat": -29.9842,
+   "lon": -51.18,
+   "x": 0,
+   "y": -8379
+  },
+  {
+   "id": 100,
+   "nome": "Parque Santa Fé",
+   "curto": "Parque Santa Fé",
+   "zona": "NOR",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -29.9765,
+   "lon": -51.1185,
+   "x": 5925,
+   "y": -9230
+  },
+  {
+   "id": 101,
+   "nome": "Costa e Silva",
+   "curto": "Costa e Silva",
+   "zona": "NOR",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -30.0118,
+   "lon": -51.1205,
+   "x": 5733,
+   "y": -5328
+  },
+  {
+   "id": 102,
+   "nome": "Pedra Redonda",
+   "curto": "Pedra Redonda",
+   "zona": "SUL",
+   "tipo": "nobre",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.1238,
+   "lon": -51.247,
+   "x": -6455,
+   "y": 7052
+  },
+  {
+   "id": 103,
+   "nome": "Jardim Isabel",
+   "curto": "Jardim Isabel",
+   "zona": "SUL",
+   "tipo": "residencial",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.1345,
+   "lon": -51.217,
+   "x": -3565,
+   "y": 8235
+  },
+  {
+   "id": 104,
+   "nome": "Campo Novo",
+   "curto": "Campo Novo",
+   "zona": "SUL",
+   "tipo": "residencial",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.1525,
+   "lon": -51.214,
+   "x": -3276,
+   "y": 10225
+  },
+  {
+   "id": 105,
+   "nome": "Extrema",
+   "curto": "Extrema",
+   "zona": "EXT",
+   "tipo": "rural",
+   "aglomeracao_base": 0,
+   "etiquetas": [
+    "ESC"
+   ],
+   "lat": -30.223,
+   "lon": -51.144,
+   "x": 3469,
+   "y": 18018
   }
  ],
  "conexoes": {
@@ -1638,12 +1797,20 @@
     40
    ],
    [
+    17,
+    95
+   ],
+   [
     18,
     22
    ],
    [
     18,
     25
+   ],
+   [
+    18,
+    95
    ],
    [
     19,
@@ -1660,6 +1827,10 @@
    [
     19,
     74
+   ],
+   [
+    19,
+    96
    ],
    [
     20,
@@ -1707,7 +1878,7 @@
    ],
    [
     25,
-    31
+    95
    ],
    [
     26,
@@ -1754,6 +1925,10 @@
     38
    ],
    [
+    31,
+    95
+   ],
+   [
     32,
     36
    ],
@@ -1790,6 +1965,10 @@
     36
    ],
    [
+    34,
+    97
+   ],
+   [
     35,
     42
    ],
@@ -1802,12 +1981,20 @@
     64
    ],
    [
+    35,
+    97
+   ],
+   [
     36,
     56
    ],
    [
     36,
     57
+   ],
+   [
+    36,
+    97
    ],
    [
     37,
@@ -1830,12 +2017,32 @@
     40
    ],
    [
+    38,
+    95
+   ],
+   [
+    38,
+    96
+   ],
+   [
     39,
     41
    ],
    [
     39,
     42
+   ],
+   [
+    39,
+    96
+   ],
+   [
+    40,
+    95
+   ],
+   [
+    40,
+    96
    ],
    [
     41,
@@ -1902,16 +2109,36 @@
     53
    ],
    [
+    50,
+    98
+   ],
+   [
     51,
     52
+   ],
+   [
+    51,
+    98
+   ],
+   [
+    51,
+    99
    ],
    [
     52,
     55
    ],
    [
+    52,
+    99
+   ],
+   [
     53,
     56
+   ],
+   [
+    53,
+    98
    ],
    [
     54,
@@ -1930,12 +2157,28 @@
     59
    ],
    [
+    54,
+    98
+   ],
+   [
+    54,
+    99
+   ],
+   [
     55,
     59
    ],
    [
+    55,
+    99
+   ],
+   [
     56,
     57
+   ],
+   [
+    56,
+    98
    ],
    [
     57,
@@ -1947,7 +2190,7 @@
    ],
    [
     57,
-    64
+    97
    ],
    [
     58,
@@ -1962,6 +2205,14 @@
     64
    ],
    [
+    58,
+    97
+   ],
+   [
+    58,
+    101
+   ],
+   [
     59,
     60
    ],
@@ -1970,12 +2221,16 @@
     61
    ],
    [
+    60,
+    100
+   ],
+   [
     61,
     62
    ],
    [
     61,
-    65
+    101
    ],
    [
     62,
@@ -1986,8 +2241,24 @@
     65
    ],
    [
+    62,
+    100
+   ],
+   [
+    63,
+    100
+   ],
+   [
     64,
-    65
+    97
+   ],
+   [
+    64,
+    101
+   ],
+   [
+    65,
+    101
    ],
    [
     66,
@@ -2046,6 +2317,10 @@
     76
    ],
    [
+    73,
+    96
+   ],
+   [
     74,
     76
    ],
@@ -2066,6 +2341,10 @@
     84
    ],
    [
+    75,
+    96
+   ],
+   [
     76,
     80
    ],
@@ -2076,6 +2355,10 @@
    [
     77,
     84
+   ],
+   [
+    77,
+    96
    ],
    [
     78,
@@ -2091,7 +2374,7 @@
    ],
    [
     79,
-    82
+    102
    ],
    [
     80,
@@ -2106,8 +2389,20 @@
     83
    ],
    [
+    81,
+    103
+   ],
+   [
     82,
     85
+   ],
+   [
+    82,
+    102
+   ],
+   [
+    82,
+    103
    ],
    [
     83,
@@ -2118,6 +2413,10 @@
     86
    ],
    [
+    83,
+    103
+   ],
+   [
     84,
     87
    ],
@@ -2126,12 +2425,24 @@
     88
    ],
    [
+    85,
+    104
+   ],
+   [
     86,
-    88
+    103
+   ],
+   [
+    86,
+    104
    ],
    [
     88,
     89
+   ],
+   [
+    88,
+    104
    ],
    [
     89,
@@ -2142,16 +2453,40 @@
     91
    ],
    [
+    90,
+    105
+   ],
+   [
     91,
     92
+   ],
+   [
+    91,
+    105
    ],
    [
     92,
     93
    ],
    [
+    92,
+    105
+   ],
+   [
     93,
     94
+   ],
+   [
+    93,
+    105
+   ],
+   [
+    98,
+    99
+   ],
+   [
+    103,
+    104
    ]
   ],
   "barco": {
@@ -2239,6 +2574,7 @@
       31,
       33,
       35,
+      42,
       43,
       65
      ]
@@ -2261,19 +2597,17 @@
     },
     {
      "id": "L4",
-     "nome": "Ipiranga / III Perimetral",
+     "nome": "Ipiranga",
      "corujao": false,
      "paradas": [
       13,
       16,
       18,
+      95,
       38,
-      37,
-      33,
-      34,
-      36,
-      56,
-      54
+      39,
+      41,
+      43
      ]
     },
     {
@@ -2288,8 +2622,10 @@
       15,
       69,
       70,
+      72,
       78,
       79,
+      102,
       82,
       85,
       88,
@@ -2301,9 +2637,13 @@
      "nome": "Cavalhada / Restinga",
      "corujao": false,
      "paradas": [
+      1,
+      10,
       17,
       19,
+      20,
       74,
+      76,
       80,
       83,
       86,
@@ -2317,10 +2657,12 @@
      "paradas": [
       1,
       8,
+      48,
       47,
       50,
       51,
       52,
+      99,
       55
      ]
     },
@@ -2333,9 +2675,11 @@
       26,
       27,
       28,
+      29,
       32,
       53,
-      56
+      98,
+      99
      ]
     },
     {
@@ -2359,6 +2703,7 @@
       91,
       90,
       92,
+      105,
       93,
       94
      ]
@@ -2370,10 +2715,81 @@
      "paradas": [
       34,
       36,
+      97,
       59,
       54,
       60,
+      100,
       62
+     ]
+    },
+    {
+     "id": "L12",
+     "nome": "III Perimetral",
+     "corujao": true,
+     "paradas": [
+      54,
+      56,
+      36,
+      34,
+      33,
+      37,
+      96,
+      73,
+      74,
+      71,
+      70
+     ]
+    },
+    {
+     "id": "L13",
+     "nome": "Ilhas",
+     "corujao": false,
+     "paradas": [
+      1,
+      8,
+      47,
+      49,
+      66,
+      68,
+      67
+     ]
+    },
+    {
+     "id": "L14",
+     "nome": "Transversal Norte",
+     "corujao": false,
+     "paradas": [
+      56,
+      97,
+      64,
+      101,
+      65
+     ]
+    },
+    {
+     "id": "L15",
+     "nome": "Juca Batista",
+     "corujao": false,
+     "paradas": [
+      80,
+      83,
+      103,
+      104,
+      88,
+      89,
+      90
+     ]
+    },
+    {
+     "id": "L16",
+     "nome": "Lomba / Restinga",
+     "corujao": false,
+     "paradas": [
+      45,
+      46,
+      84,
+      87
      ]
     }
    ]
@@ -2388,16 +2804,24 @@
     2,
     4,
     6,
+    7,
+    9,
     10,
     12,
+    13,
     14,
+    15,
     16,
+    17,
     22,
     23,
     24,
     26,
     27,
-    28
+    28,
+    30,
+    31,
+    95
    ]
   }
  },
@@ -2456,19 +2880,19 @@
   ]
  },
  "relatorio": {
-  "locais": 94,
-  "ligacoes_a_pe": 176,
-  "comprimento_medio_m": 1614,
+  "locais": 105,
+  "ligacoes_a_pe": 220,
+  "comprimento_medio_m": 1634,
   "maior_ligacao_m": 4693,
-  "diametro_em_ligacoes": 21,
+  "diametro_em_ligacoes": 20,
   "mercado_ate": {
-   "Aeroporto": 6,
+   "Aeroporto": 5,
    "Arena": 5,
    "Beira-Rio": 5,
    "Restinga": 9,
    "Belém Novo": 13,
-   "Lami": 16,
-   "Rubem Berta": 10
+   "Lami": 15,
+   "Rubem Berta": 9
   }
  }
 }

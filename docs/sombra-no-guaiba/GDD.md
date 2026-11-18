@@ -54,23 +54,23 @@ O espião **não sabe** o plano no início. Os detetives **também não**. Os do
 
 ## 4. O mapa de Porto Alegre
 
-O tabuleiro é um **mapa próprio**, desenhado a partir da posição real de 94 lugares de Porto Alegre: pontos turísticos, parques, estádios, shoppings, terminais, estações e bairros. Cada local tem um **território** (a área da cidade mais próxima dele), colorido pelo **tipo de bairro**. O mapa é gerado por `gerar_mapa.py`, que produz `mapa.json` (regras) e `mapa-arte.json` (desenho). A prévia da TV está em `tabuleiro-tv.html`.
+O tabuleiro é um **mapa próprio**, desenhado a partir da posição real de 105 lugares de Porto Alegre: pontos turísticos, parques, estádios, shoppings, terminais, estações e bairros. Cada local tem um **território** (a área da cidade mais próxima dele), colorido pelo **tipo de bairro**. O mapa é gerado por `gerar_mapa.py`, que produz `mapa.json` (regras) e `mapa-arte.json` (desenho: terra, territórios, quarteirões, árvores e rodovias). A prévia da TV está em `tabuleiro-tv.html`.
 
 ### 4.1 Escala e distâncias
 
-- **94 locais** ligados por **176 ligações a pé**. Uma ligação mede em média **1.6 km** (de 0,4 km no Centro a 4.7 km no Extremo Sul).
+- **105 locais** ligados por **220 ligações a pé**. Uma ligação mede em média **1.6 km** (de 0,4 km no Centro a 4.7 km no Extremo Sul).
 - As ligações são geradas automaticamente entre vizinhos naturais (grafo de Gabriel), **sem atravessar o Guaíba**. As ilhas só se ligam por ponte ou barco.
-- Atravessar a cidade é lento: o maior trajeto a pé tem **21 ligações**. Saindo do Mercado Público:
+- Atravessar a cidade é lento: o maior trajeto a pé tem **20 ligações**. Saindo do Mercado Público:
 
 | Destino | Ligações a pé | Rodadas a pé (2 por rodada) |
 |---|---|---|
-| Aeroporto | 6 | 3 |
+| Aeroporto | 5 | 3 |
 | Arena | 5 | 3 |
 | Beira-Rio | 5 | 3 |
 | Restinga | 9 | 5 |
 | Belém Novo | 13 | 7 |
-| Lami | 16 | 8 |
-| Rubem Berta | 10 | 5 |
+| Lami | 15 | 8 |
+| Rubem Berta | 9 | 5 |
 
 Ônibus, Trensurb e aplicativo encurtam essas distâncias, mas custam dinheiro e deixam bilhete público.
 
@@ -82,13 +82,13 @@ Cada local tem um tipo. O tipo muda o risco e as ações ali (detalhes em §7.4)
 |---|---|
 | **Comercial / Centro** | Mercado Público, Alfândega, Casa de Cultura, Matriz, Rodoviária, Praia de Belas, Azenha, Palácio da Polícia, Bourbon Ipiranga, Aeroporto, Passo d'Areia, Bourbon Wallig, BarraShopping |
 | **Boêmio** | Embarcadero, Cidade Baixa, Bom Fim |
-| **Bairro nobre** | Padre Chagas, Parcão, Mont'Serrat, Bela Vista, Auxiliadora, Três Figueiras, Iguatemi, Chácara das Pedras, Boa Vista, Vila Assunção |
-| **Residencial** | Floresta, Menino Deus, Medianeira, Independência, Petrópolis, Partenon, São José, Jardim Carvalho, São João, Cristo Redentor, Lindóia, Sarandi, Passo das Pedras, Jardim Itu, Cristal, Glória, Teresópolis, Nonoai, Cascata, Tristeza, Cavalhada, Vila Nova, Guarujá, Hípica |
+| **Bairro nobre** | Padre Chagas, Parcão, Mont'Serrat, Bela Vista, Auxiliadora, Três Figueiras, Iguatemi, Chácara das Pedras, Boa Vista, Vila Assunção, Pedra Redonda |
+| **Residencial** | Floresta, Menino Deus, Medianeira, Independência, Petrópolis, Partenon, São José, Jardim Carvalho, São João, Cristo Redentor, Lindóia, Sarandi, Passo das Pedras, Jardim Itu, Cristal, Glória, Teresópolis, Nonoai, Cascata, Tristeza, Cavalhada, Vila Nova, Guarujá, Hípica, Santana, Aparício Borges, Vila Ipiranga, Maria Goretti, Parque Santa Fé, Costa e Silva, Jardim Isabel, Campo Novo |
 | **Universitário / Hospitalar** | UFRGS, Clínicas, PUCRS, Campus do Vale |
-| **Industrial / Logístico** | Navegantes, São Pedro, Ponte do Guaíba, Farrapos, Humaitá, Ceasa |
+| **Industrial / Logístico** | Navegantes, São Pedro, Ponte do Guaíba, Farrapos, Humaitá, Ceasa, Anchieta |
 | **Zona quente** | Vila Cruzeiro, Bom Jesus, Lomba do Pinheiro, Rubem Berta, Mário Quintana, Restinga |
 | **Parque / Orla** | Cais Mauá, Gasômetro, Harmonia, Pôr do Sol, Parque Marinha, Beira-Rio, Morro Santa Tereza, Redenção, Jardim Botânico, Morro Santana, Arena, Porto Seco, Iberê Camargo, Hipódromo, Morro da Polícia, Morro do Osso, Ipanema, Reserva do Lami |
-| **Rural / Extremo Sul** | Belém Velho, Serraria, Ponta Grossa, Belém Novo, Chapéu do Sol, Lageado, Lami |
+| **Rural / Extremo Sul** | Belém Velho, Serraria, Ponta Grossa, Belém Novo, Chapéu do Sol, Lageado, Lami, Extrema |
 | **Ilhas** | Ilha dos Marinheiros, Ilha da Pintada, Ilha das Flores |
 
 > A "zona quente" é uma regra de jogo (pouca presença policial, moradores que não falam com a polícia), não um retrato dos moradores. Os locais marcados podem ser trocados em `gerar_mapa.py` sem mudar nenhuma outra regra.
@@ -107,9 +107,10 @@ Lotação base (Agl) de 0 a 5. Etiquetas: extração, contato (candidato a Ponto
 | 4 | Casa de Cultura Mario Quintana | Comercial / Centro | 2 | contato, turístico, bike |
 | 5 | Cais Embarcadero | Boêmio | 2 | barco, turístico |
 | 6 | Usina do Gasômetro | Parque / Orla | 3 | turístico, bike |
-| 7 | Praça da Matriz / Catedral / Theatro São Pedro | Comercial / Centro | 2 | turístico |
+| 7 | Praça da Matriz / Catedral / Theatro São Pedro | Comercial / Centro | 2 | turístico, bike |
 | 8 | Estação Rodoviária | Comercial / Centro | 4 | **extração (terra)**, Trensurb, terminal, câmera, caixa |
-| 9 | Floresta / Av. Cristóvão Colombo | Residencial | 2 | — |
+| 9 | Floresta / Av. Cristóvão Colombo | Residencial | 2 | bike |
+
 
 **Cidade Baixa e Menino Deus**
 
@@ -118,15 +119,17 @@ Lotação base (Agl) de 0 a 5. Etiquetas: extração, contato (candidato a Ponto
 | 10 | Cidade Baixa / Rua da República | Boêmio | 3 | contato, bike, noite +1 |
 | 11 | Parque Harmonia | Parque / Orla | 1 | parque, esconderijo |
 | 12 | Orla do Guaíba / Anfiteatro Pôr do Sol | Parque / Orla | 2 | turístico, bike |
-| 13 | Shopping Praia de Belas | Comercial / Centro | 3 | câmera, caixa, loja |
+| 13 | Shopping Praia de Belas | Comercial / Centro | 3 | câmera, caixa, loja, bike |
 | 14 | Parque Marinha do Brasil | Parque / Orla | 1 | parque, esconderijo, bike |
-| 15 | Estádio Beira-Rio | Parque / Orla | 1 | estádio, turístico |
+| 15 | Estádio Beira-Rio | Parque / Orla | 1 | estádio, turístico, bike |
 | 16 | Menino Deus / Av. Getúlio Vargas | Residencial | 2 | contato, bike |
-| 17 | Azenha / Av. da Azenha | Comercial / Centro | 2 | — |
+| 17 | Azenha / Av. da Azenha | Comercial / Centro | 2 | bike |
 | 18 | Palácio da Polícia | Comercial / Centro | 2 | base policial |
 | 19 | Medianeira / Santo Antônio | Residencial | 2 | — |
 | 20 | Vila Cruzeiro / Santa Tereza | Zona quente | 2 | esconderijo |
 | 21 | Morro Santa Tereza (torres de TV) | Parque / Orla | 0 | antenas, esconderijo, morro |
+| 95 | Santana / Av. Ipiranga | Residencial | 2 | bike |
+
 
 **Bom Fim e Farroupilha**
 
@@ -138,6 +141,7 @@ Lotação base (Agl) de 0 a 5. Etiquetas: extração, contato (candidato a Ponto
 | 25 | Hospital de Clínicas / Santa Cecília | Universitário / Hospitalar | 3 | — |
 | 26 | Av. Independência | Residencial | 2 | bike |
 
+
 **Moinhos e bairros nobres**
 
 | # | Local | Tipo | Agl | Etiquetas |
@@ -145,13 +149,14 @@ Lotação base (Agl) de 0 a 5. Etiquetas: extração, contato (candidato a Ponto
 | 27 | Rua Padre Chagas | Bairro nobre | 2 | contato, bike, noite +1 |
 | 28 | Parcão / Shopping Moinhos | Bairro nobre | 2 | parque, loja, caixa, bike |
 | 29 | Mont'Serrat | Bairro nobre | 1 | — |
-| 30 | Bela Vista / Praça da Encol | Bairro nobre | 1 | contato |
-| 31 | Petrópolis / Av. Protásio Alves | Residencial | 2 | — |
+| 30 | Bela Vista / Praça da Encol | Bairro nobre | 1 | contato, bike |
+| 31 | Petrópolis / Av. Protásio Alves | Residencial | 2 | bike |
 | 32 | Auxiliadora / Av. Plínio Brasil Milano | Bairro nobre | 2 | — |
 | 33 | Três Figueiras | Bairro nobre | 1 | — |
 | 34 | Shopping Iguatemi | Bairro nobre | 3 | câmera, caixa, loja |
 | 35 | Chácara das Pedras | Bairro nobre | 1 | — |
 | 36 | Boa Vista / Country Club | Bairro nobre | 1 | — |
+
 
 **Zona Norte**
 
@@ -176,6 +181,12 @@ Lotação base (Agl) de 0 a 5. Etiquetas: extração, contato (candidato a Ponto
 | 63 | Rubem Berta | Zona quente | 2 | esconderijo, terminal |
 | 64 | Jardim Itu-Sabará | Residencial | 2 | — |
 | 65 | Mário Quintana | Zona quente | 2 | esconderijo |
+| 97 | Vila Ipiranga | Residencial | 2 | — |
+| 98 | Santa Maria Goretti | Residencial | 2 | — |
+| 99 | Anchieta (distrito industrial) | Industrial / Logístico | 1 | esconderijo |
+| 100 | Parque Santa Fé | Residencial | 2 | — |
+| 101 | Costa e Silva | Residencial | 2 | — |
+
 
 **Zona Leste**
 
@@ -191,6 +202,8 @@ Lotação base (Agl) de 0 a 5. Etiquetas: extração, contato (candidato a Ponto
 | 44 | Morro Santana | Parque / Orla | 0 | esconderijo, morro |
 | 45 | Agronomia / UFRGS Campus do Vale | Universitário / Hospitalar | 1 | — |
 | 46 | Lomba do Pinheiro | Zona quente | 2 | esconderijo |
+| 96 | Coronel Aparício Borges | Residencial | 2 | — |
+
 
 **Zona Sul**
 
@@ -215,6 +228,10 @@ Lotação base (Agl) de 0 a 5. Etiquetas: extração, contato (candidato a Ponto
 | 85 | Espírito Santo / Guarujá | Residencial | 1 | — |
 | 86 | Hípica / Aberta dos Morros | Residencial | 1 | — |
 | 87 | Restinga | Zona quente | 3 | esconderijo, terminal |
+| 102 | Pedra Redonda | Bairro nobre | 1 | — |
+| 103 | Jardim Isabel | Residencial | 1 | — |
+| 104 | Campo Novo | Residencial | 1 | — |
+
 
 **Extremo Sul**
 
@@ -227,6 +244,8 @@ Lotação base (Agl) de 0 a 5. Etiquetas: extração, contato (candidato a Ponto
 | 92 | Lageado | Rural / Extremo Sul | 0 | esconderijo |
 | 93 | Lami | Rural / Extremo Sul | 1 | — |
 | 94 | Reserva Biológica do Lami | Parque / Orla | 0 | contato, esconderijo |
+| 105 | Extrema | Rural / Extremo Sul | 0 | esconderijo |
+
 
 **Ilhas**
 
@@ -238,6 +257,8 @@ Lotação base (Agl) de 0 a 5. Etiquetas: extração, contato (candidato a Ponto
 
 ### 4.4 Transporte
 
+Todos os bairros têm ônibus, exceto os morros e alguns pontos do Centro que se alcançam a pé.
+
 **Trensurb** (opera 06h–23h, rodadas 1–18): Mercado Público → Rodoviária → São Pedro → Farrapos → Aeroporto → Ceasa
 
 **Ônibus** (operam 06h–23h; as linhas 🌙 também rodam de madrugada, rodadas 19–23). Cada linha corre pela avenida principal do corredor:
@@ -245,20 +266,27 @@ Lotação base (Agl) de 0 a 5. Etiquetas: extração, contato (candidato a Ponto
 | Linha | Corredor | Paradas |
 |---|---|---|
 | L1 🌙 | Assis Brasil | Mercado Público → Rodoviária → Floresta → São João → Passo d'Areia → Bourbon Wallig → Cristo Redentor → Sarandi → Passo das Pedras → Rubem Berta |
-| L2 | Protásio Alves | Mercado Público → UFRGS → Bom Fim → Bela Vista → Petrópolis → Três Figueiras → Chácara das Pedras → Jardim Carvalho → Mário Quintana |
+| L2 | Protásio Alves | Mercado Público → UFRGS → Bom Fim → Bela Vista → Petrópolis → Três Figueiras → Chácara das Pedras → Bom Jesus → Jardim Carvalho → Mário Quintana |
 | L3 🌙 | Bento Gonçalves | Mercado Público → Matriz → Redenção → Clínicas → Partenon → PUCRS → São José → Campus do Vale → Lomba do Pinheiro |
-| L4 | Ipiranga / III Perimetral | Praia de Belas → Menino Deus → Palácio da Polícia → Bourbon Ipiranga → Jardim Botânico → Três Figueiras → Iguatemi → Boa Vista → Passo d'Areia → Aeroporto |
-| L5 🌙 | Zona Sul / Orla | Mercado Público → Gasômetro → Pôr do Sol → Parque Marinha → Beira-Rio → Iberê Camargo → BarraShopping → Vila Assunção → Tristeza → Ipanema → Guarujá → Serraria → Belém Novo |
-| L6 | Cavalhada / Restinga | Azenha → Medianeira → Teresópolis → Cavalhada → Vila Nova → Hípica → Restinga |
-| L7 | Farrapos / Arena | Mercado Público → Rodoviária → Navegantes → Farrapos → Humaitá → Arena → Ceasa |
-| L8 | Independência / Moinhos | Matriz → Independência → Padre Chagas → Parcão → Auxiliadora → São João → Passo d'Areia |
+| L4 | Ipiranga | Praia de Belas → Menino Deus → Palácio da Polícia → Santana → Bourbon Ipiranga → PUCRS → São José → Jardim Carvalho |
+| L5 🌙 | Zona Sul / Orla | Mercado Público → Gasômetro → Pôr do Sol → Parque Marinha → Beira-Rio → Iberê Camargo → BarraShopping → Hipódromo → Vila Assunção → Tristeza → Pedra Redonda → Ipanema → Guarujá → Serraria → Belém Novo |
+| L6 | Cavalhada / Restinga | Mercado Público → Cidade Baixa → Azenha → Medianeira → Vila Cruzeiro → Teresópolis → Nonoai → Cavalhada → Vila Nova → Hípica → Restinga |
+| L7 | Farrapos / Arena | Mercado Público → Rodoviária → São Pedro → Navegantes → Farrapos → Humaitá → Arena → Anchieta → Ceasa |
+| L8 | Independência / Moinhos | Matriz → Independência → Padre Chagas → Parcão → Mont'Serrat → Auxiliadora → São João → Maria Goretti → Anchieta |
 | L9 | Oscar Pereira / Belém Velho | Azenha → Glória → Cascata → Belém Velho → Restinga |
-| L10 | Lotação Extremo Sul | Restinga → Chapéu do Sol → Belém Novo → Lageado → Lami → Reserva do Lami |
-| L11 | Nilo Peçanha / Sertório | Iguatemi → Boa Vista → Lindóia → Aeroporto → Sarandi → Porto Seco |
+| L10 | Lotação Extremo Sul | Restinga → Chapéu do Sol → Belém Novo → Lageado → Extrema → Lami → Reserva do Lami |
+| L11 | Nilo Peçanha / Sertório | Iguatemi → Boa Vista → Vila Ipiranga → Lindóia → Aeroporto → Sarandi → Parque Santa Fé → Porto Seco |
+| L12 🌙 | III Perimetral | Aeroporto → Passo d'Areia → Boa Vista → Iguatemi → Três Figueiras → Jardim Botânico → Aparício Borges → Glória → Teresópolis → Cristal → BarraShopping |
+| L13 | Ilhas | Mercado Público → Rodoviária → Navegantes → Ponte do Guaíba → Ilha dos Marinheiros → Ilha das Flores → Ilha da Pintada |
+| L14 | Transversal Norte | Passo d'Areia → Vila Ipiranga → Jardim Itu → Costa e Silva → Mário Quintana |
+| L15 | Juca Batista | Cavalhada → Vila Nova → Jardim Isabel → Campo Novo → Serraria → Ponta Grossa → Belém Novo |
+| L16 | Lomba / Restinga | Campus do Vale → Lomba do Pinheiro → Belém Velho → Restinga |
 
 **Barco** (07h–21h, rodadas 2–16): Cais Mauá ↔ Ilha da Pintada · Embarcadero ↔ Ilha da Pintada · Embarcadero ↔ Ipanema · Ipanema ↔ Belém Novo · Ilha dos Marinheiros ↔ Ilha da Pintada · Cais Mauá ↔ Ilha das Flores
 
-**Bike compartilhada** (06h–23h, só na região central): estações em Mercado Público, Alfândega, Casa de Cultura, Gasômetro, Cidade Baixa, Pôr do Sol, Parque Marinha, Menino Deus, Redenção, UFRGS, Bom Fim, Independência, Padre Chagas, Parcão.
+**Bike compartilhada** (06h–23h, só na região central e na orla): estações em Mercado Público, Alfândega, Casa de Cultura, Gasômetro, Matriz, Floresta, Cidade Baixa, Pôr do Sol, Praia de Belas, Parque Marinha, Beira-Rio, Menino Deus, Azenha, Redenção, UFRGS, Bom Fim, Independência, Padre Chagas, Parcão, Bela Vista, Petrópolis, Santana.
+
+**Rodovias desenhadas no mapa**: Av. Castelo Branco/Freeway (saída norte) e BR-290 pela Ponte do Guaíba e pelas ilhas. Servem de referência visual e para viaturas.
 
 A lista completa de ligações a pé está em `mapa.json` (`conexoes.a_pe`).
 
@@ -286,7 +314,7 @@ Cada **rodada = 1 hora** da cidade. Rodada 1 = 06h; rodada 13 = 18h; rodada 19 =
 | Dia | 5–11 | sem modificador |
 | Rush da tarde / pôr do sol | 12–14 (17h–19h) | igual ao rush da manhã; Gasômetro e Harmonia **+1 Agl** |
 | Noite | 15–18 (20h–23h) | Cidade Baixa e Padre Chagas **+1 Agl**; parques **−1 Agl** |
-| Madrugada | 19–24 (00h–05h) | **todos −2 Agl**, exceto Cidade Baixa (−0), Rodoviária e Aeroporto (−1) e **Ceasa (+2)**. Trensurb, barcos, BikePOA e ônibus comuns fechados; só as linhas de madrugada (L1, L3, L5) até a rodada 23 |
+| Madrugada | 19–24 (00h–05h) | **todos −2 Agl**, exceto Cidade Baixa (−0), Rodoviária e Aeroporto (−1) e **Ceasa (+2)**. Trensurb, barcos, BikePOA e ônibus comuns fechados; só as linhas de madrugada (L1, L3, L5, L12) até a rodada 23 |
 
 A Aglomeração efetiva é sempre limitada a **0–5**.
 
@@ -686,7 +714,7 @@ Um detetive começa no **Palácio da Polícia**. Os outros escolhem entre **Merc
 | 5 | 4 | — |
 | 6 | 5 (+ Investigadora de Rua) | Espião +R$ 4 e +1 Mensagem Falsa |
 
-**Efeito do mapa grande:** com 94 locais, o espião tem muito mais espaço para sumir. Para compensar, a viatura dos detetives anda até 4 ligações e os detetives começam espalhados (Palácio da Polícia + 3 de: Mercado, Redenção, Aeroporto, BarraShopping, Iguatemi, Passo d'Areia). Se nos testes o espião vencer demais, os primeiros ajustes são: Interrogar com alcance 3, ou uma revelação programada extra na rodada 16.
+**Efeito do mapa grande:** com 105 locais, o espião tem muito mais espaço para sumir. Para compensar, a viatura dos detetives anda até 4 ligações e os detetives começam espalhados (Palácio da Polícia + 3 de: Mercado, Redenção, Aeroporto, BarraShopping, Iguatemi, Passo d'Areia). Se nos testes o espião vencer demais, os primeiros ajustes são: Interrogar com alcance 3, ou uma revelação programada extra na rodada 16.
 
 **Efeito do formato presencial:** como o espião ouve a mesa, e os detetives precisam digitar no celular o que é secreto, o time fica um pouco mais lento. Por isso o cronômetro padrão dos detetives é 120 s, e não 90 s. Se o espião vencer acima da meta nos testes, subir para 150 s ou dar +1 crédito por rodada ao time.
 

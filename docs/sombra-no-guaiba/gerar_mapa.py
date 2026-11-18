@@ -44,18 +44,18 @@ L = [
  ("Casa de Cultura Mario Quintana", "Casa de Cultura", "CEN", "comercial", 2, "CON TUR BIKE", -30.0313, -51.2365),
  ("Cais Embarcadero", "Embarcadero", "CEN", "boemio", 2, "B TUR", -30.0298, -51.2400),
  ("Usina do Gasômetro", "Gasômetro", "CEN", "lazer", 3, "TUR BIKE", -30.0345, -51.2422),
- ("Praça da Matriz / Catedral / Theatro São Pedro", "Matriz", "CEN", "comercial", 2, "TUR", -30.0335, -51.2300),
+ ("Praça da Matriz / Catedral / Theatro São Pedro", "Matriz", "CEN", "comercial", 2, "TUR BIKE", -30.0335, -51.2300),
  ("Estação Rodoviária", "Rodoviária", "CEN", "comercial", 4, "EXT:terra T TERM CAM ATM", -30.0222, -51.2188),
- ("Floresta / Av. Cristóvão Colombo", "Floresta", "CEN", "residencial", 2, "", -30.0205, -51.2080),
+ ("Floresta / Av. Cristóvão Colombo", "Floresta", "CEN", "residencial", 2, "BIKE", -30.0205, -51.2080),
  # Cidade Baixa, Menino Deus, Azenha
  ("Cidade Baixa / Rua da República", "Cidade Baixa", "CBX", "boemio", 3, "CON BIKE NOITE+1", -30.0408, -51.2235),
  ("Parque Harmonia", "Harmonia", "CBX", "lazer", 1, "PARQUE ESC", -30.0428, -51.2330),
  ("Orla do Guaíba / Anfiteatro Pôr do Sol", "Pôr do Sol", "CBX", "lazer", 2, "TUR BIKE", -30.0462, -51.2405),
- ("Shopping Praia de Belas", "Praia de Belas", "CBX", "comercial", 3, "CAM ATM LOJ", -30.0500, -51.2290),
+ ("Shopping Praia de Belas", "Praia de Belas", "CBX", "comercial", 3, "CAM ATM LOJ BIKE", -30.0500, -51.2290),
  ("Parque Marinha do Brasil", "Parque Marinha", "CBX", "lazer", 1, "PARQUE ESC BIKE", -30.0580, -51.2330),
- ("Estádio Beira-Rio", "Beira-Rio", "CBX", "lazer", 1, "ESTADIO TUR", -30.0655, -51.2360),
+ ("Estádio Beira-Rio", "Beira-Rio", "CBX", "lazer", 1, "ESTADIO TUR BIKE", -30.0655, -51.2360),
  ("Menino Deus / Av. Getúlio Vargas", "Menino Deus", "CBX", "residencial", 2, "CON BIKE", -30.0560, -51.2205),
- ("Azenha / Av. da Azenha", "Azenha", "CBX", "comercial", 2, "", -30.0590, -51.2125),
+ ("Azenha / Av. da Azenha", "Azenha", "CBX", "comercial", 2, "BIKE", -30.0590, -51.2125),
  ("Palácio da Polícia", "Palácio da Polícia", "CBX", "comercial", 2, "HQ", -30.0478, -51.2140),
  ("Medianeira / Santo Antônio", "Medianeira", "CBX", "residencial", 2, "", -30.0705, -51.2055),
  ("Vila Cruzeiro / Santa Tereza", "Vila Cruzeiro", "CBX", "quente", 2, "ESC", -30.0760, -51.2215),
@@ -70,8 +70,8 @@ L = [
  ("Rua Padre Chagas", "Padre Chagas", "MOI", "nobre", 2, "CON BIKE NOITE+1", -30.0268, -51.2018),
  ("Parcão / Shopping Moinhos", "Parcão", "MOI", "nobre", 2, "PARQUE LOJ ATM BIKE", -30.0232, -51.1955),
  ("Mont'Serrat", "Mont'Serrat", "MOI", "nobre", 1, "", -30.0262, -51.1865),
- ("Bela Vista / Praça da Encol", "Bela Vista", "MOI", "nobre", 1, "CON", -30.0352, -51.1848),
- ("Petrópolis / Av. Protásio Alves", "Petrópolis", "MOI", "residencial", 2, "", -30.0442, -51.1858),
+ ("Bela Vista / Praça da Encol", "Bela Vista", "MOI", "nobre", 1, "CON BIKE", -30.0352, -51.1848),
+ ("Petrópolis / Av. Protásio Alves", "Petrópolis", "MOI", "residencial", 2, "BIKE", -30.0442, -51.1858),
  ("Auxiliadora / Av. Plínio Brasil Milano", "Auxiliadora", "MOI", "nobre", 2, "", -30.0185, -51.1855),
  ("Três Figueiras", "Três Figueiras", "MOI", "nobre", 1, "", -30.0357, -51.1665),
  ("Shopping Iguatemi", "Iguatemi", "MOI", "nobre", 3, "CAM ATM LOJ", -30.0265, -51.1628),
@@ -140,6 +140,21 @@ L = [
  ("Lageado", "Lageado", "EXT", "rural", 0, "ESC", -30.2100, -51.1200),
  ("Lami", "Lami", "EXT", "rural", 1, "", -30.2370, -51.1000),
  ("Reserva Biológica do Lami", "Reserva do Lami", "EXT", "lazer", 0, "CON ESC", -30.2445, -51.0880),
+]
+
+# Locais adicionados para cobrir a cidade inteira
+L += [
+ ("Santana / Av. Ipiranga", "Santana", "CBX", "residencial", 2, "BIKE", -30.0492, -51.2005),
+ ("Coronel Aparício Borges", "Aparício Borges", "LES", "residencial", 2, "", -30.0712, -51.1858),
+ ("Vila Ipiranga", "Vila Ipiranga", "NOR", "residencial", 2, "", -30.0150, -51.1530),
+ ("Santa Maria Goretti", "Maria Goretti", "NOR", "residencial", 2, "", -29.9985, -51.1890),
+ ("Anchieta (distrito industrial)", "Anchieta", "NOR", "industrial", 1, "ESC", -29.9842, -51.1800),
+ ("Parque Santa Fé", "Parque Santa Fé", "NOR", "residencial", 2, "", -29.9765, -51.1185),
+ ("Costa e Silva", "Costa e Silva", "NOR", "residencial", 2, "", -30.0118, -51.1205),
+ ("Pedra Redonda", "Pedra Redonda", "SUL", "nobre", 1, "", -30.1238, -51.2470),
+ ("Jardim Isabel", "Jardim Isabel", "SUL", "residencial", 1, "", -30.1345, -51.2170),
+ ("Campo Novo", "Campo Novo", "SUL", "residencial", 1, "", -30.1525, -51.2140),
+ ("Extrema", "Extrema", "EXT", "rural", 0, "ESC", -30.2230, -51.1440),
 ]
 nodes = []
 for i, (n, s, z, t, a, tags, lat, lon) in enumerate(L, 1):
@@ -219,16 +234,21 @@ edges.sort()
 # Transporte
 LINHAS = [
  ("L1", "Assis Brasil", True, ["Mercado Público", "Rodoviária", "Floresta", "São João", "Passo d'Areia", "Bourbon Wallig", "Cristo Redentor", "Sarandi", "Passo das Pedras", "Rubem Berta"]),
- ("L2", "Protásio Alves", False, ["Mercado Público", "UFRGS", "Bom Fim", "Bela Vista", "Petrópolis", "Três Figueiras", "Chácara das Pedras", "Jardim Carvalho", "Mário Quintana"]),
+ ("L2", "Protásio Alves", False, ["Mercado Público", "UFRGS", "Bom Fim", "Bela Vista", "Petrópolis", "Três Figueiras", "Chácara das Pedras", "Bom Jesus", "Jardim Carvalho", "Mário Quintana"]),
  ("L3", "Bento Gonçalves", True, ["Mercado Público", "Matriz", "Redenção", "Clínicas", "Partenon", "PUCRS", "São José", "Campus do Vale", "Lomba do Pinheiro"]),
- ("L4", "Ipiranga / III Perimetral", False, ["Praia de Belas", "Menino Deus", "Palácio da Polícia", "Bourbon Ipiranga", "Jardim Botânico", "Três Figueiras", "Iguatemi", "Boa Vista", "Passo d'Areia", "Aeroporto"]),
- ("L5", "Zona Sul / Orla", True, ["Mercado Público", "Gasômetro", "Pôr do Sol", "Parque Marinha", "Beira-Rio", "Iberê Camargo", "BarraShopping", "Vila Assunção", "Tristeza", "Ipanema", "Guarujá", "Serraria", "Belém Novo"]),
- ("L6", "Cavalhada / Restinga", False, ["Azenha", "Medianeira", "Teresópolis", "Cavalhada", "Vila Nova", "Hípica", "Restinga"]),
- ("L7", "Farrapos / Arena", False, ["Mercado Público", "Rodoviária", "Navegantes", "Farrapos", "Humaitá", "Arena", "Ceasa"]),
- ("L8", "Independência / Moinhos", False, ["Matriz", "Independência", "Padre Chagas", "Parcão", "Auxiliadora", "São João", "Passo d'Areia"]),
+ ("L4", "Ipiranga", False, ["Praia de Belas", "Menino Deus", "Palácio da Polícia", "Santana", "Bourbon Ipiranga", "PUCRS", "São José", "Jardim Carvalho"]),
+ ("L5", "Zona Sul / Orla", True, ["Mercado Público", "Gasômetro", "Pôr do Sol", "Parque Marinha", "Beira-Rio", "Iberê Camargo", "BarraShopping", "Hipódromo", "Vila Assunção", "Tristeza", "Pedra Redonda", "Ipanema", "Guarujá", "Serraria", "Belém Novo"]),
+ ("L6", "Cavalhada / Restinga", False, ["Mercado Público", "Cidade Baixa", "Azenha", "Medianeira", "Vila Cruzeiro", "Teresópolis", "Nonoai", "Cavalhada", "Vila Nova", "Hípica", "Restinga"]),
+ ("L7", "Farrapos / Arena", False, ["Mercado Público", "Rodoviária", "São Pedro", "Navegantes", "Farrapos", "Humaitá", "Arena", "Anchieta", "Ceasa"]),
+ ("L8", "Independência / Moinhos", False, ["Matriz", "Independência", "Padre Chagas", "Parcão", "Mont'Serrat", "Auxiliadora", "São João", "Maria Goretti", "Anchieta"]),
  ("L9", "Oscar Pereira / Belém Velho", False, ["Azenha", "Glória", "Cascata", "Belém Velho", "Restinga"]),
- ("L10", "Lotação Extremo Sul", False, ["Restinga", "Chapéu do Sol", "Belém Novo", "Lageado", "Lami", "Reserva do Lami"]),
- ("L11", "Nilo Peçanha / Sertório", False, ["Iguatemi", "Boa Vista", "Lindóia", "Aeroporto", "Sarandi", "Porto Seco"]),
+ ("L10", "Lotação Extremo Sul", False, ["Restinga", "Chapéu do Sol", "Belém Novo", "Lageado", "Extrema", "Lami", "Reserva do Lami"]),
+ ("L11", "Nilo Peçanha / Sertório", False, ["Iguatemi", "Boa Vista", "Vila Ipiranga", "Lindóia", "Aeroporto", "Sarandi", "Parque Santa Fé", "Porto Seco"]),
+ ("L12", "III Perimetral", True, ["Aeroporto", "Passo d'Areia", "Boa Vista", "Iguatemi", "Três Figueiras", "Jardim Botânico", "Aparício Borges", "Glória", "Teresópolis", "Cristal", "BarraShopping"]),
+ ("L13", "Ilhas", False, ["Mercado Público", "Rodoviária", "Navegantes", "Ponte do Guaíba", "Ilha dos Marinheiros", "Ilha das Flores", "Ilha da Pintada"]),
+ ("L14", "Transversal Norte", False, ["Passo d'Areia", "Vila Ipiranga", "Jardim Itu", "Costa e Silva", "Mário Quintana"]),
+ ("L15", "Juca Batista", False, ["Cavalhada", "Vila Nova", "Jardim Isabel", "Campo Novo", "Serraria", "Ponta Grossa", "Belém Novo"]),
+ ("L16", "Lomba / Restinga", False, ["Campus do Vale", "Lomba do Pinheiro", "Belém Velho", "Restinga"]),
 ]
 linhas = [{"id": i, "nome": n, "corujao": c, "paradas": [ID[s] for s in st]} for i, n, c, st in LINHAS]
 TREM = [ID[s] for s in ["Mercado Público", "Rodoviária", "São Pedro", "Farrapos", "Aeroporto", "Ceasa"]]
@@ -251,6 +271,10 @@ h = hops(ID["Mercado Público"])
 assert len(h) == len(nodes), "grafo desconexo: " + str([N[i]["curto"] for i in N if i not in h])
 diam = max(max(hops(i).values()) for i in N)
 lens = [math.dist(pts[a - 1], pts[b - 1]) for a, b in edges]
+SEM_ONIBUS_OK = {"Alfândega", "Cais Mauá", "Casa de Cultura", "Embarcadero", "Harmonia", "Morro Santa Tereza", "Morro Santana", "Morro da Polícia", "Morro do Osso", "Higienópolis"}
+com_onibus = {i for l in linhas for i in l["paradas"]}
+sem = [n["curto"] for n in nodes if n["id"] not in com_onibus and n["curto"] not in SEM_ONIBUS_OK]
+assert not sem, "locais sem ônibus: " + ", ".join(sem)
 report = {
     "locais": len(nodes), "ligacoes_a_pe": len(edges),
     "comprimento_medio_m": round(sum(lens) / len(lens)), "maior_ligacao_m": round(max(lens)),
@@ -271,7 +295,7 @@ def fmt(geom):
             c = [(round(x), round(y)) for x, y in ring.coords]
             out.append("M" + " L".join(f"{x} {y}" for x, y in c) + "Z")
     return "".join(out)
-cells = []
+cells = []; cellgeo = {}
 for i, n in enumerate(nodes):
     reg = vor.regions[vor.point_region[i]]
     if -1 in reg or not reg: continue
@@ -280,7 +304,63 @@ for i, n in enumerate(nodes):
     cell = cell.intersection(Point(pts[i]).buffer(rad, 24)).intersection(allland)
     if n["tipo"] == "ilha": cell = cell.intersection(islands)
     elif n["zona"] != "ILH": cell = cell.difference(islands)
+    cellgeo[n["id"]] = cell
     cells.append({"id": n["id"], "d": fmt(cell.simplify(25))})
+# Quarteirões: grade de ruas recortada em cada território urbano
+import random
+rnd = random.Random(7)
+ESP = {"comercial": 150, "boemio": 170, "nobre": 230, "residencial": 200, "universitario": 260, "industrial": 360, "quente": 130}
+ANG = {"CEN": -32, "CBX": -8, "BOM": 14, "MOI": 22, "NOR": 34, "LES": 4, "SUL": -14, "EXT": 0, "ILH": 0}
+from shapely.geometry import MultiLineString
+from shapely import affinity
+ruas = []
+for n in nodes:
+    c = cellgeo.get(n["id"])
+    if c is None or c.is_empty or n["tipo"] not in ESP: continue
+    inner = c.buffer(-70)
+    if inner.is_empty: continue
+    sp = ESP[n["tipo"]]; ang = ANG[n["zona"]] + rnd.uniform(-10, 10)
+    x0, y0, x1, y1 = inner.bounds; cx, cy = (x0 + x1) / 2, (y0 + y1) / 2; R = math.hypot(x1 - x0, y1 - y0) / 2 + sp
+    lines = []
+    k = -R
+    while k <= R:
+        lines.append([(cx - R, cy + k), (cx + R, cy + k)])
+        lines.append([(cx + k, cy - R), (cx + k, cy + R)])
+        k += sp * (1.6 if len(lines) % 4 == 0 and n["tipo"] != "quente" else 1)
+    g = affinity.rotate(MultiLineString(lines), ang, origin=(cx, cy)).intersection(inner)
+    for ln in getattr(g, "geoms", [g]):
+        if ln.geom_type == "LineString" and ln.length > 60:
+            (ax, ay), (bx, by) = ln.coords[0], ln.coords[-1]
+            ruas.append(f"M{round(ax)} {round(ay)}L{round(bx)} {round(by)}")
+# Árvores: parques, morros, orla, ilhas e área rural
+arv = []
+def sprinkle(geom, step, jitter=0.45):
+    if geom.is_empty: return
+    x0, y0, x1, y1 = geom.bounds
+    y = y0
+    while y < y1:
+        x = x0
+        while x < x1:
+            px, py = x + rnd.uniform(-jitter, jitter) * step, y + rnd.uniform(-jitter, jitter) * step
+            if geom.contains(Point(px, py)) and all(math.dist((px, py), pts[i]) > 230 for i in range(len(pts))):
+                arv.extend([round(px), round(py)])
+            x += step
+        y += step * 0.87
+for n in nodes:
+    c = cellgeo.get(n["id"])
+    if c is None: continue
+    p = Point(n["x"], n["y"])
+    if "MORRO" in n["etiquetas"]: sprinkle(c.intersection(p.buffer(950)), 150)
+    elif n["tipo"] == "lazer": sprinkle(c.intersection(p.buffer(700)), 210)
+    elif n["tipo"] == "rural": sprinkle(c.buffer(-80), 420)
+    elif n["tipo"] == "ilha": sprinkle(c.buffer(-60), 260)
+    elif n["tipo"] == "nobre": sprinkle(c.buffer(-90), 520)
+# Rodovias
+RODOVIAS = {
+ "Av. Castelo Branco · Freeway": [(-30.0222, -51.2188), (-30.0160, -51.2165), (-30.0080, -51.2140), (-29.9980, -51.2105), (-29.9860, -51.2075), (-29.9720, -51.2050), (-29.9540, -51.2020)],
+ "BR-290 · Travessia": [(-30.0050, -51.2160), (-30.0045, -51.2235), (-30.0015, -51.2400), (-29.9990, -51.2600), (-29.9960, -51.2900)],
+}
+rodovias = [{"nome": k, "d": "M" + " L".join(f"{round(P(*q)[0])} {round(P(*q)[1])}" for q in v)} for k, v in RODOVIAS.items()]
 arte = {
     "origem": [LAT0, LON0], "kx": KX, "ky": KY,
     "terra": fmt(allland.simplify(20)),
@@ -290,6 +370,9 @@ arte = {
     "vizinhos": [{"nome": n, "x": round(P(la, lo)[0]), "y": round(P(la, lo)[1])} for n, la, lo in
                  [("CANOAS", -29.925, -51.175), ("ALVORADA", -29.990, -51.035), ("VIAMÃO", -30.120, -50.990)]],
     "territorios": cells,
+    "ruas": "".join(ruas),
+    "arvores": arv,
+    "rodovias": rodovias,
     "limites": [round(v) for v in allland.bounds],
 }
 
