@@ -598,57 +598,86 @@ Orçamento inicial: **8 créditos**. Renda: **+2/rodada**, **+2 por interceptaç
 
 ### 9.4 Posições iniciais
 
-Um detetive começa no **Palácio da Polícia**. Os outros escolhem entre **Mercado Público**, **Redenção**, **Aeroporto**, **BarraShoppingSul** e **Iguatemi**, um por local. Depois o espião escolhe o ponto de partida (§6.1).
+Um detetive começa no **Palácio da Polícia**. Os outros escolhem entre **Mercado Público**, **Redenção**, **Aeroporto**, **BarraShopping**, **Iguatemi** e **Passo d'Areia**, um por local. Depois o espião escolhe o ponto de partida (§6.1).
 
 ---
 
 ## 10. Eventos Dinâmicos
 
-### 10.1 Eventos agendados (4 de 8 por partida, agenda pública)
+Todas as cartas estão em `cartas.json`, gerado por `gerar_cartas.py`. Cada efeito é um objeto com `tipo` (um dos tipos listados em `efeitos`, que o motor do jogo implementa) e os locais pelos ids do `mapa.json`. O script falha se um local, zona, linha ou tipo de efeito não existir, e se alguma zona do mapa ficar sem evento. A página `cartas.html` mostra todas as cartas desenhadas.
 
-| Evento | Rodadas | Efeito |
+### 10.1 Eventos agendados (13 cartas; 4 por partida, agenda pública)
+
+Cartas com o mesmo grupo (os dois Gre-Nais) não saem na mesma partida.
+
+| Evento | Horário | O que muda |
 |---|---|---|
-| **Gre-Nal** (Arena *ou* Beira-Rio, sorteado) | 10–12 | Estádio +3 Agl; vizinhos +1; viatura na Cidade Baixa/Menino Deus e na Zona Norte +1 PA |
-| **Show no Anfiteatro Pôr do Sol** | 12–14 | Harmonia e Gasômetro +2 |
-| **Feira do Livro** | 4–12 | Praça da Alfândega +2; Casa de Cultura +1 |
-| **Brique da Redenção** (domingo) | 3–8 | Redenção +2 e vira `LOJ` |
-| **Acampamento Farroupilha** | 8–16 | Harmonia +3; cavalgadas: viatura na Cidade Baixa/Menino Deus +1 PA |
-| **Carnaval no Porto Seco** | 19–23 | Porto Seco +5 (ignora a madrugada); L1 roda até a rodada 24 |
-| **Procissão de Navegantes** | 5–8 | Navegantes, São Pedro e Cais Mauá +2; Av. Farrapos fechada para viaturas |
-| **Maratona de Porto Alegre** | 1–4 | Gasômetro, Pôr do Sol, Parque Marinha e Beira-Rio +1; viaturas proibidas na orla |
+| **Gre-Nal na Arena** | 15h–18h | Clássico em Humaitá. A Zona Norte para. |
+| **Gre-Nal no Beira-Rio** | 15h–18h | Clássico na beira do Guaíba. A orla vira um mar de gente. |
+| **Show no Anfiteatro Pôr do Sol** | 17h–20h | Show gratuito na orla, bem na hora do pôr do sol. |
+| **Feira do Livro** | 09h–18h | Barracas de livros tomam a Praça da Alfândega. |
+| **Brique da Redenção** | 08h–14h | Domingo de Brique: antiguidades, artesanato e chimarrão. |
+| **Acampamento Farroupilha** | 13h–22h | Piquetes, cavalos e churrasco no Parque Harmonia. |
+| **Carnaval no Porto Seco** | 00h–05h | Desfile das escolas de samba vara a madrugada. |
+| **Procissão de Navegantes** | 10h–14h | A procissão fluvial e a romaria tomam a Zona Norte. |
+| **Maratona de Porto Alegre** | 06h–10h | Corredores ocupam a orla desde cedo. |
+| **Festival de Verão em Ipanema** | 17h–22h | Palco na areia e a orla da Zona Sul lotada. |
+| **Grande Prêmio no Hipódromo** | 14h–19h | O páreo mais importante do ano no Cristal. |
+| **Dia de Vestibular** | 12h–17h | Milhares de candidatos nos campi da UFRGS e da PUCRS. |
+| **Parada Livre** | 14h–20h | A parada colorida sai da Redenção e segue pelo Bom Fim. |
 
-### 10.2 Baralho de eventos aleatórios (30 cartas)
+### 10.2 Baralho aleatório (53 cartas, 42 diferentes)
 
-| # | Evento | Duração | Efeito |
-|---|---|---|---|
-| 1–2 | **Engarrafamento na Terceira Perimetral** | ⏳2 | Viatura em Moinhos e na Zona Leste +1 PA |
-| 3 | **Freeway parada** | ⏳2 | Ponte do Guaíba fechada para veículos |
-| 4 | **Greve de ônibus** | ⏳3 | Ônibus fechados; estações Trensurb +1 Agl |
-| 5 | **Pane no Trensurb** | ⏳2 | Trensurb fechado |
-| 6–7 | **Chuva forte** | ⏳2 | Todos −1 Agl; barcos e Helicóptero proibidos; Investigar só lê 4 rodadas (o rastro é lavado) |
-| 8 | **Alagamento no Centro** | ⏳3 | Mercado, Cais Mauá, Embarcadero, Gasômetro e Rodoviária: viatura proibida; Agl −2; Trensurb não para no Mercado |
-| 9 | **Minuano** | ⏳2 | Locais ao ar livre −1 Agl; barcos cancelados |
-| 10 | **Manifestação na Esquina Democrática** | ⏳2 | Mercado Público e Alfândega +3 Agl; viaturas proibidas no Centro |
-| 11 | **Apagão no bairro** (zona sorteada) | ⏳2 | Câmeras e ATMs da zona desligados |
-| 12 | **Queda de sinal** | 1 | Interceptar impossível; transmissões não envelhecem nesta rodada |
-| 13 | **Vazamento na imprensa** | — | Exposição +1; a manchete revela o **tipo** da última pista recolhida |
-| 14 | **Retrato no jornal** | ⏳3 | Retrato Falado grátis em todas as zonas |
-| 15 | **Informante anônimo** | — | Os detetives recebem um *Interrogar* grátis com alcance 3 em qualquer local |
-| 16 | **Disque-Denúncia saturado** | ⏳2 | Denúncias −10% |
-| 17 | **Simpatizante da rede** | — | O espião pode mover 2 vezes nesta rodada (2 bilhetes públicos) |
-| 18 | **Carona de um caminhoneiro** | — | O espião pode viajar de App de graça nesta rodada |
-| 19 | **Envelope extra** | — | Um contato candidato não sorteado recebe uma cópia de uma pista ONDE ainda não recolhida (local público) |
-| 20 | **Pôr do sol no Gasômetro** (só rodadas 11–14) | 1 | Gasômetro +2; se sair fora dessas rodadas, descarta e compra outra |
-| 21 | **Festa na Cidade Baixa** | ⏳2 | Cidade Baixa +2 |
-| 22 | **Feirão no Shopping** (shopping sorteado) | ⏳2 | +2 Agl; disfarce custa R$ 1 ali |
-| 23 | **Operação na Orla** | — | Os detetives podem mover 1 peão de graça até um local da Zona Sul |
-| 24 | **Corte de verbas** | — | Orçamento −3 |
-| 25 | **Reforço da Brigada** | — | Um Bloqueio extra gratuito por 3 rodadas |
-| 26 | **Câmera quebrada** | ⏳3 | Um local `CAM` sorteado fica sem câmera |
-| 27 | **Rádio-amador xereta** | — | A transmissão mais antiga da fila ganha +25% de chance de decodificação |
-| 28 | **Barqueiro clandestino** | ⏳2 | Barcos operam fora do horário para o espião (R$ 3) |
-| 29 | **Blitz da EPTC** | ⏳2 | O detetive mais próximo do Aeroporto ganha um Bloqueio grátis; App custa +R$ 1 |
-| 30 | **Calmaria** | — | Nada acontece. Um alívio... |
+Uma carta por rodada a partir da rodada 2. Cartas com horário válido que saem fora dele são descartadas e substituídas.
+
+| Categoria | Evento | Cópias | Duração | O que muda |
+|---|---|---|---|---|
+| Trânsito | **Engarrafamento na III Perimetral** | 2 | 2 rodadas | Tudo parado entre o Aeroporto e o Cristal. |
+| Trânsito | **Freeway parada** | 1 | 2 rodadas | Acidente na saída da cidade. A ponte trava. |
+| Trânsito | **Vão móvel da ponte içado** | 1 | 1 rodada | A ponte do Guaíba levanta para um navio passar. |
+| Trânsito | **Greve de ônibus** | 1 | 3 rodadas | Rodoviários cruzam os braços. Estações do trem lotam. |
+| Trânsito | **Pane no Trensurb** | 1 | 2 rodadas | Trens parados entre o Mercado e o Aeroporto. |
+| Trânsito | **Obras na Av. Bento Gonçalves** | 1 | 2 rodadas | Desvio na Bento. A linha L3 não passa do Partenon. |
+| Trânsito | **Acidente na Av. Assis Brasil** | 1 | 2 rodadas | Corredor de ônibus interditado na Zona Norte. |
+| Trânsito | **Blitz da EPTC** | 2 | 2 rodadas | Fiscalização em todas as saídas. Motoristas de app desconfiados. |
+| Clima | **Chuva forte** | 2 | 2 rodadas | Temporal sobre a cidade. As ruas esvaziam. |
+| Clima | **Alagamento no Centro** | 1 | 3 rodadas | O Guaíba sobe e invade o Centro Histórico. |
+| Clima | **Cheia nas Ilhas** | 1 | 3 rodadas | As ilhas do Delta ficam isoladas pela água. |
+| Clima | **Estrada alagada no Extremo Sul** | 1 | 2 rodadas | A estrada do Lami some debaixo d'água. |
+| Clima | **Minuano** | 2 | 2 rodadas | Vento gelado do sul. Ninguém fica na rua. |
+| Clima | **Calorão de 40 graus** | 2 | 2 rodadas | Todo mundo foge para a orla e para os shoppings. |
+| Clima | **Neblina no Guaíba** | 1 | 2 rodadas | Não se vê a outra margem. Voos atrasados. |
+| Cidade | **Manifestação na Esquina Democrática** | 2 | 2 rodadas | Protesto fecha o Centro. |
+| Cidade | **Apagão no bairro** | 2 | 2 rodadas | Uma zona inteira fica no escuro. |
+| Cidade | **Festa na Cidade Baixa** | 2 | 2 rodadas | A República está fechada de tanta gente. |
+| Cidade | **Feirão no shopping** | 2 | 2 rodadas | Promoção relâmpago num shopping sorteado. |
+| Cidade | **Show no Araújo Vianna** | 1 | 2 rodadas | Noite de show dentro da Redenção. |
+| Cidade | **Jogo da dupla na TV** | 1 | 1 rodada | A cidade inteira para na frente da televisão. |
+| Cidade | **Feira Ecológica do Bom Fim** | 1 | 2 rodadas | Sábado de manhã: orgânicos na José Bonifácio. |
+| Cidade | **Madrugada de carga na Ceasa** | 1 | 2 rodadas | Caminhões chegam do interior. A Ceasa ferve. |
+| Cidade | **Terminal da Restinga lotado** | 1 | 1 rodada | Hora de ir trabalhar: filas no terminal. |
+| Cidade | **Pôr do sol no Gasômetro** | 1 | 1 rodada | Todo mundo para olhar o sol cair no Guaíba. |
+| Cidade | **Operação policial em zona quente** | 1 | 2 rodadas | A Brigada ocupa uma zona quente sorteada. |
+| Imprensa | **Vazamento na imprensa** | 1 | imediato | Um jornal publica que há um espião na cidade. |
+| Imprensa | **Retrato no jornal** | 1 | 3 rodadas | O retrato falado sai na capa. |
+| Polícia | **Informante anônimo** | 2 | imediato | Uma ligação para o disque-denúncia. |
+| Polícia | **Disque-denúncia saturado** | 1 | 2 rodadas | Trote atrás de trote. As denúncias se perdem. |
+| Polícia | **Corte de verbas** | 1 | imediato | O governo congela o orçamento da força-tarefa. |
+| Polícia | **Reforço da Brigada Militar** | 1 | 3 rodadas | Viaturas extras nas ruas. |
+| Polícia | **Rádio-amador xereta** | 1 | imediato | Um radioamador grava parte de uma transmissão. |
+| Polícia | **Queda de sinal** | 1 | 1 rodada | Torres de celular fora do ar. |
+| Polícia | **Câmera quebrada** | 1 | 3 rodadas | Vandalismo derruba uma câmera sorteada. |
+| Polícia | **Operação na orla** | 1 | imediato | A polícia ganha apoio para patrulhar a Zona Sul. |
+| A rede (a favor do espião) | **Simpatizante da rede** | 1 | imediato | Alguém oferece carona sem fazer perguntas. |
+| A rede (a favor do espião) | **Carona de caminhoneiro** | 1 | imediato | Um frete vai para onde o espião precisa. |
+| A rede (a favor do espião) | **Barqueiro clandestino** | 1 | 2 rodadas | Um pescador das Ilhas leva qualquer um, a qualquer hora. |
+| A rede (a favor do espião) | **Envelope extra** | 1 | imediato | A rede deixa uma cópia de uma pista em outro lugar. |
+| A rede (a favor do espião) | **Remessa da rede** | 1 | imediato | Um envelope com dinheiro aparece no bolso do casaco. |
+| Neutro | **Calmaria** | 2 | imediato | Nada acontece. Um alívio... |
+
+### 10.3 Plano secreto e pistas
+
+`gerar_pistas.py` sorteia o ponto de extração, a janela, os 8 contatos (em pelo menos 5 zonas) e os 8 envelopes, seguindo as regras do §8.2. `python3 gerar_pistas.py --testar` confere as regras em 2000 sorteios.
 
 ---
 
