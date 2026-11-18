@@ -8,7 +8,7 @@
 | **Gênero** | Dedução / movimento oculto, assimétrico, 1 contra muitos |
 | **Jogadores** | 3–6 (1 Espião × 2–5 jogadores no time de Detetives); modo solo contra IA |
 | **Duração** | 60–90 min (24 rodadas = 24 horas na cidade) |
-| **Plataforma** | Web/mobile, servidor autoritativo (o cliente dos detetives nunca recebe a posição do espião) |
+| **Plataforma** | Jogo presencial: **mapa na tela do PC/TV para todos** + **cada jogador controla pelo próprio celular** (entra por QR code, sem instalar nada). Servidor autoritativo: nenhum cliente recebe informação que seu dono não pode ver |
 | **Pilares** | 1. Informação é munição. 2. A cidade é um personagem vivo. 3. Toda ação deixa rastro. 4. Tensão crescente até a "Hora H". |
 
 ---
@@ -45,7 +45,7 @@ O espião **não sabe** o plano no início. Os detetives **também não**. Os do
 - **Medidores de Aglomeração** por local (0–5, públicos, atualizados por eventos e horário).
 - **8 Pontos de Contato** (envelopes) sorteados entre 12 candidatos — as **localizações** são públicas; os **conteúdos** são secretos.
 - **Fila de Interceptação**: transmissões cifradas geradas quando o espião coleta pistas.
-- **Dossiê da Força-Tarefa**: quadro compartilhado de dedução dos detetives (6 locais × 4 janelas).
+- **Dossiê da Força-Tarefa**: quadro de dedução dos detetives (6 locais × 4 janelas), sincronizado **só nos celulares do time**, nunca na TV.
 - **Caderno do Espião**: quadro privado de dedução do espião.
 - **Baralho de Eventos** (30 cartas aleatórias + 8 eventos agendados).
 - **Orçamento** dos detetives (créditos) e **Dinheiro** do espião (R$).
@@ -224,7 +224,7 @@ Lista completa no §10.
 
 - Cada detetive tem **4 PA** por rodada. PA não usados se perdem.
 - Turno **compartilhado e simultâneo**: os jogadores agem na ordem que quiserem, as ações resolvem na hora e o resultado aparece para o time todo. Cronômetro padrão de **120 s** (configurável).
-- O chat/voz do time é livre. O espião não ouve.
+- Conversa em voz alta é permitida, mas **o espião está na sala e ouve tudo**. Informação secreta do time (conteúdo de pistas, grampos) circula pelo **chat e pelo Dossiê no celular** (ver §14).
 
 ### 5.5 Fase 4 — Fechamento
 
@@ -585,6 +585,8 @@ Um detetive começa no **Palácio da Polícia (34)**. Os outros escolhem entre *
 | 5 | 4 | — |
 | 6 | 5 (+ Investigadora de Rua) | Espião +R$ 4 e +1 Mensagem Falsa |
 
+**Efeito do formato presencial:** como o espião ouve a mesa, e os detetives precisam digitar no celular o que é secreto, o time fica um pouco mais lento. Por isso o cronômetro padrão dos detetives é 120 s, e não 90 s. Se o espião vencer acima da meta nos testes, subir para 150 s ou dar +1 crédito por rodada ao time.
+
 **Metas de telemetria:** taxa de vitória do espião entre 42% e 50%. Cerca de 70% das partidas devem chegar à janela C ou D. Uma Acusação de Plano correta deve encerrar no máximo 15% das partidas; se passar disso, subir o custo para 4 PA ou exigir 2 detetives no Palácio.
 
 **Por que funciona:**
@@ -597,16 +599,111 @@ Um detetive começa no **Palácio da Polícia (34)**. Os outros escolhem entre *
 
 ---
 
-## 14. Arquitetura digital (resumo)
+## 14. Formato de jogo: tela compartilhada + celulares
 
-- **Servidor autoritativo**: o estado completo (posição, rota, envelopes, plano) existe só no servidor. Cada cliente recebe uma **projeção** do seu lado. O cliente dos detetives nunca recebe a posição do espião, nem cifrada.
-- **RNG no servidor** com semente gravada por partida, para replay e auditoria.
+Todos jogam **na mesma sala**. O PC (de preferência ligado a uma TV) mostra o **tabuleiro público**. Cada jogador usa o **próprio celular como controle e tela privada**.
+
+### 14.1 A regra de ouro: a TV é pública, inclusive para o espião
+
+O espião está na sala e olha a mesma TV. Por isso, cada informação do jogo pertence a uma de três camadas:
+
+| Camada | Onde aparece | Conteúdo |
+|---|---|---|
+| **Pública** | TV + todos os celulares | Mapa, peões dos detetives, Aglomeração, relógio, eventos e agenda, Painel de Bilhetes, Trilha de Exposição, revelações, denúncias, alertas de câmera, Bloqueios e Cones, PA restantes, **existência** das transmissões na fila (nº, rodada, tipo, validade, "decodificada ✔"/"expirada"), resultados de *Investigar*, *Interrogar*, *Drone*, *Abordar* e *Quebra de Sigilo* |
+| **Secreta do time** | só nos celulares dos detetives | **Conteúdo** de envelopes periciados e de transmissões decodificadas, **zona de origem** decodificada, **onde estão os Grampos**, itens no estoque e marcações do Dossiê, planejamento (rotas-fantasma), chat do time, Acusação em preparo |
+| **Secreta do espião** | só no celular do espião | Posição e rota, pistas recolhidas, Caderno, dinheiro, credenciais, Mensagens Falsas plantadas, avisos privados ("Contato em X caiu") |
+
+*Critério:* uma informação pode ir para a TV **se o espião já a conhece** (por exemplo: "o espião passou aqui na rodada 7", que é a própria rota dele) ou se ela é física e visível na cidade (um Bloqueio). Uma informação que **daria vantagem ao espião** (o conteúdo de um envelope que ele ainda não pegou, a localização de um Grampo) **nunca** vai para a TV.
+
+> ⚠️ Isso vale também para a fala. **O espião ouve tudo o que é dito em voz alta na mesa**, como em todo jogo clássico de movimento oculto. Por isso, conteúdos secretos devem circular pelo celular (Dossiê e chat do time), e não em voz alta. Falar em voz alta vira arma: os detetives podem **blefar de propósito** ("vamos fechar a Zona Sul!") para manipular o espião.
+
+### 14.2 Fluxo da sessão
+
+1. **Abrir a sala**: o PC acessa o site e clica em *Criar mesa*. A TV mostra o **QR code** e um **código de 4 letras**.
+2. **Entrar**: cada jogador lê o QR com o celular, escolhe um apelido e aparece na TV. Não é preciso instalar nada nem criar conta.
+3. **Escolher lados**: o anfitrião (no PC ou no primeiro celular) define quem é o espião (sorteio ou voluntário). Os detetives escolhem papéis no celular e a TV mostra as escolhas.
+4. **Preparação secreta**: o espião escolhe Perfil e posição inicial **no celular**. A TV mostra só *"O espião está se escondendo…"*.
+5. **Partida**: a TV conduz as fases e cada celular mostra apenas o que aquele jogador pode fazer no momento.
+6. **Fim**: a TV exibe o **replay** com a rota secreta do espião animada sobre o mapa, cruzada com a linha do tempo dos detetives. É o grande momento coletivo do pós-jogo.
+
+### 14.3 O que cada tela mostra em cada fase
+
+| Fase | TV (pública) | Celular do espião | Celulares dos detetives |
+|---|---|---|---|
+| Relógio / Evento | Animação da hora, carta de evento em destaque, mudança de Agl no mapa | Resumo do evento e do impacto na rota | Resumo do evento |
+| **Turno do espião** | *"O espião está se movendo…"* (o tabuleiro fica escurecido); o cronômetro corre. Ao terminar, o **bilhete** cai no Painel com som | Mapa privado: escolhe transporte → os destinos possíveis acendem → confirma → escolhe a ação. Mostra a **chance de Denúncia** de cada destino | Dossiê e chat do time liberados para discutir em silêncio |
+| Testes de risco | Denúncia ou câmera: alerta grande + zona ou local piscando | "Você foi visto!" / "Passou despercebido" | Notificação |
+| **Turno dos detetives** | Peões se movem em tempo real, PA de cada detetive, cronômetro, resultados públicos (rastros, sim/não, abordagens) | Assiste (pode mexer no Caderno) | Menu de ações do próprio detetive + Dossiê + chat; rotas-fantasma visíveis só para o time |
+| Fechamento | Revelação programada com animação de "foto de câmera", transmissões expirando | — | Resumo da rodada |
+| Hora H | Sirene, posição revelada, contagem regressiva do último turno | "Aguente firme!" | Tela de perseguição |
+
+### 14.4 Controles no celular
+
+O celular é usado **em pé, com uma mão**, botões grandes (mínimo 48 px) e no máximo 2 toques para a ação mais comum.
+
+**Detetive**, com 4 abas:
+
+- **Ações**: card do detetive (papel, PA ●●●○). Embaixo, só as ações **possíveis agora**, com custo em PA. Ao tocar em *Mover*, abre um **mini-mapa** centrado no peão, com destinos alcançáveis destacados e uma lista com os nomes ("Redenção · 1 PA a pé · 2 PA viatura"). Ações destrutivas (Acusação, Confiscar) pedem confirmação.
+- **Dossiê**: grade 6 locais × 4 janelas, onde cada um marca ✗/?/✓ e as marcações aparecem para o time todo. Lista de pistas obtidas, com origem (periciada/interceptada) e alerta "⚠️ autenticidade duvidosa".
+- **Equipe**: chat do time com atalhos ("Vou para 13", "Intercepta a #4!", "Cuidado: possível falsa"). Ao tocar e segurar um local no mini-mapa, um **ping** aparece nos celulares do time.
+- **Itens**: loja (Orçamento do time) e estoque.
+
+**Espião**, com 4 abas: **Mover** (transporte → destino → ação), **Caderno** (o mesmo quadro de dedução, só dele), **Inventário** (R$, credenciais, disfarce ativo) e **Contatos** (pontos de contato e status conhecido).
+
+**Modo discreto** (sempre ativo no celular do espião):
+
+- Fundo escuro, sem cores chamativas e brilho reduzido: o reflexo da tela não denuncia nada.
+- A posição atual **só aparece enquanto o dedo segura** o botão "👁 Onde estou?" e some ao soltar.
+- **Sem vibração nem som** em avisos privados, porque uma vibração na hora errada entrega que algo aconteceu.
+- Ao bloquear a tela ou trocar de app, volta para uma tela neutra.
+- Recomendação de mesa: o espião senta **de frente para a TV e de costas para a parede**, longe dos detetives.
+
+### 14.5 Layout da TV (1920 × 1080, legível a 3 m)
+
+```
+┌──────────────────────────────────────────────────────────────┬────────────────┐
+│                                                              │  🕐 16h · R11  │
+│                                                              │  EVENTO ATUAL  │
+│                      MAPA DE PORTO ALEGRE                    │  [Gre-Nal ⏳2] │
+│         (zonas coloridas + padrões, Agl por local,           │  AGENDA        │
+│          peões dos detetives, bloqueios, contatos)           │  FILA DE       │
+│                                                              │  INTERCEPTAÇÃO │
+│                                                              │  #3 ✔ #4 ⏳2   │
+├──────────────────────────────────────────────────────────────┴────────────────┤
+│ EXPOSIÇÃO ▓▓▓░░░░░░░ 3   │ DETETIVES: Delegada ●●○○ Perito ●○○○ Analista …    │
+│ BILHETES  🚶 🚌 🚆 🕳️ 🚶 🚗 📍 🚶 ⛴️ 🚶 🚶 ▢ ▢ 📍 ▢ ▢ ▢ ▢ 📍 ▢ ▢ ▢ ▢ 📍 ▢          │
+└───────────────────────────────────────────────────────────────────────────────┘
+```
+
+- Texto com no mínimo 28 px. Nomes de locais abreviados no mapa ("Mercado", "Redenção") e completos ao destacar.
+- Zonas com **cor + padrão** (acessível para daltônicos); Agl como "gotas" de 0 a 5 ao lado de cada local.
+- Animações curtas (≤ 1,5 s), que não seguram o jogo.
+- A TV **não aceita comandos de jogo**; serve só para exibir, pausar e configurar. Assim ninguém precisa encostar no PC durante a partida.
+
+### 14.6 Regras de mesa (presencial)
+
+- Ninguém olha o celular de outro jogador. O jogo ajuda: o espião tem o modo discreto, e as telas dos detetives não mostram nada que o time todo já não possa ver.
+- O que é falado em voz alta é público. O que é digitado no time é secreto.
+- Cronômetros são exibidos na TV. Se acabarem, os PA restantes são perdidos (detetives) ou o espião fica onde está; se não puder ficar, anda a pé para o destino válido de menor risco.
+- Variante **"sala de guerra"**: o espião joga de outro cômodo ou remotamente. O sistema é o mesmo; os detetives podem conversar livremente em voz alta.
+
+### 14.7 Arquitetura técnica
+
+Reaproveita a base do repositório (React + Vite, função Node na Vercel, Supabase), com o mesmo modelo seguro já usado no Patifaria:
+
+- **Servidor autoritativo**: o estado completo (rota, envelopes, plano, grampos) existe só no servidor. Toda ação é validada ali; o motor de regras não é enviado ao navegador.
+- **Projeções por token**: cada cliente se autentica com um token aleatório (o banco guarda só o hash) e recebe uma **projeção** do estado:
+  - `view(tv)`: só a camada pública;
+  - `view(detetive)`: pública + secreta do time;
+  - `view(espiao)`: pública + secreta do espião.
+
+  A TV é um cliente "espectador", sem token de jogador. Nenhuma projeção carrega dado de outra camada, nem cifrado ou escondido por CSS.
+- **Sincronização**: polling da projeção a cada ~1 s (como no Patifaria), compare-and-swap por revisão e IDs de ação para deduplicação. A TV interpola as animações entre revisões. Reconectar é só reabrir o link no celular: a sessão fica salva no aparelho.
+- **Tempo**: cronômetros com prazo absoluto definido pelo servidor.
+- **RNG no servidor**, com semente gravada por partida para replay e auditoria.
 - **Máquina de estados**: `LOBBY → SETUP → [RELOGIO → EVENTO → ESPIAO → DETETIVES → FECHAMENTO]×24 → FIM`.
-- **Log de ações** imutável. No fim da partida, o **replay** anima a rota secreta do espião sobre o mapa, junto com a linha do tempo das ações dos detetives. É o momento "uau" do pós-jogo.
-- **Interface**:
-  - *Espião*: mapa com alcance de cada modo de transporte destacado, prévia da chance de Denúncia ao passar o mouse sobre um local, Caderno de dedução privado.
-  - *Detetives*: Painel de Bilhetes, Fila de Interceptação, Dossiê compartilhado (grade 6×4 com marcações), "mapa de calor" das possíveis posições, calculado pelo cliente a partir das informações públicas.
-- **IA**: o espião-IA usa busca sobre o conjunto de posições possíveis do ponto de vista dos detetives, maximizando entropia. A IA dos detetives mantém esse conjunto e escolhe ações que o reduzem.
+- **Log de ações** imutável, usado pelo replay final.
+- **IA**: preenche peões de detetive sem dono (3 jogadores) e permite o modo solo. O espião-IA maximiza a incerteza dos detetives; a IA dos detetives escolhe ações que reduzem o conjunto de posições possíveis.
 - **Dados**: o mapa está em [`mapa.json`](./mapa.json) (locais, etiquetas, ruas, linhas, horários).
 
 ---
