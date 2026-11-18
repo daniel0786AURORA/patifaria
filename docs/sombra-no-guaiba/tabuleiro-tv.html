@@ -1,0 +1,483 @@
+<title>Tabuleiro Sombra no Guaíba</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: uma "TV" 16:9 em escala real (1920×1080) reduzida para caber na página; abaixo, legenda de movimento e os dois celulares. Visual único noturno, de sala de controle, escolhido de propósito. */
+:root{
+  --night:#0d1519; --water:#0f2a36; --water-hi:#163c4c; --land:#1c2622; --land-edge:#2b3a33;
+  --road:#4a5a52; --paper:#ece6d6; --muted:#9aa49c; --panel:#121c20; --line:#26343a;
+  --amber:#f0a541; --hot:#e5533d; --cop:#5fa8ff; --contact:#e2c46d; --water-route:#56c2e8; --rail:#d9dde2;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+html,body{background:var(--night);color:var(--paper)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+.wrap{max-width:1400px;margin:0 auto;display:grid;gap:28px}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;letter-spacing:.01em;text-wrap:balance;margin:0}
+h1{font-size:clamp(30px,5vw,48px);line-height:1}
+h1 span{color:var(--amber)}
+h2{font-size:26px;margin-bottom:10px}
+h3{font-size:19px;color:var(--amber);text-transform:uppercase;letter-spacing:.06em}
+.lede{color:var(--muted);max-width:70ch;margin:8px 0 0}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+/* controles da prévia */
+.controls{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+.group{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.group>.eyebrow{margin-right:4px}
+.chip{font:600 14px var(--f-body);color:var(--paper);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 12px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.chip[aria-pressed="false"]{color:var(--muted);opacity:.65}
+.chip:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.chip i{width:14px;height:4px;border-radius:2px;display:inline-block}
+
+/* TV */
+.tv-frame{background:#05090b;border-radius:14px;padding:10px;box-shadow:0 20px 60px #0008;border:1px solid #1d272b}
+.tv-box{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:6px;max-width:100%}
+.tv{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;display:grid;grid-template-columns:1480px 440px;grid-template-rows:910px 170px;background:var(--panel);font-family:var(--f-body)}
+.tv-map{grid-column:1;grid-row:1;background:var(--water);position:relative}
+.tv-map svg{width:100%;height:100%;display:block}
+.tv-side{grid-column:2;grid-row:1 / span 2;border-left:2px solid var(--line);padding:22px 24px;display:flex;flex-direction:column;gap:16px;overflow:hidden}
+.tv-bottom{grid-column:1;grid-row:2;border-top:2px solid var(--line);padding:16px 26px;display:grid;grid-template-columns:400px 1fr;gap:28px;align-items:start}
+.clock{display:flex;align-items:baseline;gap:14px}
+.clock b{font:700 76px/1 var(--f-display);color:var(--paper)}
+.clock span{font:600 28px var(--f-display);color:var(--muted)}
+.windows{display:flex;gap:6px;margin-top:6px}
+.windows div{flex:1;font:600 17px var(--f-display);text-align:center;border:1px solid var(--line);border-radius:6px;padding:3px 0;color:var(--muted)}
+.windows div.next{border-color:var(--amber);color:var(--amber)}
+.card{background:#0e171a;border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.tv .lbl{font:500 15px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.event-title{font:700 30px/1.05 var(--f-display);color:var(--amber)}
+.event-body{font-size:17px;color:var(--paper);margin-top:6px;line-height:1.35}
+.agenda{display:grid;gap:4px;font-size:18px}
+.agenda div{display:flex;justify-content:space-between;color:var(--muted)}
+.agenda div b{color:var(--paper);font-weight:500}
+.queue{display:grid;gap:6px}
+.q{display:grid;grid-template-columns:40px 1fr auto;gap:10px;align-items:center;font-size:16px}
+.q b{font:700 22px var(--f-display)}
+.q em{font-style:normal;font:500 15px var(--f-mono);padding:2px 8px;border-radius:4px}
+.ok{background:#1f3a2a;color:#8fd9a8}.exp{background:#2a2a2a;color:#888}.live{background:#3b2a12;color:var(--amber)}
+.inspect h4{font:700 26px/1.05 var(--f-display);margin:0}
+.inspect .meta{color:var(--muted);font-size:15px;margin:2px 0 6px}
+.inspect .tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.inspect .tags span{font:500 14px var(--f-mono);border:1px solid var(--line);border-radius:4px;padding:1px 7px;color:var(--paper)}
+.reach{display:grid;gap:4px;font-size:15px;line-height:1.28;margin:0}
+.reach div{display:grid;grid-template-columns:80px 1fr;gap:8px}
+.reach dt{font:700 16px var(--f-display);text-transform:uppercase;letter-spacing:.04em}
+.reach dd{margin:0;color:var(--paper)}
+.expo{display:grid;gap:8px}
+.expo-bar{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.expo-bar i{height:22px;border-radius:3px;background:#24302f}
+.expo-bar i.on{background:var(--amber)}
+.expo-bar i.hi{outline:1px dashed #e5533d88}
+.cops{display:flex;gap:8px;margin-top:4px}
+.cop{display:flex;align-items:center;gap:6px;font-size:16px}
+.cop b{width:26px;height:26px;border-radius:50%;background:var(--cop);color:#081320;font:700 16px/26px var(--f-display);text-align:center}
+.pa{letter-spacing:2px;color:var(--cop)}
+.tickets{display:grid;grid-template-columns:repeat(24,1fr);gap:4px}
+.tk{height:56px;border-radius:5px;border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;font:700 17px var(--f-display);position:relative;background:#0e171a}
+.tk small{font:500 11px var(--f-mono);color:var(--muted);position:absolute;top:2px}
+.tk.rev{border-color:var(--hot)}
+.tk.rev::after{content:"";position:absolute;inset:auto 4px 3px;height:3px;border-radius:2px;background:var(--hot)}
+.tk.win{background:repeating-linear-gradient(135deg,#0e171a 0 6px,#1a1710 6px 12px)}
+.tk.now{outline:2px solid var(--amber)}
+.tk span{margin-top:8px}
+.tk-legend{display:flex;gap:18px;font-size:14px;color:var(--muted);margin-top:6px}
+.tk-legend i{display:inline-block;width:14px;height:4px;vertical-align:middle;margin-right:6px}
+
+/* svg */
+.lab{font:600 15px var(--f-display);fill:var(--paper);paint-order:stroke;stroke:var(--land);stroke-width:4px;stroke-linejoin:round;pointer-events:none}
+.lab.water{stroke:var(--water)}
+.node{cursor:pointer}
+.node:focus-visible circle.core{stroke:var(--amber);stroke-width:4}
+.dim{opacity:.22}
+.zone-name{font:700 22px var(--f-display);letter-spacing:.18em;text-transform:uppercase;pointer-events:none;opacity:.5}
+.geo{font:600 italic 34px var(--f-display);letter-spacing:.35em;fill:#2f6276;pointer-events:none}
+.geo.s{font-size:20px;letter-spacing:.25em}
+
+/* legenda */
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}
+.legend section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;min-width:0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+.tbl{overflow-x:auto}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:500 12px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+td b{font-family:var(--f-display);font-size:17px}
+.sym{display:grid;gap:10px}
+.sym div{display:grid;grid-template-columns:40px 1fr;gap:10px;align-items:center}
+.lines{display:grid;gap:8px;font-size:14px}
+.lines>div{display:grid;grid-template-columns:56px 1fr;gap:10px}
+.lines b{font-family:var(--f-display);font-size:18px;border-left:5px solid;padding-left:6px}
+.lines span{color:var(--muted)}
+
+/* celulares */
+.phones{display:flex;flex-wrap:wrap;gap:28px;justify-content:center}
+.phone-col{display:grid;gap:10px;justify-items:center;max-width:320px}
+.phone-col p{color:var(--muted);font-size:14px;margin:0;text-align:center}
+.phone{width:300px;max-width:100%;height:610px;border-radius:38px;border:10px solid #05090b;background:#101a1e;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 14px 40px #0008}
+.ph-top{padding:18px 18px 10px;border-bottom:1px solid var(--line)}
+.ph-top .who{display:flex;justify-content:space-between;align-items:center}
+.ph-top b{font:700 22px var(--f-display)}
+.ph-body{padding:12px 14px;display:grid;gap:8px;align-content:start;flex:1;overflow:hidden}
+.act{display:flex;justify-content:space-between;align-items:center;background:#16232a;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:15px;min-height:48px}
+.act small{color:var(--muted);display:block;font-size:12px}
+.act .cost{font:700 18px var(--f-display);color:var(--cop)}
+.act.sel{border-color:var(--cop);background:#132638}
+.dest{display:grid;gap:6px;padding-left:10px;border-left:2px solid var(--cop)}
+.dest div{display:flex;justify-content:space-between;font-size:14px}
+.ph-tabs{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line)}
+.ph-tabs span{text-align:center;padding:10px 0 14px;font:600 13px var(--f-body);color:var(--muted)}
+.ph-tabs span.on{color:var(--paper);box-shadow:inset 0 2px 0 var(--cop)}
+.spy{background:#07090a}
+.spy .ph-top{border-color:#15191b}
+.spy .act{background:#0d1112;border-color:#1a2022;color:#b9b3a4}
+.spy .act.sel{border-color:#5b4a2a;background:#14110c}
+.risk{font:700 16px var(--f-display)}
+.eye{margin:4px 0;border:1px dashed #3a3324;border-radius:12px;padding:14px;text-align:center;color:#8d8471;font-size:14px}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.modes span{text-align:center;font:600 13px var(--f-body);border:1px solid #1a2022;border-radius:8px;padding:7px 0;color:#8d8471}
+.modes span.on{border-color:#5b4a2a;color:#d8c9a3}
+.modes small{display:block;font:500 11px var(--f-mono);opacity:.8}
+.spy .ph-tabs{border-color:#15191b}
+.spy .ph-tabs span.on{box-shadow:inset 0 2px 0 #5b4a2a;color:#d8c9a3}
+.note{color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion:no-preference){.pulse{animation:pulse 2.4s ease-in-out infinite}@keyframes pulse{50%{opacity:.35}}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Prévia da tela da TV · Rodada 11 de 24</div>
+    <h1>Sombra no <span>Guaíba</span></h1>
+    <p class="lede">O tabuleiro como aparece na TV durante uma partida. Clique em qualquer local para ver para onde dá para ir a partir dele com cada transporte. Na partida de verdade a TV não recebe cliques: quem joga usa o celular.</p>
+  </header>
+
+  <div class="controls" aria-label="Controles da prévia">
+    <div class="group" id="layers"><span class="eyebrow">Camadas</span></div>
+    <div class="group" id="modes"><span class="eyebrow">Movimento</span></div>
+  </div>
+
+  <div class="tv-frame">
+    <div class="tv-box" id="tvbox">
+      <div class="tv" id="tv">
+        <div class="tv-map"><svg id="map" viewBox="-250 -25 1600 973" role="img" aria-label="Mapa esquemático de Porto Alegre com 47 locais"></svg></div>
+
+        <aside class="tv-side">
+          <div>
+            <div class="clock"><b>16h</b><span>Rodada 11 · tarde</span></div>
+            <div class="windows" aria-label="Janelas possíveis de extração">
+              <div>A 14–15h</div><div class="next">B 18–19h</div><div>C 22–23h</div><div>D 02–03h</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="lbl">Evento agendado · rodadas 10–12</div>
+            <div class="event-title">Gre-Nal na Arena</div>
+            <div class="event-body">Arena +3 de lotação, vizinhos +1. Viatura nas Zonas Norte e Sul custa +1 PA.</div>
+            <div class="lbl" style="margin-top:12px">Carta da rodada · 2 rodadas</div>
+            <div class="event-body"><b style="font-family:var(--f-display);font-size:22px">Engarrafamento na Terceira Perimetral</b><br>Viatura em Moinhos/Petrópolis e Zona Leste +1 PA.</div>
+          </div>
+          <div>
+            <div class="lbl">Fila de interceptação</div>
+            <div class="queue">
+              <div class="q"><b>#1</b><span>QUANDO · rodada 4</span><em class="exp">expirou</em></div>
+              <div class="q"><b>#2</b><span>ONDE · rodada 6</span><em class="ok">decifrada</em></div>
+              <div class="q"><b>#3</b><span>ONDE · rodada 9</span><em class="ok">decifrada</em></div>
+              <div class="q"><b>#4</b><span>CREDENCIAL · rodada 10</span><em class="live">3 rodadas</em></div>
+            </div>
+          </div>
+          <div class="card inspect" id="inspect" aria-live="polite"></div>
+        </aside>
+
+        <div class="tv-bottom">
+          <div class="expo">
+            <div><div class="lbl">Exposição do espião</div>
+              <div class="expo-bar" id="expo"></div></div>
+            <div><div class="lbl">Detetives · PA</div>
+              <div class="cops">
+                <div class="cop"><b>D</b><span class="pa">●●○○</span></div>
+                <div class="cop"><b>P</b><span class="pa">●○○○</span></div>
+                <div class="cop"><b>A</b><span class="pa">●●●○</span></div>
+                <div class="cop"><b>T</b><span class="pa">○○○○</span></div>
+              </div></div>
+          </div>
+          <div>
+            <div class="lbl">Bilhetes do espião · como ele se moveu em cada rodada</div>
+            <div class="tickets" id="tickets"></div>
+            <div class="tk-legend"><span><i style="background:var(--hot)"></i>revelação programada</span><span><i style="background:repeating-linear-gradient(90deg,#3a3320 0 3px,transparent 3px 6px)"></i>janela de extração</span><span><i style="background:var(--amber)"></i>rodada atual</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <section>
+      <h3>Símbolos do mapa</h3>
+      <div class="sym" id="symbols"></div>
+    </section>
+    <section>
+      <h3>Como o espião se move</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Bilhete</th><th>Alcance</th><th>Custo</th><th>Horário</th></tr></thead>
+        <tbody>
+          <tr><td><b>PÉ</b></td><td>1 rua</td><td>grátis</td><td>sempre</td></tr>
+          <tr><td><b>BIKE</b></td><td>até 2 ruas, só Centro, Cidade Baixa, Bom Fim e Moinhos</td><td>R$ 1</td><td>06h–23h</td></tr>
+          <tr><td><b>ÔNIBUS</b></td><td>até 3 paradas na mesma linha</td><td>R$ 1</td><td>06h–23h; L1 e L4 de madrugada</td></tr>
+          <tr><td><b>TREM</b></td><td>Trensurb, quantas estações quiser</td><td>R$ 1</td><td>06h–23h</td></tr>
+          <tr><td><b>APP</b></td><td>qualquer local a até 3 ruas</td><td>R$ 3</td><td>sempre (rastreável)</td></tr>
+          <tr><td><b>BARCO</b></td><td>1 travessia pelo Guaíba</td><td>R$ 2</td><td>07h–21h</td></tr>
+          <tr><td><b>ESC</b></td><td>fica no lugar, escondido</td><td>grátis</td><td>esconderijo ou lugar vazio</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">Detetives: a pé 1 PA, viatura 2 PA (até 3 ruas), ônibus/trem 1 PA, barco 2 PA com a Lancha.</p>
+    </section>
+    <section>
+      <h3>Linhas de ônibus e trem</h3>
+      <div class="lines" id="lines"></div>
+    </section>
+  </div>
+
+  <section>
+    <h2>Nos celulares</h2>
+    <p class="lede" style="margin-bottom:18px">Cada jogador vê só o que pode saber. O detetive escolhe ações com custo em PA. O espião joga num modo escuro e discreto: a própria posição só aparece enquanto ele segura o botão.</p>
+    <div class="phones">
+      <div class="phone-col">
+        <div class="phone">
+          <div class="ph-top"><div class="who"><b>Perito Criminal</b><span class="pa" style="font-size:18px">●○○○</span></div><div class="eyebrow">Arena · lotação 4</div></div>
+          <div class="ph-body">
+            <div class="act sel"><div>Mover a pé<small>1 rua</small></div><span class="cost">1 PA</span></div>
+            <div class="dest">
+              <div><span>São Pedro</span><span class="eyebrow">trem</span></div>
+              <div><span>Ceasa</span><span class="eyebrow">contato</span></div>
+              <div><span>Ponte do Guaíba</span><span class="eyebrow">extração</span></div>
+            </div>
+            <div class="act"><div>Viatura<small>até 3 ruas · Gre-Nal +1 · falta PA</small></div><span class="cost" style="color:var(--muted)">3 PA</span></div>
+            <div class="act"><div>Investigar rastro<small>já usado aqui nesta rodada</small></div><span class="cost" style="color:var(--muted)">1 PA</span></div>
+            <div class="act"><div>Interrogar testemunhas<small>a até 2 ruas?</small></div><span class="cost">1 PA</span></div>
+            <div class="act"><div>Abordar<small>chance 70% (lotação 4)</small></div><span class="cost" style="color:var(--muted)">2 PA</span></div>
+          </div>
+          <div class="ph-tabs"><span class="on">Ações</span><span>Dossiê</span><span>Equipe</span><span>Itens</span></div>
+        </div>
+        <p>Detetive: só aparecem as ações possíveis, com o custo já calculado.</p>
+      </div>
+      <div class="phone-col">
+        <div class="phone spy">
+          <div class="ph-top"><div class="who"><b style="color:#d8c9a3">Quero-Quero</b><span style="font:500 13px var(--f-mono);color:#8d8471">R$ 6 · 1 senha</span></div><div class="eyebrow" style="color:#6d6555">Seu turno · 45 s</div></div>
+          <div class="ph-body">
+            <div class="eye">Segure para ver onde você está</div>
+            <div class="modes">
+              <span class="on">Pé<small>grátis</small></span><span>Ônibus<small>R$ 1</small></span><span>Trem<small>R$ 1</small></span>
+              <span>App<small>R$ 3</small></span><span>Barco<small>sem cais</small></span><span>Esconder<small>—</small></span>
+            </div>
+            <div class="act sel"><div>Ceasa<small>contato · lotação 2</small></div><span class="risk" style="color:#c9b46a">16%</span></div>
+            <div class="act"><div>Ponte do Guaíba<small>extração? · lotação 2</small></div><span class="risk" style="color:#c9b46a">16%</span></div>
+            <div class="act"><div>São Pedro<small>trem · lotação 3</small></div><span class="risk" style="color:#d08a5a">26%</span></div>
+          </div>
+          <div class="ph-tabs"><span class="on">Mover</span><span>Caderno</span><span>Bolso</span><span>Contatos</span></div>
+        </div>
+        <p>Espião: tela escura, sem vibração. O número é a chance de ser denunciado ao chegar lá.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const D = {"nodes":[{"id":1,"n":"Mercado Público / Largo Glênio Peres","s":"Mercado Público","z":"Z1","a":4,"t":["CAM","T","EMERGENCIA"],"x":285,"y":262,"d":"r"},{"id":2,"n":"Praça da Alfândega / Rua da Praia","s":"Alfândega","z":"Z1","a":3,"t":["CON","CAM"],"x":250,"y":300,"d":"r"},{"id":3,"n":"Usina do Gasômetro","s":"Gasômetro","z":"Z1","a":3,"t":["B"],"x":160,"y":345,"d":"l"},{"id":4,"n":"Cais Mauá","s":"Cais Mauá","z":"Z1","a":2,"t":["EXT:agua","B"],"x":245,"y":243,"d":"t"},{"id":5,"n":"Praça da Matriz / Catedral","s":"Matriz","z":"Z1","a":2,"t":[],"x":262,"y":350,"d":"r"},{"id":6,"n":"Rodoviária","s":"Rodoviária","z":"Z1","a":4,"t":["EXT:terra","CAM","ATM","T"],"x":395,"y":212,"d":"r"},{"id":7,"n":"Casa de Cultura Mario Quintana","s":"Casa de Cultura","z":"Z1","a":2,"t":["CON"],"x":196,"y":318,"d":"l"},{"id":8,"n":"Cidade Baixa / Largo Zumbi dos Palmares","s":"Cidade Baixa","z":"Z2","a":3,"t":["NOITE+1"],"x":340,"y":426,"d":"r"},{"id":9,"n":"Parque Harmonia / Anfiteatro Pôr do Sol","s":"Harmonia","z":"Z2","a":1,"t":["PARQUE"],"x":240,"y":432,"d":"l"},{"id":10,"n":"Shopping Praia de Belas","s":"Praia de Belas","z":"Z2","a":3,"t":["CAM","ATM","LOJ"],"x":297,"y":474,"d":"l"},{"id":11,"n":"Estádio Beira-Rio","s":"Beira-Rio","z":"Z2","a":1,"t":["ESTADIO"],"x":260,"y":535,"d":"r"},{"id":12,"n":"Menino Deus / Av. Getúlio Vargas","s":"Menino Deus","z":"Z2","a":2,"t":["CON"],"x":373,"y":504,"d":"r"},{"id":13,"n":"Parque da Redenção / Brique","s":"Redenção","z":"Z3","a":3,"t":["CON","PARQUE"],"x":452,"y":392,"d":"l"},{"id":14,"n":"Hospital de Clínicas","s":"Clínicas","z":"Z3","a":3,"t":[],"x":548,"y":388,"d":"r"},{"id":15,"n":"UFRGS – Campus Centro","s":"UFRGS","z":"Z3","a":2,"t":[],"x":412,"y":330,"d":"t"},{"id":16,"n":"Bom Fim / Av. Osvaldo Aranha","s":"Bom Fim","z":"Z3","a":2,"t":[],"x":505,"y":320,"d":"r"},{"id":17,"n":"Auditório Araújo Vianna","s":"Araújo Vianna","z":"Z3","a":1,"t":["ESC"],"x":470,"y":440,"d":"r"},{"id":18,"n":"Parcão","s":"Parcão","z":"Z4","a":2,"t":["PARQUE"],"x":560,"y":250,"d":"t"},{"id":19,"n":"Rua Padre Chagas","s":"Padre Chagas","z":"Z4","a":2,"t":["CON","NOITE+1"],"x":605,"y":288,"d":"r"},{"id":20,"n":"Shopping Moinhos","s":"Shop. Moinhos","z":"Z4","a":2,"t":["ATM","LOJ"],"x":600,"y":215,"d":"r"},{"id":21,"n":"Av. Independência","s":"Independência","z":"Z4","a":2,"t":[],"x":480,"y":268,"d":"l"},{"id":22,"n":"Shopping Iguatemi","s":"Iguatemi","z":"Z4","a":3,"t":["CAM","ATM","LOJ"],"x":729,"y":298,"d":"r"},{"id":23,"n":"Petrópolis / Praça da Encol","s":"Petrópolis","z":"Z4","a":1,"t":["CON"],"x":671,"y":362,"d":"r"},{"id":24,"n":"Navegantes / Estação São Pedro–Farrapos","s":"São Pedro","z":"Z5","a":2,"t":["T"],"x":495,"y":149,"d":"r"},{"id":25,"n":"Av. Farrapos / Igreja dos Navegantes","s":"Navegantes","z":"Z5","a":2,"t":[],"x":448,"y":178,"d":"r"},{"id":26,"n":"Arena do Grêmio (Humaitá)","s":"Arena","z":"Z5","a":1,"t":["ESTADIO"],"x":513,"y":48,"d":"r"},{"id":27,"n":"Aeroporto Salgado Filho","s":"Aeroporto","z":"Z5","a":3,"t":["EXT:ar","CAM","ATM","T"],"x":657,"y":131,"d":"r"},{"id":28,"n":"Ceasa","s":"Ceasa","z":"Z5","a":1,"t":["CON","T","MADRUGADA+2"],"x":697,"y":87,"d":"r"},{"id":29,"n":"Av. Assis Brasil / Sarandi","s":"Sarandi","z":"Z5","a":2,"t":[],"x":786,"y":166,"d":"r"},{"id":30,"n":"Porto Seco","s":"Porto Seco","z":"Z5","a":0,"t":[],"x":898,"y":197,"d":"r"},{"id":31,"n":"PUCRS","s":"PUCRS","z":"Z6","a":3,"t":["CON"],"x":669,"y":475,"d":"r"},{"id":32,"n":"Jardim Botânico","s":"Jd. Botânico","z":"Z6","a":1,"t":["CON","PARQUE"],"x":676,"y":416,"d":"r"},{"id":33,"n":"Bourbon Ipiranga / Av. Ipiranga","s":"Bourbon Ipiranga","z":"Z6","a":2,"t":["CAM","ATM","LOJ"],"x":600,"y":446,"d":"b"},{"id":34,"n":"Palácio da Polícia","s":"Palácio da Polícia","z":"Z6","a":2,"t":["HQ"],"x":445,"y":462,"d":"b"},{"id":35,"n":"Morro Santana","s":"Morro Santana","z":"Z6","a":0,"t":["ESC"],"x":833,"y":413,"d":"r"},{"id":36,"n":"Partenon / Av. Bento Gonçalves","s":"Partenon","z":"Z6","a":2,"t":[],"x":568,"y":513,"d":"r"},{"id":37,"n":"Fundação Iberê Camargo","s":"Iberê Camargo","z":"Z7","a":1,"t":["CON"],"x":216,"y":573,"d":"l"},{"id":38,"n":"BarraShoppingSul / Cristal","s":"BarraShopping","z":"Z7","a":3,"t":["CAM","ATM","LOJ"],"x":238,"y":610,"d":"l"},{"id":39,"n":"Hipódromo do Cristal","s":"Hipódromo","z":"Z7","a":1,"t":[],"x":282,"y":645,"d":"r"},{"id":40,"n":"Orla de Ipanema","s":"Ipanema","z":"Z7","a":2,"t":["B"],"x":318,"y":740,"d":"l"},{"id":41,"n":"Morro do Osso","s":"Morro do Osso","z":"Z7","a":0,"t":["ESC"],"x":375,"y":698,"d":"r"},{"id":42,"n":"Píer de Belém Novo","s":"Belém Novo","z":"Z7","a":1,"t":["EXT:agua","B"],"x":487,"y":880,"d":"r"},{"id":43,"n":"Reserva Biológica do Lami","s":"Lami","z":"Z7","a":0,"t":["CON","ESC"],"x":770,"y":912,"d":"r"},{"id":44,"n":"Ilha da Pintada","s":"Ilha da Pintada","z":"Z8","a":1,"t":["EXT:agua","B"],"x":57,"y":312,"d":"b"},{"id":45,"n":"Ponte do Guaíba / Travessia BR-290","s":"Ponte do Guaíba","z":"Z8","a":1,"t":["EXT:terra"],"x":326,"y":150,"d":"t"},{"id":46,"n":"Ilha Grande dos Marinheiros","s":"Ilha dos Marinheiros","z":"Z8","a":1,"t":["CON","ESC","B"],"x":182,"y":142,"d":"t"},{"id":47,"n":"Morro da Polícia (antenas)","s":"Morro da Polícia","z":"Z6","a":0,"t":["ESC","ANT"],"x":521,"y":600,"d":"r"}],"ruas":[[1,2],[1,4],[1,6],[2,4],[2,5],[2,7],[3,4],[3,5],[3,7],[3,9],[5,8],[5,13],[5,15],[6,21],[6,25],[8,9],[8,10],[8,12],[8,13],[9,10],[10,11],[10,12],[11,12],[11,37],[11,39],[12,34],[13,14],[13,15],[13,16],[13,17],[14,16],[14,34],[14,36],[15,16],[16,17],[16,21],[18,19],[18,20],[18,21],[19,20],[20,22],[20,23],[21,23],[22,23],[22,29],[22,32],[23,32],[23,33],[24,25],[24,26],[26,28],[26,45],[27,28],[27,29],[27,30],[29,30],[29,35],[30,35],[31,33],[31,35],[31,36],[32,33],[32,35],[33,34],[33,36],[36,38],[36,47],[37,38],[38,39],[38,40],[39,41],[39,47],[40,41],[40,42],[42,43],[44,45],[44,46],[45,46]],"barco":[[3,4],[3,40],[3,44],[4,44],[40,42],[44,46]],"trem":[1,6,24,27,28],"linhas":[{"id":"L1","nome":"Assis Brasil","corujao":true,"paradas":[1,6,21,22,29,30]},{"id":"L2","nome":"Bento Gonçalves","corujao":false,"paradas":[1,5,13,14,36,31,35]},{"id":"L3","nome":"Ipiranga / Perimetral","corujao":false,"paradas":[10,12,34,33,23,22]},{"id":"L4","nome":"Zona Sul","corujao":true,"paradas":[1,9,10,11,37,38,40,42]},{"id":"L5","nome":"Lotação Extremo Sul","corujao":false,"paradas":[40,42,43]},{"id":"L6","nome":"Navegantes / Humaitá","corujao":false,"paradas":[2,1,25,24,26,28]},{"id":"L7","nome":"Independência / Moinhos","corujao":false,"paradas":[5,16,21,18,20,22]}],"zonas":{"Z1":"Centro Histórico","Z2":"Cidade Baixa & Menino Deus","Z3":"Bom Fim & Farroupilha","Z4":"Moinhos de Vento & Petrópolis","Z5":"Zona Norte","Z6":"Zona Leste","Z7":"Orla Sul","Z8":"Ilhas & Travessia"},"shore":[[443,-80],[443,9],[437,69],[427,120],[396,168],[316,208],[211,257],[164,305],[120,345],[163,386],[198,445],[221,508],[213,539],[184,571],[187,610],[169,646],[220,692],[275,729],[289,771],[343,811],[408,844],[459,872],[514,891],[612,913],[704,925],[773,937],[837,950],[882,1000]]};
+const SX=1.42; D.nodes.forEach(n=>n.x=Math.round(n.x*SX)); D.shore.forEach(p=>p[0]=Math.round(p[0]*SX));
+const NS="http://www.w3.org/2000/svg";
+const N={}; D.nodes.forEach(n=>N[n.id]=n);
+const svg=document.getElementById("map");
+const el=(t,a={},p=svg)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e};
+
+/* estado da rodada de exemplo */
+const ROUND=11;
+const CONTACTS=[2,7,13,19,28,32,37,46];
+const COPS=[{id:34,l:"D"},{id:26,l:"P"},{id:47,l:"A"},{id:27,l:"T",block:true}];
+const LAST_SEEN={id:24,txt:"visto 13h"};
+const aglNow=id=>{let a=N[id].a; if(id===26)a+=3; if([24,28,45].includes(id))a+=1; return Math.max(0,Math.min(5,a));};
+
+const ZC={Z1:"#d1a866",Z2:"#d47f5c",Z3:"#86b87e",Z4:"#a690d4",Z5:"#69a9cf",Z6:"#cf7fa3",Z7:"#8fc4a0",Z8:"#8aa5c4"};
+const LC={L1:"#f28e2b",L2:"#59a14f",L3:"#edc948",L4:"#e15759",L5:"#b07aa1",L6:"#76b7b2",L7:"#ff9da7"};
+
+/* adjacências */
+const ADJ={}; D.nodes.forEach(n=>ADJ[n.id]=new Set());
+D.ruas.forEach(([a,b])=>{ADJ[a].add(b);ADJ[b].add(a)});
+const WADJ={}; D.nodes.forEach(n=>WADJ[n.id]=new Set());
+D.barco.forEach(([a,b])=>{WADJ[a].add(b);WADJ[b].add(a)});
+const bfs=(s,max,ok=()=>true)=>{const d={[s]:0},q=[s];while(q.length){const x=q.shift();if(d[x]>=max)continue;for(const y of ADJ[x])if(d[y]===undefined&&ok(y)){d[y]=d[x]+1;q.push(y)}}delete d[s];return Object.keys(d).map(Number)};
+
+/* ---------- desenho ---------- */
+const gBase=el("g"); const gZones=el("g"); const gRoads=el("g"); const gWater=el("g"); const gBus=el("g"); const gRail=el("g");
+const gHi=el("g"); const gNodes=el("g"); const gPieces=el("g");
+
+// terra
+const shore=D.shore;
+const landPts=shore.map(p=>p.join(",")).join(" ")+" 1400,1000 1400,-80";
+el("polygon",{points:landPts,fill:"var(--land)",stroke:"var(--land-edge)","stroke-width":3,"stroke-linejoin":"round"},gBase);
+// ilhas do Delta
+[[57,318,62,34,-15],[182,138,92,40,-20],[300,118,50,22,-30],[110,215,38,18,-25]].map(([cx,cy,rx,ry,r])=>[cx*SX,cy,rx*SX,ry,r]).forEach(([cx,cy,rx,ry,r])=>
+  el("ellipse",{cx,cy,rx,ry,transform:`rotate(${r} ${cx} ${cy})`,fill:"var(--land)",stroke:"var(--land-edge)","stroke-width":3},gBase));
+const geo=(x,y,t,cls,rot=0)=>{const e=el("text",{x,y,class:cls,transform:`rotate(${rot} ${x} ${y})`,"text-anchor":"middle"},gBase);e.textContent=t};
+geo(-60,640,"LAGO GUAÍBA","geo",-62);
+geo(150,30,"DELTA DO JACUÍ","geo s",-10);
+// rosa dos ventos
+const cmp=el("g",{transform:"translate(1290,40)"},gBase);
+el("path",{d:"M0 -26 L8 6 L0 0 L-8 6 Z",fill:"var(--paper)"},cmp);
+const nt=el("text",{x:0,y:28,"text-anchor":"middle",class:"lab"},cmp);nt.textContent="N";
+
+// zonas (casco convexo com borda grossa)
+function hull(pts){pts=pts.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);const lo=[],up=[];for(const p of pts){while(lo.length>=2&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p)}for(const p of pts.slice().reverse()){while(up.length>=2&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p)}return lo.slice(0,-1).concat(up.slice(0,-1))}
+const zoneEls=[];
+Object.keys(D.zonas).forEach(z=>{
+  const pts=D.nodes.filter(n=>n.z===z).map(n=>[n.x,n.y]);
+  const h=pts.length>2?hull(pts):pts.concat([[pts[0][0]+1,pts[0][1]+1]]);
+  zoneEls.push(el("polygon",{points:h.map(p=>p.join(",")).join(" "),fill:ZC[z],"fill-opacity":.09,stroke:ZC[z],"stroke-opacity":.09,"stroke-width":70,"stroke-linejoin":"round"},gZones));
+});
+const ZL={Z1:[330,195,"Centro"],Z2:[560,560,"Menino Deus"],Z3:[0,0,""],Z4:[930,205,"Moinhos"],Z5:[1100,40,"Zona Norte"],Z6:[1100,540,"Zona Leste"],Z7:[800,800,"Zona Sul"],Z8:[60,215,"Ilhas"]};
+Object.entries(ZL).forEach(([z,[x,y,t]])=>{if(!t)return;const e=el("text",{x,y,class:"zone-name",fill:ZC[z],"text-anchor":"middle"},gZones);e.textContent=t;zoneEls.push(e)});
+
+// ruas
+const roadEls=D.ruas.map(([a,b])=>{const p=N[a],q=N[b];return {a,b,e:el("line",{x1:p.x,y1:p.y,x2:q.x,y2:q.y,stroke:"var(--road)","stroke-width":3,"stroke-linecap":"round"},gRoads)}});
+// barco (curvas pela água)
+const waterEls=D.barco.map(([a,b])=>{const p=N[a],q=N[b];const mx=(p.x+q.x)/2-40,my=(p.y+q.y)/2+10;
+  return {a,b,e:el("path",{d:`M${p.x} ${p.y} Q${mx} ${my} ${q.x} ${q.y}`,fill:"none",stroke:"var(--water-route)","stroke-width":3,"stroke-dasharray":"2 9","stroke-linecap":"round"},gWater)}});
+// ônibus com deslocamento paralelo
+function offsetPath(ids,off){const P=ids.map(i=>[N[i].x,N[i].y]);const out=[];
+  for(let i=0;i<P.length;i++){const a=P[Math.max(0,i-1)],b=P[Math.min(P.length-1,i+1)];let dx=b[0]-a[0],dy=b[1]-a[1];const L=Math.hypot(dx,dy)||1;out.push([P[i][0]-dy/L*off,P[i][1]+dx/L*off])}
+  return "M"+out.map(p=>p.map(v=>v.toFixed(1)).join(" ")).join(" L")}
+const busEls=D.linhas.map((l,i)=>({l,e:el("path",{d:offsetPath(l.paradas,(i-3)*4.2),fill:"none",stroke:LC[l.id],"stroke-width":3.2,"stroke-linejoin":"round","stroke-opacity":.9},gBus)}));
+// trem
+const railD="M"+D.trem.map(i=>N[i].x+" "+N[i].y).join(" L");
+const railEls=[el("path",{d:railD,fill:"none",stroke:"#0b1114","stroke-width":11,"stroke-linejoin":"round"},gRail),
+  el("path",{d:railD,fill:"none",stroke:"var(--rail)","stroke-width":7,"stroke-linejoin":"round"},gRail),
+  el("path",{d:railD,fill:"none",stroke:"#0b1114","stroke-width":3,"stroke-dasharray":"8 8"},gRail)];
+
+// nós
+const aglColor=a=>["#5b6b63","#9db07a","#d9c25c","#f0a541","#ee7a3c","#e5533d"][a];
+function arc(cx,cy,r,a0,a1){const p=a=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];const [x0,y0]=p(a0),[x1,y1]=p(a1);return `M${x0} ${y0} A${r} ${r} 0 0 1 ${x1} ${y1}`}
+const nodeEls={};
+D.nodes.forEach(n=>{
+  const g=el("g",{class:"node",tabindex:0,role:"button","aria-label":n.n},gNodes);
+  const ext=n.t.find(t=>t.startsWith("EXT"));
+  const a=aglNow(n.id);
+  const ring=el("g",{class:"agl"},g);
+  for(let i=0;i<5;i++){const a0=-Math.PI/2+i*(2*Math.PI/5)+.12,a1=a0+2*Math.PI/5-.24;
+    el("path",{d:arc(n.x,n.y,ext?17:14,a0,a1),stroke:i<a?aglColor(a):"#2c3934","stroke-width":4,fill:"none"},ring)}
+  if(ext) el("circle",{cx:n.x,cy:n.y,r:23,fill:"none",stroke:"var(--amber)","stroke-width":2,"stroke-dasharray":"4 4"},g);
+  el("circle",{class:"core",cx:n.x,cy:n.y,r:9,fill:n.t.includes("HQ")?"var(--cop)":"#101a17",stroke:ZC[n.z],"stroke-width":3},g);
+  if(n.t.includes("T")) {el("rect",{x:n.x-24,y:n.y-6,width:12,height:12,rx:2,fill:"var(--rail)"},g);const t=el("text",{x:n.x-18,y:n.y+4.5,"text-anchor":"middle",style:"font:700 11px var(--f-display);fill:#0b1114"},g);t.textContent="T"}
+  if(n.t.includes("B")) {el("path",{d:`M${n.x+13} ${n.y+16} q4 -4 8 0 q4 4 8 0`,stroke:"var(--water-route)","stroke-width":2.5,fill:"none"},g)}
+  if(n.t.includes("ANT")) {el("path",{d:`M${n.x+12} ${n.y-10} l5 -14 l5 14 M${n.x+14} ${n.y-16} h6`,stroke:"var(--muted)","stroke-width":2,fill:"none"},g)}
+  if(CONTACTS.includes(n.id)){const x=n.x-26,y=n.y-24;el("rect",{x,y,width:16,height:11,rx:1.5,fill:"var(--contact)"},g);el("path",{d:`M${x} ${y} l8 6 l8 -6`,stroke:"#3a2f12","stroke-width":1.4,fill:"none"},g)}
+  const dir=n.d, off=ext?27:18;
+  const L={r:[n.x+off,n.y+5,"start"],l:[n.x-off,n.y+5,"end"],t:[n.x,n.y-off-2,"middle"],b:[n.x,n.y+off+13,"middle"]}[dir];
+  const water=[44,45,46].includes(n.id);
+  const tx=el("text",{x:L[0],y:L[1],"text-anchor":L[2],class:"lab"+(water?" water":"")},g); tx.textContent=n.s;
+  g.addEventListener("click",()=>select(n.id));
+  g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(n.id)}});
+  nodeEls[n.id]=g;
+});
+
+// peças: detetives, bloqueio, último avistamento
+COPS.forEach((c,i)=>{const n=N[c.id];const x=n.x+(c.l==="A"?-30:22),y=n.y-30;
+  el("line",{x1:n.x,y1:n.y,x2:x,y2:y,stroke:"var(--cop)","stroke-width":2},gPieces);
+  el("circle",{cx:x,cy:y,r:14,fill:"var(--cop)",stroke:"#081320","stroke-width":3},gPieces);
+  const t=el("text",{x,y:y+6,"text-anchor":"middle",style:"font:700 18px var(--f-display);fill:#081320"},gPieces);t.textContent=c.l;
+  if(c.block){const g=el("g",{transform:`translate(${n.x-22} ${n.y+20})`},gPieces);
+    for(let k=0;k<4;k++)el("rect",{x:k*11,y:0,width:11,height:8,fill:k%2?"#f2f2f2":"var(--hot)"},g)}
+});
+{const n=N[LAST_SEEN.id];el("circle",{cx:n.x,cy:n.y,r:30,fill:"none",stroke:"var(--hot)","stroke-width":2.5,"stroke-dasharray":"6 5",class:"pulse"},gPieces);
+ const t=el("text",{x:n.x+34,y:n.y+28,class:"lab",style:"fill:var(--hot)"},gPieces);t.textContent="espião "+LAST_SEEN.txt;}
+
+/* ---------- alcance de movimento ---------- */
+const BIKEZ=["Z1","Z2","Z3","Z4"];
+function reach(id){
+  const r={pe:[...ADJ[id]],bike:[],onibus:{},trem:[],barco:[...WADJ[id]],app:bfs(id,3)};
+  if(BIKEZ.includes(N[id].z)) r.bike=bfs(id,2,y=>BIKEZ.includes(N[y].z));
+  D.linhas.forEach(l=>{const i=l.paradas.indexOf(id);if(i<0)return;r.onibus[l.id]=l.paradas.filter((s,j)=>j!==i&&Math.abs(j-i)<=3)});
+  if(D.trem.includes(id)) r.trem=D.trem.filter(s=>s!==id);
+  return r;
+}
+let MODE="todos", SEL=1;
+const MODES=[["todos","Todos"],["pe","A pé"],["bike","Bike"],["onibus","Ônibus"],["trem","Trensurb"],["barco","Barco"],["app","App"]];
+const modesBox=document.getElementById("modes");
+MODES.forEach(([k,t])=>{const b=document.createElement("button");b.className="chip";b.textContent=t;b.setAttribute("aria-pressed",k===MODE);b.onclick=()=>{MODE=k;[...modesBox.querySelectorAll(".chip")].forEach(c=>c.setAttribute("aria-pressed",c===b));select(SEL)};modesBox.appendChild(b)});
+
+const nm=id=>N[id].s;
+function select(id){
+  SEL=id; const n=N[id], r=reach(id);
+  gHi.innerHTML="";
+  const on=new Set([id]);
+  const want=m=>MODE==="todos"||MODE===m;
+  const hiLine=(p,q,stroke,w,dash)=>el("line",{x1:p.x,y1:p.y,x2:q.x,y2:q.y,stroke,"stroke-width":w,"stroke-linecap":"round","stroke-dasharray":dash||""},gHi);
+  if(want("app")) r.app.forEach(x=>on.add(x));
+  if(want("bike")) r.bike.forEach(x=>on.add(x));
+  if(want("pe")){r.pe.forEach(x=>{on.add(x);hiLine(n,N[x],"var(--paper)",4)})}
+  if(want("onibus")) D.linhas.forEach(l=>{const s=r.onibus[l.id];if(!s)return;const i=l.paradas.indexOf(id);
+     const seg=l.paradas.slice(Math.max(0,i-3),i+4);s.forEach(x=>on.add(x));
+     el("path",{d:"M"+seg.map(k=>N[k].x+" "+N[k].y).join(" L"),stroke:LC[l.id],"stroke-width":7,fill:"none","stroke-linejoin":"round","stroke-opacity":.85},gHi)});
+  if(want("trem")&&r.trem.length){r.trem.forEach(x=>on.add(x));el("path",{d:railD,stroke:"var(--rail)","stroke-width":9,fill:"none","stroke-opacity":.6},gHi)}
+  if(want("barco")) r.barco.forEach(x=>{on.add(x);const p=n,q=N[x];el("path",{d:`M${p.x} ${p.y} Q${(p.x+q.x)/2-40} ${(p.y+q.y)/2+10} ${q.x} ${q.y}`,stroke:"var(--water-route)","stroke-width":5,fill:"none","stroke-dasharray":"2 9","stroke-linecap":"round"},gHi)});
+  if(want("app")&&MODE==="app") r.app.forEach(x=>{});
+  Object.entries(nodeEls).forEach(([k,g])=>g.classList.toggle("dim",!on.has(+k)));
+  el("circle",{cx:n.x,cy:n.y,r:30,fill:"none",stroke:"var(--amber)","stroke-width":3},gHi);
+
+  const tagName={CON:"contato possível",CAM:"câmera",ATM:"caixa eletrônico",LOJ:"loja · disfarce",ESC:"esconderijo",HQ:"base da polícia",ANT:"antenas · interceptar",T:"Trensurb",B:"atracadouro",EMERGENCIA:"contato de emergência",ESTADIO:"estádio","NOITE+1":"agita à noite","MADRUGADA+2":"cheio de madrugada",PARQUE:"parque"};
+  const tags=n.t.map(t=>t.startsWith("EXT")?"extração · "+t.split(":")[1]:tagName[t]||t);
+  const list=a=>a.length?a.map(nm).join(", "):"—";
+  const bus=Object.entries(r.onibus).map(([k,v])=>`<span style="color:${LC[k]};font-weight:600">${k}</span> ${v.map(nm).join(", ")}`).join("<br>")||"—";
+  const a=aglNow(id);
+  document.getElementById("inspect").innerHTML=`
+    <div class="lbl">Local selecionado</div>
+    <h4>${n.n}</h4>
+    <div class="meta">${D.zonas[n.z]} · lotação agora <b style="color:${aglColor(a)}">${a}/5</b> · denúncia ${[0,5,10,20,30,40][a]}%</div>
+    <div class="tags">${tags.map(t=>`<span>${t}</span>`).join("")}</div>
+    <dl class="reach">
+      <div><dt>A pé</dt><dd>${list(r.pe)}</dd></div>
+      <div><dt>Ônibus</dt><dd>${bus}</dd></div>
+      ${r.trem.length?`<div><dt>Trensurb</dt><dd>${list(r.trem)}</dd></div>`:""}
+      ${r.barco.length?`<div><dt>Barco</dt><dd>${list(r.barco)}</dd></div>`:""}
+      ${r.bike.length?`<div><dt>Bike</dt><dd>${r.bike.length} locais</dd></div>`:""}
+      <div><dt>App</dt><dd>${r.app.length} locais a até 3 ruas</dd></div>
+    </dl>`;
+}
+
+/* ---------- camadas ---------- */
+const LAYERS=[["zonas","Zonas",gZones,"#86b87e"],["ruas","Ruas",gRoads,"#7d8c84"],["onibus","Ônibus",gBus,"#f28e2b"],["trem","Trensurb",gRail,"#d9dde2"],["barco","Barco",gWater,"#56c2e8"],["agl","Lotação",null,"#f0a541"],["pecas","Peças",gPieces,"#5fa8ff"]];
+const layersBox=document.getElementById("layers");
+LAYERS.forEach(([k,t,g,c])=>{const b=document.createElement("button");b.className="chip";b.innerHTML=`<i style="background:${c}"></i>${t}`;b.setAttribute("aria-pressed","true");
+  b.onclick=()=>{const v=b.getAttribute("aria-pressed")!=="true";b.setAttribute("aria-pressed",v);
+    if(g)g.style.display=v?"":"none"; else svg.querySelectorAll(".agl").forEach(e=>e.style.display=v?"":"none")};layersBox.appendChild(b)});
+
+/* ---------- barra inferior ---------- */
+const expo=document.getElementById("expo");for(let i=1;i<=10;i++){const e=document.createElement("i");if(i<=3)e.className="on";if(i>=7)e.classList.add("hi");expo.appendChild(e)}
+const TK=["PÉ","ÔNI","PÉ","ÔNI","PÉ","TREM","PÉ","PÉ","ÔNI","PÉ","PÉ"];
+const REV=[3,8,13,18,23], WIN=[9,10,13,14,17,18,21,22];
+const tkBox=document.getElementById("tickets");
+for(let r=1;r<=24;r++){const h=(5+r)%24;const d=document.createElement("div");d.className="tk"+(REV.includes(r)?" rev":"")+(WIN.includes(r)?" win":"")+(r===ROUND?" now":"");
+  d.innerHTML=`<small>${String(h).padStart(2,"0")}h</small><span>${TK[r-1]||""}</span>`;tkBox.appendChild(d)}
+
+/* ---------- legenda ---------- */
+const sym=document.getElementById("symbols");
+const S=(svgInner,txt)=>{const d=document.createElement("div");d.innerHTML=`<svg width="40" height="34" viewBox="-20 -17 40 34" aria-hidden="true">${svgInner}</svg><span>${txt}</span>`;sym.appendChild(d)};
+S(`<circle r="9" fill="#101a17" stroke="#d1a866" stroke-width="3"/>`+[0,1,2,3,4].map(i=>{const a0=-Math.PI/2+i*1.2566+.12,a1=a0+1.0166;return `<path d="${arc(0,0,14,a0,a1)}" stroke="${i<3?"#f0a541":"#2c3934"}" stroke-width="4" fill="none"/>`}).join(""),"Local. A cor da borda é a zona; os 5 tracinhos são a lotação agora (0 a 5)");
+S(`<circle r="16" fill="none" stroke="#f0a541" stroke-width="2" stroke-dasharray="4 4"/><circle r="7" fill="#101a17" stroke="#d1a866" stroke-width="3"/>`,"Possível ponto de extração (6 no mapa, só 1 é o verdadeiro)");
+S(`<rect x="-8" y="-6" width="16" height="11" rx="1.5" fill="#e2c46d"/><path d="M-8 -6 l8 6 l8 -6" stroke="#3a2f12" stroke-width="1.4" fill="none"/>`,"Ponto de contato com envelope (8 sorteados por partida)");
+S(`<rect x="-6" y="-6" width="12" height="12" rx="2" fill="#d9dde2"/><text x="0" y="4.5" text-anchor="middle" style="font:700 11px var(--f-display);fill:#0b1114">T</text>`,"Estação do Trensurb");
+S(`<path d="M-12 2 q4 -4 8 0 q4 4 8 0 q4 -4 8 0" stroke="#56c2e8" stroke-width="2.5" fill="none"/>`,"Atracadouro de barco ou catamarã");
+S(`<circle r="13" fill="#5fa8ff" stroke="#081320" stroke-width="3"/><text y="6" text-anchor="middle" style="font:700 17px var(--f-display);fill:#081320">P</text>`,"Detetive (D Delegada, P Perito, A Analista, T Agente Tático)");
+S(`<g transform="translate(-18 -4)">${[0,1,2,3].map(k=>`<rect x="${k*9}" width="9" height="8" fill="${k%2?"#f2f2f2":"#e5533d"}"/>`).join("")}</g>`,"Bloqueio (blitz) montado por um detetive");
+S(`<circle r="14" fill="none" stroke="#e5533d" stroke-width="2.5" stroke-dasharray="6 5"/>`,"Último lugar onde o espião foi visto");
+
+const linesBox=document.getElementById("lines");
+D.linhas.forEach(l=>{const d=document.createElement("div");d.innerHTML=`<b style="border-color:${LC[l.id]}">${l.id}</b><div>${l.nome}${l.corujao?" · também de madrugada":""}<br><span>${l.paradas.map(nm).join(" → ")}</span></div>`;linesBox.appendChild(d)});
+{const d=document.createElement("div");d.innerHTML=`<b style="border-color:#d9dde2">Trem</b><div>Trensurb<br><span>${D.trem.map(nm).join(" → ")}</span></div>`;linesBox.appendChild(d)}
+{const d=document.createElement("div");d.innerHTML=`<b style="border-color:#56c2e8">Barco</b><div>Travessias do Guaíba<br><span>${D.barco.map(([a,b])=>nm(a)+" ↔ "+nm(b)).join(" · ")}</span></div>`;linesBox.appendChild(d)}
+
+/* ---------- escala da TV ---------- */
+const box=document.getElementById("tvbox"),tv=document.getElementById("tv");
+const fit=()=>{tv.style.transform=`scale(${box.clientWidth/1920})`};
+new ResizeObserver(fit).observe(box);fit();
+select(1);
+</script>
