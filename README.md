@@ -84,3 +84,30 @@ Build Vite para `dist`, função Node `api/game.ts`, região `gru1`. Configure `
 ## Limites da primeira versão
 
 A conversa usa uma chamada externa. Não há bots, chat de voz embutido, moderação automática, matchmaking público ou análise de argumentos. Juiz e jurados precisam permanecer presentes para suas decisões; quem perde conexão pode atualizar e retornar com a sessão salva. Não há substituição automática de jogador ausente durante um caso. Não há testes de carga nem validação em aparelhos físicos diversos; os testes multiplayer automatizados usam sessões independentes na API real.
+
+
+---
+
+# 🕵️ Sombra no Guaíba
+
+Jogo de movimento oculto em Porto Alegre, na mesma base do Patifaria. O mapa fica na TV ou no computador; cada jogador usa o próprio celular. De 2 a 6 jogadores: 1 espião contra a força-tarefa.
+
+## Jogar
+
+1. Na TV ou no computador, abra `/sombra` e clique em **Abrir mesa**.
+2. Cada pessoa lê o QR code com o celular (ou entra em `/sombra` e digita o código) e escolhe um apelido.
+3. Na TV, escolha quem é o espião ou deixe sortear, e clique em **Começar**.
+4. O espião escolhe perfil e esconderijo no celular. Depois os turnos se alternam: espião, força-tarefa, fechamento. São 24 rodadas, das 06h às 05h.
+
+As regras completas estão em `docs/sombra-no-guaiba/GDD.md`.
+
+## Como está montado
+
+- `src/sombra/rules/` — motor de regras (só roda no servidor). Guarda o plano de fuga, a rota secreta e os envelopes. `view()` monta uma projeção para cada aparelho: a TV recebe só o público, os detetives recebem também o que é do time, e o espião recebe a própria posição.
+- `api/sombra.ts` — função Vercel. Usa o mesmo armazenamento Supabase do Patifaria (`patifaria_storage`); as mesas são marcadas com `kind: 'sombra'`. Sem Supabase configurado (desenvolvimento local), as mesas ficam na memória do processo.
+- `src/sombra/main.tsx` e `board.ts` — telas da TV e dos celulares e o tabuleiro em SVG. Sincronização por consulta a cada 1 s, como no Patifaria.
+- `docs/sombra-no-guaiba/` — dados do jogo: `mapa.json` e `mapa-arte.json` (gerados por `gerar_mapa.py`), `cartas.json` (gerado por `gerar_cartas.py`) e `gerar_pistas.py`.
+
+## Testes
+
+`npm test` roda também `tests/sombra.test.ts`: regras das pistas em 600 sorteios, lobby, movimento, vazamento de informação secreta para TV e detetives, tempo esgotado e 300 partidas simuladas com jogadores automáticos do começo ao fim.
