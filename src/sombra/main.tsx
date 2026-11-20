@@ -93,7 +93,10 @@ function LobbyTV({pub, send, error}:{pub:Any;send:Any;error:string}) {
       </div>
       {error && <div className="err">{error}</div>}
     </div>
-    <div style={{display: 'grid', gap: 16, justifyItems: 'center'}}><Qr text={url}/><div className="code">{pub.code}</div></div>
+    <div style={{display: 'grid', gap: 16, justifyItems: 'center'}}><Qr text={url}/><div className="code">{pub.code}</div>
+      <a className="btn" style={{textDecoration: 'none'}} target="_blank" rel="noreferrer"
+        href={'https://wa.me/?text=' + encodeURIComponent(`Bora jogar Sombra no Guaíba! Entra na mesa ${pub.code}: ${url}`)}>Mandar convite pelo WhatsApp</a>
+      <button className="btn sec" onClick={() => navigator.clipboard?.writeText(url).catch(() => {})}>Copiar link da mesa</button></div>
   </main>;
 }
 function TVJogo({pub, send, offset, error}:{pub:Any;send:Any;offset:number;error:string}) {
