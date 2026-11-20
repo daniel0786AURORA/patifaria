@@ -18,10 +18,10 @@ const DENUNCIA = [0, 5, 10, 20, 30, 40];
 /** Parâmetros de equilíbrio (ajustados com scripts/sombra-sim.ts). */
 export const BALANCO = {viaturaAlcance: 3, viaturaPorRodada: 1, interrogarRaio: 1, interrogarCusto: 2, interrogarPorRodada: 1, abordarPorRodada: 1, confiscar: false, rendaEspiao: 1,
   dinheiroInicial: 10, conteudoSoComDecodificador: true, horaHMaxAbordagem: 50, peAlcance: 3, abordagem: [100, 100, 100, 85, 70, 55]};
-export const TEMPO = {preparo: 120_000, espiao: 90_000, detetives: 150_000};
+export const TEMPO = {preparo: 120_000, espiao: 90_000, detetives: 150_000, vez: 75_000};
 
 type Player = {id:string;secret:string;name:string;side:'espiao'|'detetive'|null;seen:number};
-type Det = {papel:Papel;owner:string;loc:number;pa:number;bloqueio:boolean;encerrou:boolean;k9:number;escuta:boolean;transferiu:boolean;interrogouGratis:boolean;investigou:number[];viaturas?:number;abordagens?:number;interrogacoes?:number};
+type Det = {papel:Papel;owner:string;loc:number;pa:number;bloqueio:boolean;encerrou:boolean;k9:number;escuta:boolean;transferiu:boolean;interrogouGratis:boolean;investigou:number[];viaturas?:number;abordagens?:number;interrogacoes?:number;rolou?:boolean};
 type Spy = {owner:string;loc:number;dinheiro:number;exposicao:number;perfil:string;credenciais:number;pistas:Pista[];disfarce:number;escudo:boolean;
   escondido:number;falsas:number;falhas:number;denunciaIgnorada:boolean;deveMover:boolean;app:{rodada:number;de:number;para:number}|null;
   movimentos:number;moveu:boolean;agiu:boolean;transporteGratis:boolean;appGratis:boolean;opcoesInicio:number[];planoB?:boolean;remarcada?:string};
@@ -40,7 +40,7 @@ export type Game = {
   plano:Plano|null;contatos:Contato[];dets:Det[];spy:Spy|null;agenda:{id:string;rodadas:[number,number]}[];baralho:string[];descarte:string[];ativos:Ativo[];carta:string|null;
   fila:Transmissao[];bilhetes:{rodada:number;modo:Modo}[];rastro:Rastro[];revelacoes:Revelacao[];equipe:Equipe;avisos:Aviso[];
   horaH:{local:number;rodada:number}|null;pendentes?:{local:number;motivo:string}[];alertaBancario:{zona:string;rodada:number}|null;cancelarRevelacao:boolean;interceptBloqueado:boolean;
-  deadline:number|null;winner:'espiao'|'detetives'|null;motivo:string;requests:string[];espiaoEscolhido:string|null;
+  deadline:number|null;vez?:number|null;dado?:{det:number;valor:number;rodada:number}|null;winner:'espiao'|'detetives'|null;motivo:string;requests:string[];espiaoEscolhido:string|null;
 };
 
 // ------------------------------------------------------------------ utilidades
@@ -313,8 +313,8 @@ function fimTurnoEspiao(g:Game) {
   }
   if (s.disfarce > 0) s.disfarce--;
   s.deveMover = false;
-  for (const d of g.dets) { d.pa = 4; d.encerrou = false; d.transferiu = false; d.interrogouGratis = false; d.investigou = []; d.viaturas = 0; d.abordagens = 0; d.interrogacoes = 0; }
-  g.phase = 'detetives'; g.deadline = Date.now() + TEMPO.detetives;
+  for (const d of g.dets) { d.pa = 0; d.rolou = false; d.encerrou = false; d.transferiu = false; d.interrogouGratis = false; d.investigou = []; d.viaturas = 0; d.abordagens = 0; d.interrogacoes = 0; }
+  g.phase = 'detetives'; g.vez = 0; g.dado = null; g.deadline = Date.now() + TEMPO.vez;
 }
 function fechamento(g:Game) {
   if (g.phase === 'fim') return;
@@ -471,9 +471,22 @@ export function opcoesDetetive(g:Game, i:number): {mover:{modo:string;local:numb
 const alcanceGratis = (g:Game, d:Det) => d.papel === 'rua' && !d.interrogouGratis ? BALANCO.interrogarRaio + 1 : g.equipe.interrogarGratis;
 const chanceInterceptar = (g:Game, d:Det, x:Transmissao) => Math.min(95, 40 + 15 * x.tentativas + (g.equipe.decodificador ? 20 : 0) + (d.papel === 'analista' ? 15 : 0) - (g.spy!.perfil === 'criptografo' ? 15 : 0) + x.bonus);
 type CorpoDet = {i:number;acao:string;local?:number;n?:number;item?:string;zona?:string;extracao?:number;janela?:string;alvo?:number};
+/** Passa a vez para o próximo detetive; depois do último, fecha a rodada. */
+function proximaVez(g:Game) {
+  const atual = g.vez ?? 0; g.dets[atual].encerrou = true;
+  const prox = g.dets.findIndex((d, i) => i > atual && !d.encerrou);
+  if (prox < 0) { g.vez = null; fechamento(g); return; }
+  g.vez = prox; g.deadline = Date.now() + TEMPO.vez;
+}
+function rolarDado(g:Game, p:Player, i:number) {
+  const d = g.dets[i]; if (!d || d.owner !== p.id) fail('Esse detetive não é seu.');
+  if (g.vez !== i) fail('Ainda não é a vez deste detetive.'); if (d.rolou) fail('Você já rolou o dado nesta rodada.');
+  const valor = 1 + Math.floor(rnd(g) * 6); d.pa += valor; d.rolou = true; g.dado = {det: i, valor, rodada: g.round};
+  aviso(g, `🎲 ${p.name} (${papelNome(d.papel)}) tirou ${valor} no dado: ${d.pa} ponto${d.pa === 1 ? '' : 's'} para usar.`, 'info');
+}
 function agirDetetive(g:Game, p:Player, b:CorpoDet) {
   b.i = Number(b.i); if (b.local !== undefined) b.local = Number(b.local); if (b.n !== undefined) b.n = Number(b.n); if (b.alvo !== undefined) b.alvo = Number(b.alvo); if (b.extracao !== undefined) b.extracao = Number(b.extracao);
-  const d = g.dets[b.i]; if (!d || d.owner !== p.id) fail('Esse detetive não é seu.'); if (d.encerrou) fail('Este detetive já encerrou a rodada.');
+  const d = g.dets[b.i]; if (!d || d.owner !== p.id) fail('Esse detetive não é seu.'); if (g.vez !== b.i) fail('Ainda não é a vez deste detetive.'); if (!d.rolou) fail('Role o dado primeiro.');
   const t = g.equipe, s = g.spy!, m = mods(g), quem = `${p.name} (${papelNome(d.papel)})`;
   if (b.acao === 'mover') {
     const op = opcoesDetetive(g, b.i).mover.find(x => x.local === Number(b.local)); if (!op) fail('Não dá para ir até lá.');
@@ -610,8 +623,8 @@ export function act(g:Game, token:string, b:any) {
   }
   if (g.phase === 'detetives' && p!.side === 'detetive') {
     if (tipo === 'det') { agirDetetive(g, p!, b); return; }
-    if (tipo === 'encerrar') { g.dets.filter(d => d.owner === p!.id && (b.i === undefined || b.i === g.dets.indexOf(d))).forEach(d => d.encerrou = true);
-      if (g.dets.every(d => d.encerrou)) fechamento(g); return; }
+    if (tipo === 'rolar') { rolarDado(g, p!, Number(b.i)); return; }
+    if (tipo === 'encerrar') { const i = g.vez ?? -1; if (g.dets[i]?.owner !== p!.id) fail('Agora não é a sua vez.'); proximaVez(g); return; }
   }
   fail('Agora não é a sua vez.');
 }
@@ -625,7 +638,10 @@ export function tick(g:Game, now = Date.now()) {
       else { const pe = [...o.pe].sort((a, b) => a.risco - b.risco)[0] ?? Object.values(o).flat()[0]; if (pe) moverEspiao(g, (Object.keys(o) as Modo[]).find(k => o[k].includes(pe))!, pe.local); } }
     if (g.phase === 'espiao') fimTurnoEspiao(g); return true;
   }
-  if (g.phase === 'detetives') { fechamento(g); return true; }
+  if (g.phase === 'detetives') {
+    const i = g.vez ?? 0; const d = g.dets[i];
+    if (d && !d.rolou) { const dono = g.players.find(x => x.id === d.owner); aviso(g, `O tempo de ${dono?.name ?? 'um detetive'} (${papelNome(d.papel)}) acabou.`, 'info'); }
+    proximaVez(g); return true; }
   return false;
 }
 
@@ -636,7 +652,8 @@ export function view(g:Game, token:string|null) {
   const pub = {
     kind: 'sombra', code: g.code, revision: g.revision, phase: g.phase, round: g.round, hora: hora(Math.max(1, g.round)), deadline: g.deadline, now: Date.now(),
     players: g.players.map(x => ({id: x.id, name: x.name, side: x.side, online: Date.now() - x.seen < 20_000})), espiaoEscolhido: g.espiaoEscolhido,
-    dets: g.dets.map(d => ({papel: d.papel, owner: d.owner, loc: d.loc, pa: d.pa, bloqueio: d.bloqueio, encerrou: d.encerrou})),
+    dets: g.dets.map(d => ({papel: d.papel, owner: d.owner, dono: g.players.find(x => x.id === d.owner)?.name ?? '', loc: d.loc, pa: d.pa, bloqueio: d.bloqueio, encerrou: d.encerrou, rolou: !!d.rolou})),
+    vez: g.phase === 'detetives' ? g.vez ?? null : null, dado: g.dado ?? null,
     espiao: g.spy ? {perfil: g.spy.perfil, exposicao: g.spy.exposicao, falhas: g.spy.falhas, moveu: g.spy.moveu} : null,
     bilhetes: g.bilhetes, revelacoes: g.revelacoes, horaH: g.horaH, cones: g.equipe.cones,
     agl: m ? Object.fromEntries(IDS.map(i => [i, agl(g, i, m)])) : {},
@@ -654,7 +671,7 @@ export function view(g:Game, token:string|null) {
     equipe = {orcamento: t.orcamento, estoque: t.estoque, dossie: t.dossie, chat: t.chat.slice(-40), pistas: t.pistas, acusou: t.acusou, decodificador: t.decodificador, lancha: t.lancha === g.round,
       contatos: MAPA.contatos_candidatos.map(l => ({local: l, situacao: t.vistoriados[l] ?? 'desconhecido', grampo: t.grampos.includes(l)})),
       avisos: g.avisos.filter(a => a.para === 'equipe').slice(-30), interrogarGratis: t.interrogarGratis, bloqueiosGratis: t.bloqueiosGratis,
-      meus: g.phase === 'detetives' ? g.dets.map((d, i) => d.owner === p!.id && !d.encerrou ? {i, ...opcoesDetetive(g, i)} : null).filter(Boolean) : []};
+      meus: g.phase === 'detetives' && g.vez != null && g.dets[g.vez].owner === p!.id && g.dets[g.vez].rolou ? [{i: g.vez, ...opcoesDetetive(g, g.vez)}] : []};
   }
   if (side === 'espiao' && g.spy) {
     const s = g.spy;

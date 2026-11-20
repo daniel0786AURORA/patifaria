@@ -3,11 +3,11 @@ import type {IncomingMessage, ServerResponse} from 'node:http';
 import {createGame, addPlayer, act, tick, view, hash, type Game} from '../src/sombra/rules/engine.js';
 
 const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-// Sem Supabase configurado (desenvolvimento local), as mesas ficam na memória do processo.
+// Sem Supabase (só no desenvolvimento local, fora da Vercel) as mesas ficam na memória do processo.
+// Na Vercel isso nunca é usado: cada requisição pode cair num servidor diferente e as mesas se perderiam.
 const memoria = new Map<string, {state:Game;at:number}>();
-// Também cai para a memória quando o Supabase não está configurado ou não responde (modo de teste).
-let semBanco = false;
-const usarMemoria = () => semBanco || !process.env.SUPABASE_URL || !process.env.SUPABASE_PUBLISHABLE_KEY || !process.env.GAME_BACKEND_KEY;
+const configurado = () => !!(process.env.SUPABASE_URL && process.env.SUPABASE_PUBLISHABLE_KEY && process.env.GAME_BACKEND_KEY);
+const usarMemoria = () => !configurado() && !process.env.VERCEL;
 
 async function rpc(operation:'get'|'create'|'save', code:string, state:Game|null = null, revision = -1): Promise<any> {
   if (usarMemoria()) {
@@ -17,22 +17,31 @@ async function rpc(operation:'get'|'create'|'save', code:string, state:Game|null
     if (operation === 'create') { if (atual) return false; memoria.set(code, {state: structuredClone(state!), at: agora}); return true; }
     if (!atual || atual.state.revision !== revision) return false; memoria.set(code, {state: structuredClone(state!), at: agora}); return true;
   }
-  const url = process.env.SUPABASE_URL!.trim().replace(/\/+$/, ''), key = process.env.SUPABASE_PUBLISHABLE_KEY!, backend = process.env.GAME_BACKEND_KEY!;
-  let res: Response;
-  try {
-    res = await fetch(`${url}/rest/v1/rpc/patifaria_storage`, {method: 'POST', headers: {apikey: key, 'Content-Type': 'application/json'},
-      body: JSON.stringify({backend_key: backend, operation, room_code: code, new_state: state, expected_revision: revision}), signal: AbortSignal.timeout(12000)});
-  } catch (e) {
-    console.error('storage: Supabase não respondeu; usando a memória do servidor', e);
-    semBanco = true; return rpc(operation, code, state, revision);
+  if (!configurado()) throw new Error('O banco de dados não está configurado na Vercel (SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY e GAME_BACKEND_KEY).');
+  const url = process.env.SUPABASE_URL!.trim().replace(/\/+$/, ''), key = process.env.SUPABASE_PUBLISHABLE_KEY!.trim(), backend = process.env.GAME_BACKEND_KEY!.trim();
+  let res: Response | null = null; let erro: unknown = null;
+  for (let tentativa = 0; tentativa < 3 && !res; tentativa++) {
+    try {
+      res = await fetch(`${url}/rest/v1/rpc/patifaria_storage`, {method: 'POST', headers: {apikey: key, 'Content-Type': 'application/json'},
+        body: JSON.stringify({backend_key: backend, operation, room_code: code, new_state: state, expected_revision: revision}), signal: AbortSignal.timeout(8000)});
+    } catch (e) { erro = e; await new Promise(r => setTimeout(r, 300 * (tentativa + 1))); }
   }
+  if (!res) { console.error('storage: sem conexão com o Supabase', erro);
+    throw new Error('Sem conexão com o banco de dados (Supabase). Abra supabase.com e veja se o projeto está pausado.'); }
   if (!res.ok) { console.error('storage', res.status, await res.text().catch(() => ''));
-    throw new Error(res.status === 401 || res.status === 403 || res.status === 404 ? `O banco de dados recusou o acesso (erro ${res.status}). Confira as variáveis do Supabase na Vercel.` : 'Não foi possível acessar a mesa. Tente novamente.'); }
+    throw new Error(res.status === 401 || res.status === 403 || res.status === 404 ? `O banco de dados recusou o acesso (erro ${res.status}).` : 'Não foi possível acessar a mesa. Tente novamente.'); }
   return await res.json();
+}
+
+/** Diagnóstico para abrir no navegador: /api/sombra?diag */
+async function diagnostico(res:ServerResponse) {
+  try { await rpc('get', 'ZZZZZ'); res.end(JSON.stringify({banco: usarMemoria() ? 'memória local (desenvolvimento)' : 'conectado ao Supabase'})); }
+  catch (e) { res.end(JSON.stringify({banco: 'com problema', detalhe: (e as Error).message})); }
 }
 
 export default async function handler(req:IncomingMessage & {body?:any}, res:ServerResponse) {
   res.setHeader('Cache-Control', 'no-store'); res.setHeader('Content-Type', 'application/json');
+  if (req.method === 'GET' && (req.url ?? '').includes('diag')) { await diagnostico(res); return; }
   if (req.method !== 'POST') { res.statusCode = 405; res.end(JSON.stringify({error: 'Método inválido.'})); return; }
   try {
     let b = req.body; if (typeof b === 'string') b = JSON.parse(b);

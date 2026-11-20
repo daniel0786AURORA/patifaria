@@ -185,3 +185,30 @@ h1,h2,h3{font-family:var(--f-display);margin:0;line-height:1.05;text-wrap:balanc
 @keyframes pulse{50%{opacity:.4}}
 @media (prefers-reduced-motion:reduce){.pulse,.g-horah,.a-cell.zona-rev{animation:none}}
 @media (max-width:900px){.tv{grid-template-columns:1fr;grid-template-rows:60vh auto auto}.tv-side{grid-column:1;grid-row:3}.lobby-tv{grid-template-columns:1fr}}
+
+.g-coptext{font:800 20px var(--f-display)}
+.g-copnome{font:700 15px var(--f-display);fill:#06111d;paint-order:stroke;stroke:#fff;stroke-width:4px}
+.g-vez{fill:none;stroke:#ffd166;stroke-width:5;animation:pulse 1s ease-in-out infinite}
+.g-rotulo{fill:var(--amber);stroke:#1b1206;stroke-width:1.5}.g-rotulotxt{font:800 13px var(--f-display);fill:#1b1206}
+/* turno e dado */
+.turno{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:var(--panel2);border-radius:14px;padding:12px 14px;border:2px solid var(--line)}
+.turno.minha{border-color:#ffd166;background:#2a2410}
+.turno b{font:800 22px var(--f-display);display:block}
+.turno small{color:var(--muted)}
+.dado{width:64px;height:64px;border-radius:14px;background:#fff;color:#111;display:grid;place-items:center;font:800 40px var(--f-display);box-shadow:0 4px 0 #bbb}
+.dado.grande{width:120px;height:120px;font-size:80px;border-radius:24px}
+.dado.anim{animation:rolar .6s ease-out}
+@keyframes rolar{0%{transform:rotate(-200deg) scale(.4);opacity:.3}100%{transform:none;opacity:1}}
+.pontos{display:flex;align-items:center;gap:10px;font:800 26px var(--f-display)}
+.pontos i{width:18px;height:18px;border-radius:50%;background:var(--cop);display:inline-block}
+.pontos i.off{background:#24303a}
+.btn.enorme{font-size:24px;min-height:72px;border-radius:16px;width:100%}
+.sheet{background:#0e171a;border:2px solid var(--amber);border-radius:14px;padding:12px;display:grid;gap:8px}
+.jog{display:grid;gap:6px}
+.jog div{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;background:#0e171a;font-size:clamp(14px,1vw,17px)}
+.jog div.agora{outline:2px solid #ffd166;background:#2a2410}
+.jog span.tag{font:700 12px var(--f-mono);padding:2px 7px;border-radius:5px;background:#24303a}
+.jog span.tag.esp{background:#5a1f17;color:#ffb4a8}
+.ajuda{font-size:14px;color:var(--muted);background:#0e171a;border-radius:10px;padding:10px 12px;line-height:1.45}
+.ajuda b{color:var(--paper)}
+.vezbanner{position:absolute;left:50%;top:16px;transform:translateX(-50%);display:flex;align-items:center;gap:18px;background:#12191cf0;border:3px solid #ffd166;border-radius:18px;padding:12px 22px;font:800 clamp(22px,2.2vw,40px) var(--f-display);max-width:90%}
