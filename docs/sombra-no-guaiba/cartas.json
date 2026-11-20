@@ -1,0 +1,1586 @@
+{
+ "versao": 1,
+ "regras_eventos": {
+  "agendados_por_partida": 4,
+  "aleatorio_a_partir_da_rodada": 2,
+  "aleatorios_por_rodada": 1
+ },
+ "efeitos": {
+  "agl": "Soma `valor` à lotação dos `locais`.",
+  "agl_vizinhos": "Soma `valor` à lotação dos vizinhos a pé de `local`.",
+  "agl_zona": "Soma `valor` à lotação de todos os locais das `zonas`.",
+  "agl_tipo": "Soma `valor` à lotação de todos os locais do `tipo_area`.",
+  "agl_global": "Soma `valor` à lotação de todos os locais.",
+  "ignora_madrugada": "Os `locais` não sofrem o −2 de madrugada.",
+  "viatura_custo": "Viatura custa `valor` PA a mais nas `zonas` (ou `locais`).",
+  "viatura_proibida": "Viaturas não entram nos `locais` (ou `zonas`).",
+  "transporte_fechado": "Fecha o `modo` (onibus, trem, barco, bike, app). `linhas` restringe a linhas de ônibus; `trecho` restringe a paradas.",
+  "transporte_horario": "Mantém o `modo` (ou `linhas`) aberto até a rodada `ate`.",
+  "local_fechado": "Ninguém entra nem sai dos `locais` por terra.",
+  "vira_loja": "Os `locais` passam a permitir Trocar Disfarce.",
+  "vira_esconderijo": "Os `locais` passam a permitir Esconder-se.",
+  "disfarce_custo": "Disfarce custa `valor` R$ a mais (negativo = desconto) nos `locais`.",
+  "denuncia_mod": "Soma `valor` pontos percentuais à chance de denúncia (em `zonas`, se houver).",
+  "retrato_global": "Retrato Falado ativo em todas as zonas.",
+  "camera_off": "Câmeras desligadas (em `zonas`/`locais`, ou numa zona sorteada se `sorteio`).",
+  "camera_mod": "Soma `valor` pontos percentuais ao alerta de câmera (em `zonas`).",
+  "caixa_off": "Caixas eletrônicos desligados (mesma área de camera_off).",
+  "interceptar_bloqueado": "Nenhuma interceptação nesta rodada; as transmissões não envelhecem.",
+  "interceptar_bonus": "A transmissão mais antiga da fila ganha `valor` pontos percentuais.",
+  "exposicao": "Soma `valor` à Exposição do espião.",
+  "revela_tipo_pista": "Revela publicamente o tipo da última pista recolhida.",
+  "orcamento": "Soma `valor` créditos ao Orçamento dos detetives.",
+  "dinheiro_espiao": "Soma `valor` R$ ao dinheiro do espião.",
+  "movimento_extra": "O espião pode se mover 2 vezes nesta rodada (2 bilhetes).",
+  "app_gratis": "Uma viagem de App grátis para o espião nesta rodada.",
+  "app_custo": "App custa `valor` R$ a mais.",
+  "barco_clandestino": "Barcos operam fora do horário para o espião, a R$ `valor`.",
+  "interrogar_gratis": "Os detetives ganham um Interrogar grátis, com alcance `alcance`, em qualquer local.",
+  "bloqueio_gratis": "Os detetives ganham `quantidade` Bloqueio(s) grátis por `duracao` rodadas.",
+  "movimento_detetive": "Um detetive move de graça até um local das `zonas`.",
+  "contato_extra": "Um contato candidato não sorteado recebe cópia de uma pista ONDE ainda não recolhida.",
+  "silencio_suspenso": "A regra de zona quente (denúncia ×0,5, Interrogar bloqueado) fica suspensa nos `locais`.",
+  "assalto_mod": "Soma `valor` pontos percentuais à chance de assalto em zona quente.",
+  "nenhum": "Sem efeito."
+ },
+ "eventos_agendados": [
+  {
+   "id": "grenal-arena",
+   "grupo": "grenal",
+   "nome": "Gre-Nal na Arena",
+   "rodadas": [
+    10,
+    12
+   ],
+   "texto": "Clássico em Humaitá. A Zona Norte para.",
+   "sabor": "Quarenta mil pessoas de azul e vermelho, e ninguém olhando para o lado.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      52
+     ],
+     "valor": 3
+    },
+    {
+     "tipo": "agl_vizinhos",
+     "local": 52,
+     "valor": 1
+    },
+    {
+     "tipo": "viatura_custo",
+     "zonas": [
+      "NOR"
+     ],
+     "valor": 1
+    }
+   ],
+   "regioes": [
+    "NOR"
+   ]
+  },
+  {
+   "id": "grenal-beirario",
+   "grupo": "grenal",
+   "nome": "Gre-Nal no Beira-Rio",
+   "rodadas": [
+    10,
+    12
+   ],
+   "texto": "Clássico na beira do Guaíba. A orla vira um mar de gente.",
+   "sabor": "Do Gasômetro ao Iberê, só se ouve o estádio.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      15
+     ],
+     "valor": 3
+    },
+    {
+     "tipo": "agl_vizinhos",
+     "local": 15,
+     "valor": 1
+    },
+    {
+     "tipo": "viatura_custo",
+     "zonas": [
+      "CBX",
+      "SUL"
+     ],
+     "valor": 1
+    }
+   ],
+   "regioes": [
+    "CBX",
+    "SUL"
+   ]
+  },
+  {
+   "id": "show-por-do-sol",
+   "nome": "Show no Anfiteatro Pôr do Sol",
+   "rodadas": [
+    12,
+    14
+   ],
+   "texto": "Show gratuito na orla, bem na hora do pôr do sol.",
+   "sabor": "O sol cai atrás do Guaíba e o palco acende.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      12
+     ],
+     "valor": 3
+    },
+    {
+     "tipo": "agl",
+     "locais": [
+      6,
+      11,
+      14
+     ],
+     "valor": 1
+    }
+   ],
+   "regioes": [
+    "CBX",
+    "CEN"
+   ]
+  },
+  {
+   "id": "feira-do-livro",
+   "nome": "Feira do Livro",
+   "rodadas": [
+    4,
+    12
+   ],
+   "texto": "Barracas de livros tomam a Praça da Alfândega.",
+   "sabor": "Entre sebos e autógrafos, um envelope passa de mão em mão.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      2
+     ],
+     "valor": 2
+    },
+    {
+     "tipo": "agl",
+     "locais": [
+      4,
+      1
+     ],
+     "valor": 1
+    },
+    {
+     "tipo": "contato_extra"
+    }
+   ],
+   "regioes": [
+    "CEN"
+   ]
+  },
+  {
+   "id": "brique",
+   "nome": "Brique da Redenção",
+   "rodadas": [
+    3,
+    8
+   ],
+   "texto": "Domingo de Brique: antiguidades, artesanato e chimarrão.",
+   "sabor": "Tem disfarce para vender em qualquer barraca.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      22
+     ],
+     "valor": 2
+    },
+    {
+     "tipo": "vira_loja",
+     "locais": [
+      22
+     ]
+    },
+    {
+     "tipo": "agl",
+     "locais": [
+      24
+     ],
+     "valor": 1
+    }
+   ],
+   "regioes": [
+    "BOM"
+   ]
+  },
+  {
+   "id": "acampamento-farroupilha",
+   "nome": "Acampamento Farroupilha",
+   "rodadas": [
+    8,
+    16
+   ],
+   "texto": "Piquetes, cavalos e churrasco no Parque Harmonia.",
+   "sabor": "Ninguém estranha um forasteiro de bombacha.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      11
+     ],
+     "valor": 3
+    },
+    {
+     "tipo": "viatura_custo",
+     "zonas": [
+      "CBX"
+     ],
+     "valor": 1
+    },
+    {
+     "tipo": "vira_loja",
+     "locais": [
+      11
+     ]
+    }
+   ],
+   "regioes": [
+    "CBX"
+   ]
+  },
+  {
+   "id": "carnaval-porto-seco",
+   "nome": "Carnaval no Porto Seco",
+   "rodadas": [
+    19,
+    23
+   ],
+   "texto": "Desfile das escolas de samba vara a madrugada.",
+   "sabor": "Fantasia é o melhor disfarce que existe.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      62
+     ],
+     "valor": 5
+    },
+    {
+     "tipo": "ignora_madrugada",
+     "locais": [
+      62
+     ]
+    },
+    {
+     "tipo": "transporte_horario",
+     "modo": "onibus",
+     "linhas": [
+      "L11",
+      "L1"
+     ],
+     "ate": 24
+    },
+    {
+     "tipo": "vira_loja",
+     "locais": [
+      62
+     ]
+    }
+   ],
+   "regioes": [
+    "NOR"
+   ]
+  },
+  {
+   "id": "procissao-navegantes",
+   "nome": "Procissão de Navegantes",
+   "rodadas": [
+    5,
+    8
+   ],
+   "texto": "A procissão fluvial e a romaria tomam a Zona Norte.",
+   "sabor": "Barcos enfeitados no rio, fiéis na Av. Farrapos.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      47,
+      48,
+      3
+     ],
+     "valor": 2
+    },
+    {
+     "tipo": "viatura_proibida",
+     "locais": [
+      47,
+      50
+     ]
+    }
+   ],
+   "regioes": [
+    "CEN",
+    "NOR"
+   ]
+  },
+  {
+   "id": "maratona",
+   "nome": "Maratona de Porto Alegre",
+   "rodadas": [
+    1,
+    4
+   ],
+   "texto": "Corredores ocupam a orla desde cedo.",
+   "sabor": "Quem corre de tênis e boné passa despercebido.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      6,
+      12,
+      14,
+      15,
+      69
+     ],
+     "valor": 1
+    },
+    {
+     "tipo": "viatura_proibida",
+     "locais": [
+      6,
+      12,
+      14,
+      15,
+      69
+     ]
+    }
+   ],
+   "regioes": [
+    "CBX",
+    "CEN",
+    "SUL"
+   ]
+  },
+  {
+   "id": "festival-ipanema",
+   "nome": "Festival de Verão em Ipanema",
+   "rodadas": [
+    12,
+    16
+   ],
+   "texto": "Palco na areia e a orla da Zona Sul lotada.",
+   "sabor": "Guarda-sol, caixa de som e um barco esperando no fim da praia.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      82
+     ],
+     "valor": 3
+    },
+    {
+     "tipo": "agl",
+     "locais": [
+      102,
+      85,
+      79
+     ],
+     "valor": 1
+    }
+   ],
+   "regioes": [
+    "SUL"
+   ]
+  },
+  {
+   "id": "grande-premio",
+   "nome": "Grande Prêmio no Hipódromo",
+   "rodadas": [
+    9,
+    13
+   ],
+   "texto": "O páreo mais importante do ano no Cristal.",
+   "sabor": "Chapéus, binóculos e apostas: todo mundo olha para a pista.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      72
+     ],
+     "valor": 3
+    },
+    {
+     "tipo": "agl",
+     "locais": [
+      71,
+      70
+     ],
+     "valor": 1
+    }
+   ],
+   "regioes": [
+    "SUL"
+   ]
+  },
+  {
+   "id": "vestibular",
+   "nome": "Dia de Vestibular",
+   "rodadas": [
+    7,
+    11
+   ],
+   "texto": "Milhares de candidatos nos campi da UFRGS e da PUCRS.",
+   "sabor": "Mochila nas costas e cara de nervoso: igual a todo mundo.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      23,
+      39,
+      45
+     ],
+     "valor": 2
+    },
+    {
+     "tipo": "viatura_custo",
+     "zonas": [
+      "LES"
+     ],
+     "valor": 1
+    }
+   ],
+   "regioes": [
+    "BOM",
+    "LES"
+   ]
+  },
+  {
+   "id": "parada-livre",
+   "nome": "Parada Livre",
+   "rodadas": [
+    9,
+    14
+   ],
+   "texto": "A parada colorida sai da Redenção e segue pelo Bom Fim.",
+   "sabor": "Glitter, música e uma multidão que não para de crescer.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      22
+     ],
+     "valor": 3
+    },
+    {
+     "tipo": "agl",
+     "locais": [
+      24,
+      10
+     ],
+     "valor": 2
+    },
+    {
+     "tipo": "viatura_proibida",
+     "locais": [
+      22,
+      24
+     ]
+    }
+   ],
+   "regioes": [
+    "BOM",
+    "CBX"
+   ]
+  }
+ ],
+ "eventos_aleatorios": [
+  {
+   "id": "engarrafamento-perimetral",
+   "cat": "transito",
+   "copias": 2,
+   "duracao": 2,
+   "nome": "Engarrafamento na III Perimetral",
+   "texto": "Tudo parado entre o Aeroporto e o Cristal.",
+   "efeitos": [
+    {
+     "tipo": "viatura_custo",
+     "zonas": [
+      "MOI",
+      "LES"
+     ],
+     "valor": 1
+    }
+   ],
+   "regioes": [
+    "LES",
+    "MOI"
+   ]
+  },
+  {
+   "id": "freeway-parada",
+   "cat": "transito",
+   "copias": 1,
+   "duracao": 2,
+   "nome": "Freeway parada",
+   "texto": "Acidente na saída da cidade. A ponte trava.",
+   "efeitos": [
+    {
+     "tipo": "local_fechado",
+     "locais": [
+      49
+     ]
+    },
+    {
+     "tipo": "transporte_fechado",
+     "modo": "onibus",
+     "linhas": [
+      "L13"
+     ]
+    }
+   ],
+   "regioes": [
+    "NOR"
+   ]
+  },
+  {
+   "id": "vao-movel",
+   "cat": "transito",
+   "copias": 1,
+   "duracao": 1,
+   "nome": "Vão móvel da ponte içado",
+   "texto": "A ponte do Guaíba levanta para um navio passar.",
+   "sabor": "Vinte minutos com a cidade cortada em duas.",
+   "efeitos": [
+    {
+     "tipo": "local_fechado",
+     "locais": [
+      49
+     ]
+    }
+   ],
+   "regioes": [
+    "NOR"
+   ]
+  },
+  {
+   "id": "greve-onibus",
+   "cat": "transito",
+   "copias": 1,
+   "duracao": 3,
+   "nome": "Greve de ônibus",
+   "texto": "Rodoviários cruzam os braços. Estações do trem lotam.",
+   "efeitos": [
+    {
+     "tipo": "transporte_fechado",
+     "modo": "onibus"
+    },
+    {
+     "tipo": "agl",
+     "locais": [
+      1,
+      8,
+      48,
+      50,
+      54,
+      55
+     ],
+     "valor": 1
+    }
+   ],
+   "regioes": [
+    "CEN",
+    "NOR"
+   ]
+  },
+  {
+   "id": "pane-trensurb",
+   "cat": "transito",
+   "copias": 1,
+   "duracao": 2,
+   "nome": "Pane no Trensurb",
+   "texto": "Trens parados entre o Mercado e o Aeroporto.",
+   "efeitos": [
+    {
+     "tipo": "transporte_fechado",
+     "modo": "trem"
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "obras-bento",
+   "cat": "transito",
+   "copias": 1,
+   "duracao": 2,
+   "nome": "Obras na Av. Bento Gonçalves",
+   "texto": "Desvio na Bento. A linha L3 não passa do Partenon.",
+   "efeitos": [
+    {
+     "tipo": "transporte_fechado",
+     "modo": "onibus",
+     "linhas": [
+      "L3"
+     ],
+     "trecho": [
+      39,
+      41,
+      45,
+      46
+     ]
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "acidente-assis-brasil",
+   "cat": "transito",
+   "copias": 1,
+   "duracao": 2,
+   "nome": "Acidente na Av. Assis Brasil",
+   "texto": "Corredor de ônibus interditado na Zona Norte.",
+   "efeitos": [
+    {
+     "tipo": "transporte_fechado",
+     "modo": "onibus",
+     "linhas": [
+      "L1"
+     ]
+    },
+    {
+     "tipo": "viatura_custo",
+     "zonas": [
+      "NOR"
+     ],
+     "valor": 1
+    }
+   ],
+   "regioes": [
+    "NOR"
+   ]
+  },
+  {
+   "id": "blitz-eptc",
+   "cat": "transito",
+   "copias": 2,
+   "duracao": 2,
+   "nome": "Blitz da EPTC",
+   "texto": "Fiscalização em todas as saídas. Motoristas de app desconfiados.",
+   "efeitos": [
+    {
+     "tipo": "bloqueio_gratis",
+     "quantidade": 1,
+     "duracao": 2
+    },
+    {
+     "tipo": "app_custo",
+     "valor": 1
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "chuva-forte",
+   "cat": "clima",
+   "copias": 2,
+   "duracao": 2,
+   "nome": "Chuva forte",
+   "texto": "Temporal sobre a cidade. As ruas esvaziam.",
+   "sabor": "A chuva apaga pegadas.",
+   "efeitos": [
+    {
+     "tipo": "agl_global",
+     "valor": -1
+    },
+    {
+     "tipo": "transporte_fechado",
+     "modo": "barco"
+    },
+    {
+     "tipo": "transporte_fechado",
+     "modo": "bike"
+    },
+    {
+     "tipo": "nenhum",
+     "nota": "Helicóptero proibido; Investigar só lê 4 rodadas."
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "alagamento-centro",
+   "cat": "clima",
+   "copias": 1,
+   "duracao": 3,
+   "nome": "Alagamento no Centro",
+   "texto": "O Guaíba sobe e invade o Centro Histórico.",
+   "sabor": "O muro da Mauá nunca pareceu tão pequeno.",
+   "efeitos": [
+    {
+     "tipo": "viatura_proibida",
+     "locais": [
+      1,
+      3,
+      5,
+      6,
+      8
+     ]
+    },
+    {
+     "tipo": "agl",
+     "locais": [
+      1,
+      3,
+      5,
+      6,
+      8
+     ],
+     "valor": -2
+    },
+    {
+     "tipo": "transporte_fechado",
+     "modo": "trem",
+     "trecho": [
+      1
+     ]
+    }
+   ],
+   "regioes": [
+    "CEN"
+   ]
+  },
+  {
+   "id": "cheia-ilhas",
+   "cat": "clima",
+   "copias": 1,
+   "duracao": 3,
+   "nome": "Cheia nas Ilhas",
+   "texto": "As ilhas do Delta ficam isoladas pela água.",
+   "efeitos": [
+    {
+     "tipo": "local_fechado",
+     "locais": [
+      66,
+      67,
+      68
+     ]
+    },
+    {
+     "tipo": "transporte_fechado",
+     "modo": "barco"
+    }
+   ],
+   "regioes": [
+    "ILH"
+   ]
+  },
+  {
+   "id": "enchente-extremo-sul",
+   "cat": "clima",
+   "copias": 1,
+   "duracao": 2,
+   "nome": "Estrada alagada no Extremo Sul",
+   "texto": "A estrada do Lami some debaixo d'água.",
+   "efeitos": [
+    {
+     "tipo": "transporte_fechado",
+     "modo": "onibus",
+     "linhas": [
+      "L10"
+     ]
+    },
+    {
+     "tipo": "viatura_proibida",
+     "zonas": [
+      "EXT"
+     ]
+    }
+   ],
+   "regioes": [
+    "EXT"
+   ]
+  },
+  {
+   "id": "minuano",
+   "cat": "clima",
+   "copias": 2,
+   "duracao": 2,
+   "nome": "Minuano",
+   "texto": "Vento gelado do sul. Ninguém fica na rua.",
+   "efeitos": [
+    {
+     "tipo": "agl_tipo",
+     "tipo_area": "lazer",
+     "valor": -1
+    },
+    {
+     "tipo": "agl_tipo",
+     "tipo_area": "boemio",
+     "valor": 1
+    },
+    {
+     "tipo": "transporte_fechado",
+     "modo": "barco"
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "calorao",
+   "cat": "clima",
+   "copias": 2,
+   "duracao": 2,
+   "nome": "Calorão de 40 graus",
+   "texto": "Todo mundo foge para a orla e para os shoppings.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      82,
+      12,
+      14,
+      93
+     ],
+     "valor": 2
+    },
+    {
+     "tipo": "agl",
+     "locais": [
+      13,
+      34,
+      70,
+      57
+     ],
+     "valor": 1
+    }
+   ],
+   "regioes": [
+    "CBX",
+    "EXT",
+    "MOI",
+    "NOR",
+    "SUL"
+   ]
+  },
+  {
+   "id": "neblina",
+   "cat": "clima",
+   "copias": 1,
+   "duracao": 2,
+   "nome": "Neblina no Guaíba",
+   "texto": "Não se vê a outra margem. Voos atrasados.",
+   "efeitos": [
+    {
+     "tipo": "transporte_fechado",
+     "modo": "barco"
+    },
+    {
+     "tipo": "agl",
+     "locais": [
+      54
+     ],
+     "valor": 2
+    },
+    {
+     "tipo": "camera_off",
+     "locais": [
+      3,
+      6,
+      12,
+      82
+     ]
+    }
+   ],
+   "regioes": [
+    "CBX",
+    "CEN",
+    "NOR",
+    "SUL"
+   ]
+  },
+  {
+   "id": "manifestacao",
+   "cat": "cidade",
+   "copias": 2,
+   "duracao": 2,
+   "nome": "Manifestação na Esquina Democrática",
+   "texto": "Protesto fecha o Centro.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      1,
+      2
+     ],
+     "valor": 3
+    },
+    {
+     "tipo": "viatura_proibida",
+     "zonas": [
+      "CEN"
+     ]
+    }
+   ],
+   "regioes": [
+    "CEN"
+   ]
+  },
+  {
+   "id": "apagao",
+   "cat": "cidade",
+   "copias": 2,
+   "duracao": 2,
+   "nome": "Apagão no bairro",
+   "texto": "Uma zona inteira fica no escuro.",
+   "efeitos": [
+    {
+     "tipo": "camera_off",
+     "sorteio": true
+    },
+    {
+     "tipo": "caixa_off",
+     "sorteio": true
+    },
+    {
+     "tipo": "denuncia_mod",
+     "valor": -10
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "festa-cidade-baixa",
+   "cat": "cidade",
+   "copias": 2,
+   "duracao": 2,
+   "nome": "Festa na Cidade Baixa",
+   "rodadas_validas": [
+    14,
+    22
+   ],
+   "texto": "A República está fechada de tanta gente.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      10
+     ],
+     "valor": 2
+    },
+    {
+     "tipo": "agl",
+     "locais": [
+      24,
+      27
+     ],
+     "valor": 1
+    }
+   ],
+   "regioes": [
+    "BOM",
+    "CBX",
+    "MOI"
+   ]
+  },
+  {
+   "id": "feirao-shopping",
+   "cat": "cidade",
+   "copias": 2,
+   "duracao": 2,
+   "nome": "Feirão no shopping",
+   "texto": "Promoção relâmpago num shopping sorteado.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      13,
+      34,
+      70,
+      38,
+      57,
+      28
+     ],
+     "valor": 2,
+     "sorteio": 1
+    },
+    {
+     "tipo": "disfarce_custo",
+     "valor": -1,
+     "mesmo_local": true
+    }
+   ],
+   "regioes": [
+    "CBX",
+    "LES",
+    "MOI",
+    "NOR",
+    "SUL"
+   ]
+  },
+  {
+   "id": "show-araujo-vianna",
+   "cat": "cidade",
+   "copias": 1,
+   "duracao": 2,
+   "nome": "Show no Araújo Vianna",
+   "rodadas_validas": [
+    14,
+    19
+   ],
+   "texto": "Noite de show dentro da Redenção.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      22
+     ],
+     "valor": 2
+    },
+    {
+     "tipo": "vira_esconderijo",
+     "locais": [
+      22
+     ]
+    }
+   ],
+   "regioes": [
+    "BOM"
+   ]
+  },
+  {
+   "id": "jogo-na-tv",
+   "cat": "cidade",
+   "copias": 1,
+   "duracao": 1,
+   "nome": "Jogo da dupla na TV",
+   "texto": "A cidade inteira para na frente da televisão.",
+   "sabor": "Rua vazia, bar lotado.",
+   "efeitos": [
+    {
+     "tipo": "agl_global",
+     "valor": -1
+    },
+    {
+     "tipo": "agl_tipo",
+     "tipo_area": "boemio",
+     "valor": 2
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "feira-ecologica",
+   "cat": "cidade",
+   "copias": 1,
+   "duracao": 2,
+   "nome": "Feira Ecológica do Bom Fim",
+   "rodadas_validas": [
+    2,
+    6
+   ],
+   "texto": "Sábado de manhã: orgânicos na José Bonifácio.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      24,
+      22
+     ],
+     "valor": 2
+    }
+   ],
+   "regioes": [
+    "BOM"
+   ]
+  },
+  {
+   "id": "madrugada-ceasa",
+   "cat": "cidade",
+   "copias": 1,
+   "duracao": 2,
+   "nome": "Madrugada de carga na Ceasa",
+   "rodadas_validas": [
+    19,
+    24
+   ],
+   "texto": "Caminhões chegam do interior. A Ceasa ferve.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      55,
+      99
+     ],
+     "valor": 2
+    },
+    {
+     "tipo": "app_gratis"
+    }
+   ],
+   "regioes": [
+    "NOR"
+   ]
+  },
+  {
+   "id": "onibus-lotado-restinga",
+   "cat": "cidade",
+   "copias": 1,
+   "duracao": 1,
+   "nome": "Terminal da Restinga lotado",
+   "rodadas_validas": [
+    2,
+    4
+   ],
+   "texto": "Hora de ir trabalhar: filas no terminal.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      87
+     ],
+     "valor": 2
+    }
+   ],
+   "regioes": [
+    "SUL"
+   ]
+  },
+  {
+   "id": "por-do-sol-gasometro",
+   "cat": "cidade",
+   "copias": 1,
+   "duracao": 1,
+   "nome": "Pôr do sol no Gasômetro",
+   "rodadas_validas": [
+    11,
+    14
+   ],
+   "texto": "Todo mundo para olhar o sol cair no Guaíba.",
+   "efeitos": [
+    {
+     "tipo": "agl",
+     "locais": [
+      6,
+      12
+     ],
+     "valor": 2
+    }
+   ],
+   "regioes": [
+    "CBX",
+    "CEN"
+   ]
+  },
+  {
+   "id": "operacao-morro",
+   "cat": "cidade",
+   "copias": 1,
+   "duracao": 2,
+   "nome": "Operação policial em zona quente",
+   "texto": "A Brigada ocupa uma zona quente sorteada.",
+   "efeitos": [
+    {
+     "tipo": "silencio_suspenso",
+     "locais": [
+      20,
+      42,
+      46,
+      63,
+      65,
+      87
+     ],
+     "sorteio": 1
+    },
+    {
+     "tipo": "agl",
+     "locais": [],
+     "valor": -1,
+     "mesmo_local": true
+    }
+   ],
+   "regioes": [
+    "CBX",
+    "LES",
+    "NOR",
+    "SUL"
+   ]
+  },
+  {
+   "id": "vazamento",
+   "cat": "midia",
+   "copias": 1,
+   "duracao": 0,
+   "nome": "Vazamento na imprensa",
+   "texto": "Um jornal publica que há um espião na cidade.",
+   "efeitos": [
+    {
+     "tipo": "exposicao",
+     "valor": 1
+    },
+    {
+     "tipo": "revela_tipo_pista"
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "retrato-jornal",
+   "cat": "midia",
+   "copias": 1,
+   "duracao": 3,
+   "nome": "Retrato no jornal",
+   "texto": "O retrato falado sai na capa.",
+   "efeitos": [
+    {
+     "tipo": "retrato_global"
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "informante",
+   "cat": "policia",
+   "copias": 2,
+   "duracao": 0,
+   "nome": "Informante anônimo",
+   "texto": "Uma ligação para o disque-denúncia.",
+   "efeitos": [
+    {
+     "tipo": "interrogar_gratis",
+     "alcance": 3
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "disque-saturado",
+   "cat": "policia",
+   "copias": 1,
+   "duracao": 2,
+   "nome": "Disque-denúncia saturado",
+   "texto": "Trote atrás de trote. As denúncias se perdem.",
+   "efeitos": [
+    {
+     "tipo": "denuncia_mod",
+     "valor": -10
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "corte-verbas",
+   "cat": "policia",
+   "copias": 1,
+   "duracao": 0,
+   "nome": "Corte de verbas",
+   "texto": "O governo congela o orçamento da força-tarefa.",
+   "efeitos": [
+    {
+     "tipo": "orcamento",
+     "valor": -3
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "reforco-brigada",
+   "cat": "policia",
+   "copias": 1,
+   "duracao": 3,
+   "nome": "Reforço da Brigada Militar",
+   "texto": "Viaturas extras nas ruas.",
+   "efeitos": [
+    {
+     "tipo": "bloqueio_gratis",
+     "quantidade": 1,
+     "duracao": 3
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "radio-amador",
+   "cat": "policia",
+   "copias": 1,
+   "duracao": 0,
+   "nome": "Rádio-amador xereta",
+   "texto": "Um radioamador grava parte de uma transmissão.",
+   "efeitos": [
+    {
+     "tipo": "interceptar_bonus",
+     "valor": 25
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "queda-sinal",
+   "cat": "policia",
+   "copias": 1,
+   "duracao": 1,
+   "nome": "Queda de sinal",
+   "texto": "Torres de celular fora do ar.",
+   "efeitos": [
+    {
+     "tipo": "interceptar_bloqueado"
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "camera-quebrada",
+   "cat": "policia",
+   "copias": 1,
+   "duracao": 3,
+   "nome": "Câmera quebrada",
+   "texto": "Vandalismo derruba uma câmera sorteada.",
+   "efeitos": [
+    {
+     "tipo": "camera_off",
+     "sorteio": true,
+     "um_local": true
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "operacao-orla",
+   "cat": "policia",
+   "copias": 1,
+   "duracao": 0,
+   "nome": "Operação na orla",
+   "texto": "A polícia ganha apoio para patrulhar a Zona Sul.",
+   "efeitos": [
+    {
+     "tipo": "movimento_detetive",
+     "zonas": [
+      "SUL",
+      "EXT"
+     ]
+    }
+   ],
+   "regioes": [
+    "EXT",
+    "SUL"
+   ]
+  },
+  {
+   "id": "simpatizante",
+   "cat": "rede",
+   "copias": 1,
+   "duracao": 0,
+   "nome": "Simpatizante da rede",
+   "texto": "Alguém oferece carona sem fazer perguntas.",
+   "efeitos": [
+    {
+     "tipo": "movimento_extra"
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "caminhoneiro",
+   "cat": "rede",
+   "copias": 1,
+   "duracao": 0,
+   "nome": "Carona de caminhoneiro",
+   "texto": "Um frete vai para onde o espião precisa.",
+   "efeitos": [
+    {
+     "tipo": "app_gratis"
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "barqueiro",
+   "cat": "rede",
+   "copias": 1,
+   "duracao": 2,
+   "nome": "Barqueiro clandestino",
+   "texto": "Um pescador das Ilhas leva qualquer um, a qualquer hora.",
+   "efeitos": [
+    {
+     "tipo": "barco_clandestino",
+     "valor": 3
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "envelope-extra",
+   "cat": "rede",
+   "copias": 1,
+   "duracao": 0,
+   "nome": "Envelope extra",
+   "texto": "A rede deixa uma cópia de uma pista em outro lugar.",
+   "efeitos": [
+    {
+     "tipo": "contato_extra"
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "dinheiro-rede",
+   "cat": "rede",
+   "copias": 1,
+   "duracao": 0,
+   "nome": "Remessa da rede",
+   "texto": "Um envelope com dinheiro aparece no bolso do casaco.",
+   "efeitos": [
+    {
+     "tipo": "dinheiro_espiao",
+     "valor": 3
+    }
+   ],
+   "regioes": []
+  },
+  {
+   "id": "calmaria",
+   "cat": "neutro",
+   "copias": 2,
+   "duracao": 0,
+   "nome": "Calmaria",
+   "texto": "Nada acontece. Um alívio...",
+   "efeitos": [
+    {
+     "tipo": "nenhum"
+    }
+   ],
+   "regioes": []
+  }
+ ],
+ "itens": [
+  {
+   "id": "grampo",
+   "nome": "Grampo",
+   "custo": 3,
+   "texto": "Instale num Ponto de Contato (1 PA). Se o espião recolher ali: local exato e conteúdo decifrado na hora."
+  },
+  {
+   "id": "retrato",
+   "nome": "Retrato Falado",
+   "custo": 2,
+   "texto": "Por 3 rodadas: +15% de denúncia numa zona."
+  },
+  {
+   "id": "ceic",
+   "nome": "Monitoramento CEIC",
+   "custo": 3,
+   "texto": "Por 2 rodadas: câmeras de uma zona com 50% de alerta."
+  },
+  {
+   "id": "k9",
+   "nome": "Cão K9",
+   "custo": 3,
+   "usos": 3,
+   "texto": "Investigar alcança 12 rodadas e mostra o próximo local do rastro."
+  },
+  {
+   "id": "drone",
+   "nome": "Drone",
+   "custo": 4,
+   "usos": 1,
+   "texto": "Escolha um local: diz se o espião está nele ou num vizinho (sem dizer qual)."
+  },
+  {
+   "id": "quebra-sigilo",
+   "nome": "Quebra de Sigilo Telemático",
+   "custo": 4,
+   "usos": 1,
+   "texto": "Revela origem, destino e rodada da última corrida de App do espião."
+  },
+  {
+   "id": "escuta-movel",
+   "nome": "Escuta Móvel",
+   "custo": 3,
+   "texto": "Este detetive pode Interceptar de qualquer lugar. Permanente."
+  },
+  {
+   "id": "decodificador",
+   "nome": "Decodificador",
+   "custo": 5,
+   "texto": "+20% em todas as interceptações do time. Permanente."
+  },
+  {
+   "id": "cones",
+   "nome": "Cones de Barreira",
+   "custo": 2,
+   "texto": "Bloqueio sem detetive num local vizinho por 3 rodadas. Se o espião entrar a pé, é avistado."
+  },
+  {
+   "id": "lancha",
+   "nome": "Lancha da Patrulha Fluvial",
+   "custo": 3,
+   "texto": "Nesta rodada o time usa as travessias de barco (2 PA), em qualquer horário."
+  },
+  {
+   "id": "helicoptero",
+   "nome": "Helicóptero Águia",
+   "custo": 6,
+   "usos": 1,
+   "texto": "Um detetive vai a qualquer local por 0 PA. Proibido com chuva forte."
+  }
+ ],
+ "perfis_espiao": [
+  {
+   "id": "sombra",
+   "nome": "Sombra",
+   "especialidade": "Infiltração",
+   "texto": "Disfarce custa R$ 1. A primeira denúncia da partida é ignorada."
+  },
+  {
+   "id": "corredor",
+   "nome": "Corredor",
+   "especialidade": "Logística",
+   "texto": "Uma viagem de ônibus ou Trensurb grátis por rodada. App custa R$ 2."
+  },
+  {
+   "id": "criptografo",
+   "nome": "Criptógrafo",
+   "especialidade": "Comunicação",
+   "texto": "Interceptar suas transmissões tem −15%. Pode usar Mensagem Falsa 3 vezes."
+  }
+ ],
+ "papeis_detetives": [
+  {
+   "id": "delegada",
+   "letra": "D",
+   "nome": "Delegada",
+   "especialidade": "Comando",
+   "texto": "1×/rodada transfere 1 PA a outro detetive. Acusação custa 2 PA e vale de qualquer lugar. Itens custam 1 crédito a menos."
+  },
+  {
+   "id": "perito",
+   "letra": "P",
+   "nome": "Perito Criminal",
+   "especialidade": "Forense",
+   "texto": "Investigar também mostra o próximo local se o rastro tem até 3 rodadas. Periciar Contato custa 1 PA."
+  },
+  {
+   "id": "analista",
+   "letra": "A",
+   "nome": "Analista de Inteligência",
+   "especialidade": "Inteligência",
+   "texto": "Interceptar custa 1 PA, +15%, de qualquer lugar. Não pode Abordar."
+  },
+  {
+   "id": "tatico",
+   "letra": "T",
+   "nome": "Agente Tático",
+   "especialidade": "Operações",
+   "texto": "Abordar custa 1 PA e ignora 1 nível de lotação. Viatura alcança 5 ligações. Interceptar custa 3 PA."
+  },
+  {
+   "id": "rua",
+   "letra": "R",
+   "nome": "Investigadora de Rua",
+   "especialidade": "Campo",
+   "so_com_6": true,
+   "texto": "Interrogar grátis 1×/rodada, com alcance 3. Um Retrato Falado grátis por partida."
+  }
+ ]
+}

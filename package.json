@@ -5,14 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "node --import tsx scripts/dev.ts",
-    "build": "tsc --noEmit && vite build",
+    "build": "node scripts/sombra-dados.mjs && tsc --noEmit && vite build",
     "test": "node --import tsx --test tests/*.test.ts",
     "preview": "vite preview"
   },
   "dependencies": {
+    "lucide-react": "^0.468.0",
+    "qrcode-generator": "^1.4.4",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "lucide-react": "^0.468.0"
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.0",

@@ -1,0 +1,2898 @@
+{
+ "versao": 2,
+ "escala": "1 ligação a pé ≈ 0,5 a 2 km (cidade) e até 4 km (Extremo Sul)",
+ "rodadas": {
+  "total": 24,
+  "hora_da_rodada_1": 6,
+  "revelacoes": [
+   3,
+   8,
+   13,
+   18,
+   23
+  ]
+ },
+ "zonas": {
+  "CEN": "Centro Histórico",
+  "CBX": "Cidade Baixa e Menino Deus",
+  "BOM": "Bom Fim e Farroupilha",
+  "MOI": "Moinhos e bairros nobres",
+  "NOR": "Zona Norte",
+  "LES": "Zona Leste",
+  "SUL": "Zona Sul",
+  "EXT": "Extremo Sul",
+  "ILH": "Ilhas"
+ },
+ "tipos": {
+  "comercial": "Comercial / Centro",
+  "boemio": "Boêmio",
+  "nobre": "Bairro nobre",
+  "residencial": "Residencial",
+  "universitario": "Universitário / Hospitalar",
+  "industrial": "Industrial / Logístico",
+  "quente": "Zona quente",
+  "lazer": "Parque / Orla",
+  "rural": "Rural / Extremo Sul",
+  "ilha": "Ilhas"
+ },
+ "locais": [
+  {
+   "id": 1,
+   "nome": "Mercado Público / Largo Glênio Peres",
+   "curto": "Mercado Público",
+   "zona": "CEN",
+   "tipo": "comercial",
+   "aglomeracao_base": 4,
+   "etiquetas": [
+    "T",
+    "TERM",
+    "CAM",
+    "TUR",
+    "BIKE",
+    "EMERGENCIA"
+   ],
+   "lat": -30.0272,
+   "lon": -51.2283,
+   "x": -4654,
+   "y": -3626
+  },
+  {
+   "id": 2,
+   "nome": "Praça da Alfândega / Rua da Praia",
+   "curto": "Alfândega",
+   "zona": "CEN",
+   "tipo": "comercial",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "CON",
+    "CAM",
+    "TUR",
+    "BIKE"
+   ],
+   "lat": -30.0298,
+   "lon": -51.2318,
+   "x": -4991,
+   "y": -3338
+  },
+  {
+   "id": 3,
+   "nome": "Cais Mauá",
+   "curto": "Cais Mauá",
+   "zona": "CEN",
+   "tipo": "lazer",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "EXT:agua",
+    "B",
+    "TUR"
+   ],
+   "lat": -30.0258,
+   "lon": -51.2345,
+   "x": -5251,
+   "y": -3780
+  },
+  {
+   "id": 4,
+   "nome": "Casa de Cultura Mario Quintana",
+   "curto": "Casa de Cultura",
+   "zona": "CEN",
+   "tipo": "comercial",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "CON",
+    "TUR",
+    "BIKE"
+   ],
+   "lat": -30.0313,
+   "lon": -51.2365,
+   "x": -5444,
+   "y": -3172
+  },
+  {
+   "id": 5,
+   "nome": "Cais Embarcadero",
+   "curto": "Embarcadero",
+   "zona": "CEN",
+   "tipo": "boemio",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "B",
+    "TUR"
+   ],
+   "lat": -30.0298,
+   "lon": -51.24,
+   "x": -5781,
+   "y": -3338
+  },
+  {
+   "id": 6,
+   "nome": "Usina do Gasômetro",
+   "curto": "Gasômetro",
+   "zona": "CEN",
+   "tipo": "lazer",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "TUR",
+    "BIKE"
+   ],
+   "lat": -30.0345,
+   "lon": -51.2422,
+   "x": -5993,
+   "y": -2819
+  },
+  {
+   "id": 7,
+   "nome": "Praça da Matriz / Catedral / Theatro São Pedro",
+   "curto": "Matriz",
+   "zona": "CEN",
+   "tipo": "comercial",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "TUR",
+    "BIKE"
+   ],
+   "lat": -30.0335,
+   "lon": -51.23,
+   "x": -4817,
+   "y": -2929
+  },
+  {
+   "id": 8,
+   "nome": "Estação Rodoviária",
+   "curto": "Rodoviária",
+   "zona": "CEN",
+   "tipo": "comercial",
+   "aglomeracao_base": 4,
+   "etiquetas": [
+    "EXT:terra",
+    "T",
+    "TERM",
+    "CAM",
+    "ATM"
+   ],
+   "lat": -30.0222,
+   "lon": -51.2188,
+   "x": -3738,
+   "y": -4178
+  },
+  {
+   "id": 9,
+   "nome": "Floresta / Av. Cristóvão Colombo",
+   "curto": "Floresta",
+   "zona": "CEN",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "BIKE"
+   ],
+   "lat": -30.0205,
+   "lon": -51.208,
+   "x": -2698,
+   "y": -4366
+  },
+  {
+   "id": 10,
+   "nome": "Cidade Baixa / Rua da República",
+   "curto": "Cidade Baixa",
+   "zona": "CBX",
+   "tipo": "boemio",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "CON",
+    "BIKE",
+    "NOITE+1"
+   ],
+   "lat": -30.0408,
+   "lon": -51.2235,
+   "x": -4191,
+   "y": -2122
+  },
+  {
+   "id": 11,
+   "nome": "Parque Harmonia",
+   "curto": "Harmonia",
+   "zona": "CBX",
+   "tipo": "lazer",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "PARQUE",
+    "ESC"
+   ],
+   "lat": -30.0428,
+   "lon": -51.233,
+   "x": -5106,
+   "y": -1901
+  },
+  {
+   "id": 12,
+   "nome": "Orla do Guaíba / Anfiteatro Pôr do Sol",
+   "curto": "Pôr do Sol",
+   "zona": "CBX",
+   "tipo": "lazer",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "TUR",
+    "BIKE"
+   ],
+   "lat": -30.0462,
+   "lon": -51.2405,
+   "x": -5829,
+   "y": -1525
+  },
+  {
+   "id": 13,
+   "nome": "Shopping Praia de Belas",
+   "curto": "Praia de Belas",
+   "zona": "CBX",
+   "tipo": "comercial",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "CAM",
+    "ATM",
+    "LOJ",
+    "BIKE"
+   ],
+   "lat": -30.05,
+   "lon": -51.229,
+   "x": -4721,
+   "y": -1105
+  },
+  {
+   "id": 14,
+   "nome": "Parque Marinha do Brasil",
+   "curto": "Parque Marinha",
+   "zona": "CBX",
+   "tipo": "lazer",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "PARQUE",
+    "ESC",
+    "BIKE"
+   ],
+   "lat": -30.058,
+   "lon": -51.233,
+   "x": -5106,
+   "y": -221
+  },
+  {
+   "id": 15,
+   "nome": "Estádio Beira-Rio",
+   "curto": "Beira-Rio",
+   "zona": "CBX",
+   "tipo": "lazer",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "ESTADIO",
+    "TUR",
+    "BIKE"
+   ],
+   "lat": -30.0655,
+   "lon": -51.236,
+   "x": -5395,
+   "y": 608
+  },
+  {
+   "id": 16,
+   "nome": "Menino Deus / Av. Getúlio Vargas",
+   "curto": "Menino Deus",
+   "zona": "CBX",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "CON",
+    "BIKE"
+   ],
+   "lat": -30.056,
+   "lon": -51.2205,
+   "x": -3902,
+   "y": -442
+  },
+  {
+   "id": 17,
+   "nome": "Azenha / Av. da Azenha",
+   "curto": "Azenha",
+   "zona": "CBX",
+   "tipo": "comercial",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "BIKE"
+   ],
+   "lat": -30.059,
+   "lon": -51.2125,
+   "x": -3131,
+   "y": -111
+  },
+  {
+   "id": 18,
+   "nome": "Palácio da Polícia",
+   "curto": "Palácio da Polícia",
+   "zona": "CBX",
+   "tipo": "comercial",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "HQ"
+   ],
+   "lat": -30.0478,
+   "lon": -51.214,
+   "x": -3276,
+   "y": -1349
+  },
+  {
+   "id": 19,
+   "nome": "Medianeira / Santo Antônio",
+   "curto": "Medianeira",
+   "zona": "CBX",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -30.0705,
+   "lon": -51.2055,
+   "x": -2457,
+   "y": 1161
+  },
+  {
+   "id": 20,
+   "nome": "Vila Cruzeiro / Santa Tereza",
+   "curto": "Vila Cruzeiro",
+   "zona": "CBX",
+   "tipo": "quente",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "ESC"
+   ],
+   "lat": -30.076,
+   "lon": -51.2215,
+   "x": -3998,
+   "y": 1769
+  },
+  {
+   "id": 21,
+   "nome": "Morro Santa Tereza (torres de TV)",
+   "curto": "Morro Santa Tereza",
+   "zona": "CBX",
+   "tipo": "lazer",
+   "aglomeracao_base": 0,
+   "etiquetas": [
+    "ANT",
+    "ESC",
+    "MORRO"
+   ],
+   "lat": -30.0695,
+   "lon": -51.2295,
+   "x": -4769,
+   "y": 1050
+  },
+  {
+   "id": 22,
+   "nome": "Parque da Redenção / Brique / Araújo Vianna",
+   "curto": "Redenção",
+   "zona": "BOM",
+   "tipo": "lazer",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "CON",
+    "PARQUE",
+    "TUR",
+    "BIKE"
+   ],
+   "lat": -30.0378,
+   "lon": -51.215,
+   "x": -3372,
+   "y": -2454
+  },
+  {
+   "id": 23,
+   "nome": "UFRGS – Campus Centro",
+   "curto": "UFRGS",
+   "zona": "BOM",
+   "tipo": "universitario",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "BIKE"
+   ],
+   "lat": -30.0335,
+   "lon": -51.219,
+   "x": -3758,
+   "y": -2929
+  },
+  {
+   "id": 24,
+   "nome": "Bom Fim / Av. Osvaldo Aranha",
+   "curto": "Bom Fim",
+   "zona": "BOM",
+   "tipo": "boemio",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "BIKE",
+    "NOITE+1"
+   ],
+   "lat": -30.0318,
+   "lon": -51.21,
+   "x": -2890,
+   "y": -3117
+  },
+  {
+   "id": 25,
+   "nome": "Hospital de Clínicas / Santa Cecília",
+   "curto": "Clínicas",
+   "zona": "BOM",
+   "tipo": "universitario",
+   "aglomeracao_base": 3,
+   "etiquetas": [],
+   "lat": -30.039,
+   "lon": -51.2063,
+   "x": -2534,
+   "y": -2321
+  },
+  {
+   "id": 26,
+   "nome": "Av. Independência",
+   "curto": "Independência",
+   "zona": "BOM",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "BIKE"
+   ],
+   "lat": -30.027,
+   "lon": -51.209,
+   "x": -2794,
+   "y": -3648
+  },
+  {
+   "id": 27,
+   "nome": "Rua Padre Chagas",
+   "curto": "Padre Chagas",
+   "zona": "MOI",
+   "tipo": "nobre",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "CON",
+    "BIKE",
+    "NOITE+1"
+   ],
+   "lat": -30.0268,
+   "lon": -51.2018,
+   "x": -2100,
+   "y": -3670
+  },
+  {
+   "id": 28,
+   "nome": "Parcão / Shopping Moinhos",
+   "curto": "Parcão",
+   "zona": "MOI",
+   "tipo": "nobre",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "PARQUE",
+    "LOJ",
+    "ATM",
+    "BIKE"
+   ],
+   "lat": -30.0232,
+   "lon": -51.1955,
+   "x": -1493,
+   "y": -4068
+  },
+  {
+   "id": 29,
+   "nome": "Mont'Serrat",
+   "curto": "Mont'Serrat",
+   "zona": "MOI",
+   "tipo": "nobre",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.0262,
+   "lon": -51.1865,
+   "x": -626,
+   "y": -3736
+  },
+  {
+   "id": 30,
+   "nome": "Bela Vista / Praça da Encol",
+   "curto": "Bela Vista",
+   "zona": "MOI",
+   "tipo": "nobre",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "CON",
+    "BIKE"
+   ],
+   "lat": -30.0352,
+   "lon": -51.1848,
+   "x": -462,
+   "y": -2741
+  },
+  {
+   "id": 31,
+   "nome": "Petrópolis / Av. Protásio Alves",
+   "curto": "Petrópolis",
+   "zona": "MOI",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "BIKE"
+   ],
+   "lat": -30.0442,
+   "lon": -51.1858,
+   "x": -559,
+   "y": -1747
+  },
+  {
+   "id": 32,
+   "nome": "Auxiliadora / Av. Plínio Brasil Milano",
+   "curto": "Auxiliadora",
+   "zona": "MOI",
+   "tipo": "nobre",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -30.0185,
+   "lon": -51.1855,
+   "x": -530,
+   "y": -4587
+  },
+  {
+   "id": 33,
+   "nome": "Três Figueiras",
+   "curto": "Três Figueiras",
+   "zona": "MOI",
+   "tipo": "nobre",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.0357,
+   "lon": -51.1665,
+   "x": 1301,
+   "y": -2686
+  },
+  {
+   "id": 34,
+   "nome": "Shopping Iguatemi",
+   "curto": "Iguatemi",
+   "zona": "MOI",
+   "tipo": "nobre",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "CAM",
+    "ATM",
+    "LOJ"
+   ],
+   "lat": -30.0265,
+   "lon": -51.1628,
+   "x": 1657,
+   "y": -3703
+  },
+  {
+   "id": 35,
+   "nome": "Chácara das Pedras",
+   "curto": "Chácara das Pedras",
+   "zona": "MOI",
+   "tipo": "nobre",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.0302,
+   "lon": -51.1505,
+   "x": 2842,
+   "y": -3294
+  },
+  {
+   "id": 36,
+   "nome": "Boa Vista / Country Club",
+   "curto": "Boa Vista",
+   "zona": "MOI",
+   "tipo": "nobre",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.0183,
+   "lon": -51.1705,
+   "x": 915,
+   "y": -4610
+  },
+  {
+   "id": 37,
+   "nome": "Jardim Botânico",
+   "curto": "Jardim Botânico",
+   "zona": "LES",
+   "tipo": "lazer",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "CON",
+    "PARQUE",
+    "TUR"
+   ],
+   "lat": -30.0515,
+   "lon": -51.1765,
+   "x": 337,
+   "y": -940
+  },
+  {
+   "id": 38,
+   "nome": "Bourbon Ipiranga / Av. Ipiranga",
+   "curto": "Bourbon Ipiranga",
+   "zona": "LES",
+   "tipo": "comercial",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "CAM",
+    "ATM",
+    "LOJ"
+   ],
+   "lat": -30.0572,
+   "lon": -51.1845,
+   "x": -434,
+   "y": -310
+  },
+  {
+   "id": 39,
+   "nome": "PUCRS",
+   "curto": "PUCRS",
+   "zona": "LES",
+   "tipo": "universitario",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "CON"
+   ],
+   "lat": -30.0598,
+   "lon": -51.1728,
+   "x": 694,
+   "y": -22
+  },
+  {
+   "id": 40,
+   "nome": "Partenon / Av. Bento Gonçalves",
+   "curto": "Partenon",
+   "zona": "LES",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -30.062,
+   "lon": -51.1965,
+   "x": -1590,
+   "y": 221
+  },
+  {
+   "id": 41,
+   "nome": "São José",
+   "curto": "São José",
+   "zona": "LES",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -30.0612,
+   "lon": -51.148,
+   "x": 3083,
+   "y": 133
+  },
+  {
+   "id": 42,
+   "nome": "Vila Bom Jesus",
+   "curto": "Bom Jesus",
+   "zona": "LES",
+   "tipo": "quente",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "ESC"
+   ],
+   "lat": -30.0442,
+   "lon": -51.1545,
+   "x": 2457,
+   "y": -1747
+  },
+  {
+   "id": 43,
+   "nome": "Jardim Carvalho / Protásio Alves",
+   "curto": "Jardim Carvalho",
+   "zona": "LES",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -30.042,
+   "lon": -51.1355,
+   "x": 4287,
+   "y": -1990
+  },
+  {
+   "id": 44,
+   "nome": "Morro Santana",
+   "curto": "Morro Santana",
+   "zona": "LES",
+   "tipo": "lazer",
+   "aglomeracao_base": 0,
+   "etiquetas": [
+    "ESC",
+    "MORRO"
+   ],
+   "lat": -30.0565,
+   "lon": -51.1295,
+   "x": 4866,
+   "y": -387
+  },
+  {
+   "id": 45,
+   "nome": "Agronomia / UFRGS Campus do Vale",
+   "curto": "Campus do Vale",
+   "zona": "LES",
+   "tipo": "universitario",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.072,
+   "lon": -51.121,
+   "x": 5685,
+   "y": 1326
+  },
+  {
+   "id": 46,
+   "nome": "Lomba do Pinheiro",
+   "curto": "Lomba do Pinheiro",
+   "zona": "LES",
+   "tipo": "quente",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "ESC"
+   ],
+   "lat": -30.106,
+   "lon": -51.12,
+   "x": 5781,
+   "y": 5085
+  },
+  {
+   "id": 47,
+   "nome": "Igreja dos Navegantes / Av. Farrapos",
+   "curto": "Navegantes",
+   "zona": "NOR",
+   "tipo": "industrial",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "TUR"
+   ],
+   "lat": -30.011,
+   "lon": -51.211,
+   "x": -2987,
+   "y": -5416
+  },
+  {
+   "id": 48,
+   "nome": "Estação São Pedro",
+   "curto": "São Pedro",
+   "zona": "NOR",
+   "tipo": "industrial",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "T"
+   ],
+   "lat": -30.0152,
+   "lon": -51.2068,
+   "x": -2582,
+   "y": -4952
+  },
+  {
+   "id": 49,
+   "nome": "Ponte do Guaíba (Travessia Régis Bittencourt)",
+   "curto": "Ponte do Guaíba",
+   "zona": "NOR",
+   "tipo": "industrial",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "EXT:terra"
+   ],
+   "lat": -30.0045,
+   "lon": -51.2235,
+   "x": -4191,
+   "y": -6135
+  },
+  {
+   "id": 50,
+   "nome": "Estação Farrapos",
+   "curto": "Farrapos",
+   "zona": "NOR",
+   "tipo": "industrial",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "T"
+   ],
+   "lat": -30.0035,
+   "lon": -51.2008,
+   "x": -2004,
+   "y": -6246
+  },
+  {
+   "id": 51,
+   "nome": "Humaitá",
+   "curto": "Humaitá",
+   "zona": "NOR",
+   "tipo": "industrial",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "ESC"
+   ],
+   "lat": -29.989,
+   "lon": -51.2,
+   "x": -1927,
+   "y": -7848
+  },
+  {
+   "id": 52,
+   "nome": "Arena do Grêmio",
+   "curto": "Arena",
+   "zona": "NOR",
+   "tipo": "lazer",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "ESTADIO",
+    "TUR"
+   ],
+   "lat": -29.974,
+   "lon": -51.1955,
+   "x": -1493,
+   "y": -9506
+  },
+  {
+   "id": 53,
+   "nome": "São João / Higienópolis",
+   "curto": "São João",
+   "zona": "NOR",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -30.011,
+   "lon": -51.1905,
+   "x": -1012,
+   "y": -5416
+  },
+  {
+   "id": 54,
+   "nome": "Aeroporto Salgado Filho",
+   "curto": "Aeroporto",
+   "zona": "NOR",
+   "tipo": "comercial",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "EXT:ar",
+    "T",
+    "CAM",
+    "ATM"
+   ],
+   "lat": -29.9935,
+   "lon": -51.1715,
+   "x": 819,
+   "y": -7351
+  },
+  {
+   "id": 55,
+   "nome": "Anchieta / Ceasa",
+   "curto": "Ceasa",
+   "zona": "NOR",
+   "tipo": "industrial",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "CON",
+    "T",
+    "MADRUGADA+2"
+   ],
+   "lat": -29.9795,
+   "lon": -51.164,
+   "x": 1542,
+   "y": -8898
+  },
+  {
+   "id": 56,
+   "nome": "Passo d'Areia / Av. Assis Brasil",
+   "curto": "Passo d'Areia",
+   "zona": "NOR",
+   "tipo": "comercial",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "TERM"
+   ],
+   "lat": -30.0068,
+   "lon": -51.1772,
+   "x": 270,
+   "y": -5881
+  },
+  {
+   "id": 57,
+   "nome": "Bourbon Wallig",
+   "curto": "Bourbon Wallig",
+   "zona": "NOR",
+   "tipo": "comercial",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "CAM",
+    "ATM",
+    "LOJ"
+   ],
+   "lat": -30.0092,
+   "lon": -51.159,
+   "x": 2023,
+   "y": -5615
+  },
+  {
+   "id": 58,
+   "nome": "Cristo Redentor",
+   "curto": "Cristo Redentor",
+   "zona": "NOR",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -30.0045,
+   "lon": -51.145,
+   "x": 3372,
+   "y": -6135
+  },
+  {
+   "id": 59,
+   "nome": "Jardim Lindóia",
+   "curto": "Lindóia",
+   "zona": "NOR",
+   "tipo": "residencial",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -29.9962,
+   "lon": -51.1555,
+   "x": 2361,
+   "y": -7052
+  },
+  {
+   "id": 60,
+   "nome": "Sarandi",
+   "curto": "Sarandi",
+   "zona": "NOR",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -29.986,
+   "lon": -51.132,
+   "x": 4625,
+   "y": -8180
+  },
+  {
+   "id": 61,
+   "nome": "Passo das Pedras",
+   "curto": "Passo das Pedras",
+   "zona": "NOR",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -29.9995,
+   "lon": -51.118,
+   "x": 5974,
+   "y": -6688
+  },
+  {
+   "id": 62,
+   "nome": "Complexo Cultural do Porto Seco",
+   "curto": "Porto Seco",
+   "zona": "NOR",
+   "tipo": "lazer",
+   "aglomeracao_base": 0,
+   "etiquetas": [
+    "ESC"
+   ],
+   "lat": -29.9925,
+   "lon": -51.1065,
+   "x": 7082,
+   "y": -7461
+  },
+  {
+   "id": 63,
+   "nome": "Rubem Berta",
+   "curto": "Rubem Berta",
+   "zona": "NOR",
+   "tipo": "quente",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "ESC",
+    "TERM"
+   ],
+   "lat": -29.9835,
+   "lon": -51.0955,
+   "x": 8141,
+   "y": -8456
+  },
+  {
+   "id": 64,
+   "nome": "Jardim Itu-Sabará",
+   "curto": "Jardim Itu",
+   "zona": "NOR",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -30.0185,
+   "lon": -51.1395,
+   "x": 3902,
+   "y": -4587
+  },
+  {
+   "id": 65,
+   "nome": "Mário Quintana",
+   "curto": "Mário Quintana",
+   "zona": "NOR",
+   "tipo": "quente",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "ESC"
+   ],
+   "lat": -30.025,
+   "lon": -51.0955,
+   "x": 8141,
+   "y": -3869
+  },
+  {
+   "id": 66,
+   "nome": "Ilha Grande dos Marinheiros",
+   "curto": "Ilha dos Marinheiros",
+   "zona": "ILH",
+   "tipo": "ilha",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "CON",
+    "ESC",
+    "B"
+   ],
+   "lat": -30.0005,
+   "lon": -51.2475,
+   "x": -6503,
+   "y": -6577
+  },
+  {
+   "id": 67,
+   "nome": "Ilha da Pintada",
+   "curto": "Ilha da Pintada",
+   "zona": "ILH",
+   "tipo": "ilha",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "EXT:agua",
+    "B"
+   ],
+   "lat": -30.031,
+   "lon": -51.2625,
+   "x": -7949,
+   "y": -3206
+  },
+  {
+   "id": 68,
+   "nome": "Ilha das Flores",
+   "curto": "Ilha das Flores",
+   "zona": "ILH",
+   "tipo": "ilha",
+   "aglomeracao_base": 0,
+   "etiquetas": [
+    "ESC"
+   ],
+   "lat": -29.9862,
+   "lon": -51.238,
+   "x": -5588,
+   "y": -8158
+  },
+  {
+   "id": 69,
+   "nome": "Fundação Iberê Camargo",
+   "curto": "Iberê Camargo",
+   "zona": "SUL",
+   "tipo": "lazer",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "CON",
+    "TUR"
+   ],
+   "lat": -30.0775,
+   "lon": -51.245,
+   "x": -6263,
+   "y": 1934
+  },
+  {
+   "id": 70,
+   "nome": "BarraShoppingSul",
+   "curto": "BarraShopping",
+   "zona": "SUL",
+   "tipo": "comercial",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "CAM",
+    "ATM",
+    "LOJ"
+   ],
+   "lat": -30.0858,
+   "lon": -51.2438,
+   "x": -6147,
+   "y": 2852
+  },
+  {
+   "id": 71,
+   "nome": "Cristal / Av. Diário de Notícias",
+   "curto": "Cristal",
+   "zona": "SUL",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -30.0835,
+   "lon": -51.229,
+   "x": -4721,
+   "y": 2598
+  },
+  {
+   "id": 72,
+   "nome": "Hipódromo do Cristal",
+   "curto": "Hipódromo",
+   "zona": "SUL",
+   "tipo": "lazer",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "ESC"
+   ],
+   "lat": -30.096,
+   "lon": -51.239,
+   "x": -5685,
+   "y": 3979
+  },
+  {
+   "id": 73,
+   "nome": "Glória / Av. Oscar Pereira",
+   "curto": "Glória",
+   "zona": "SUL",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -30.0795,
+   "lon": -51.199,
+   "x": -1831,
+   "y": 2156
+  },
+  {
+   "id": 74,
+   "nome": "Teresópolis",
+   "curto": "Teresópolis",
+   "zona": "SUL",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -30.088,
+   "lon": -51.214,
+   "x": -3276,
+   "y": 3095
+  },
+  {
+   "id": 75,
+   "nome": "Morro da Polícia",
+   "curto": "Morro da Polícia",
+   "zona": "SUL",
+   "tipo": "lazer",
+   "aglomeracao_base": 0,
+   "etiquetas": [
+    "ESC",
+    "ANT",
+    "MORRO"
+   ],
+   "lat": -30.0895,
+   "lon": -51.1885,
+   "x": -819,
+   "y": 3261
+  },
+  {
+   "id": 76,
+   "nome": "Nonoai",
+   "curto": "Nonoai",
+   "zona": "SUL",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -30.0985,
+   "lon": -51.201,
+   "x": -2023,
+   "y": 4256
+  },
+  {
+   "id": 77,
+   "nome": "Cascata",
+   "curto": "Cascata",
+   "zona": "SUL",
+   "tipo": "residencial",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.0905,
+   "lon": -51.172,
+   "x": 771,
+   "y": 3371
+  },
+  {
+   "id": 78,
+   "nome": "Vila Assunção",
+   "curto": "Vila Assunção",
+   "zona": "SUL",
+   "tipo": "nobre",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.104,
+   "lon": -51.2495,
+   "x": -6696,
+   "y": 4864
+  },
+  {
+   "id": 79,
+   "nome": "Tristeza / Av. Wenceslau Escobar",
+   "curto": "Tristeza",
+   "zona": "SUL",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "CON"
+   ],
+   "lat": -30.113,
+   "lon": -51.241,
+   "x": -5877,
+   "y": 5859
+  },
+  {
+   "id": 80,
+   "nome": "Cavalhada",
+   "curto": "Cavalhada",
+   "zona": "SUL",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -30.105,
+   "lon": -51.221,
+   "x": -3950,
+   "y": 4974
+  },
+  {
+   "id": 81,
+   "nome": "Morro do Osso",
+   "curto": "Morro do Osso",
+   "zona": "SUL",
+   "tipo": "lazer",
+   "aglomeracao_base": 0,
+   "etiquetas": [
+    "ESC",
+    "MORRO"
+   ],
+   "lat": -30.1185,
+   "lon": -51.224,
+   "x": -4239,
+   "y": 6467
+  },
+  {
+   "id": 82,
+   "nome": "Orla de Ipanema",
+   "curto": "Ipanema",
+   "zona": "SUL",
+   "tipo": "lazer",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "B",
+    "TUR"
+   ],
+   "lat": -30.1355,
+   "lon": -51.2325,
+   "x": -5058,
+   "y": 8346
+  },
+  {
+   "id": 83,
+   "nome": "Vila Nova",
+   "curto": "Vila Nova",
+   "zona": "SUL",
+   "tipo": "residencial",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.1265,
+   "lon": -51.201,
+   "x": -2023,
+   "y": 7351
+  },
+  {
+   "id": 84,
+   "nome": "Belém Velho",
+   "curto": "Belém Velho",
+   "zona": "SUL",
+   "tipo": "rural",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.118,
+   "lon": -51.176,
+   "x": 385,
+   "y": 6411
+  },
+  {
+   "id": 85,
+   "nome": "Espírito Santo / Guarujá",
+   "curto": "Guarujá",
+   "zona": "SUL",
+   "tipo": "residencial",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.16,
+   "lon": -51.2285,
+   "x": -4673,
+   "y": 11054
+  },
+  {
+   "id": 86,
+   "nome": "Hípica / Aberta dos Morros",
+   "curto": "Hípica",
+   "zona": "SUL",
+   "tipo": "residencial",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.145,
+   "lon": -51.199,
+   "x": -1831,
+   "y": 9396
+  },
+  {
+   "id": 87,
+   "nome": "Restinga",
+   "curto": "Restinga",
+   "zona": "SUL",
+   "tipo": "quente",
+   "aglomeracao_base": 3,
+   "etiquetas": [
+    "ESC",
+    "TERM"
+   ],
+   "lat": -30.15,
+   "lon": -51.144,
+   "x": 3469,
+   "y": 9949
+  },
+  {
+   "id": 88,
+   "nome": "Serraria",
+   "curto": "Serraria",
+   "zona": "EXT",
+   "tipo": "rural",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.175,
+   "lon": -51.216,
+   "x": -3469,
+   "y": 12712
+  },
+  {
+   "id": 89,
+   "nome": "Ponta Grossa",
+   "curto": "Ponta Grossa",
+   "zona": "EXT",
+   "tipo": "rural",
+   "aglomeracao_base": 0,
+   "etiquetas": [
+    "ESC"
+   ],
+   "lat": -30.188,
+   "lon": -51.2075,
+   "x": -2650,
+   "y": 14149
+  },
+  {
+   "id": 90,
+   "nome": "Píer de Belém Novo",
+   "curto": "Belém Novo",
+   "zona": "EXT",
+   "tipo": "rural",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "EXT:agua",
+    "B"
+   ],
+   "lat": -30.205,
+   "lon": -51.184,
+   "x": -385,
+   "y": 16028
+  },
+  {
+   "id": 91,
+   "nome": "Chapéu do Sol",
+   "curto": "Chapéu do Sol",
+   "zona": "EXT",
+   "tipo": "rural",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.198,
+   "lon": -51.15,
+   "x": 2890,
+   "y": 15255
+  },
+  {
+   "id": 92,
+   "nome": "Lageado",
+   "curto": "Lageado",
+   "zona": "EXT",
+   "tipo": "rural",
+   "aglomeracao_base": 0,
+   "etiquetas": [
+    "ESC"
+   ],
+   "lat": -30.21,
+   "lon": -51.12,
+   "x": 5781,
+   "y": 16581
+  },
+  {
+   "id": 93,
+   "nome": "Lami",
+   "curto": "Lami",
+   "zona": "EXT",
+   "tipo": "rural",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.237,
+   "lon": -51.1,
+   "x": 7708,
+   "y": 19566
+  },
+  {
+   "id": 94,
+   "nome": "Reserva Biológica do Lami",
+   "curto": "Reserva do Lami",
+   "zona": "EXT",
+   "tipo": "lazer",
+   "aglomeracao_base": 0,
+   "etiquetas": [
+    "CON",
+    "ESC"
+   ],
+   "lat": -30.2445,
+   "lon": -51.088,
+   "x": 8864,
+   "y": 20395
+  },
+  {
+   "id": 95,
+   "nome": "Santana / Av. Ipiranga",
+   "curto": "Santana",
+   "zona": "CBX",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [
+    "BIKE"
+   ],
+   "lat": -30.0492,
+   "lon": -51.2005,
+   "x": -1975,
+   "y": -1194
+  },
+  {
+   "id": 96,
+   "nome": "Coronel Aparício Borges",
+   "curto": "Aparício Borges",
+   "zona": "LES",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -30.0712,
+   "lon": -51.1858,
+   "x": -559,
+   "y": 1238
+  },
+  {
+   "id": 97,
+   "nome": "Vila Ipiranga",
+   "curto": "Vila Ipiranga",
+   "zona": "NOR",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -30.015,
+   "lon": -51.153,
+   "x": 2601,
+   "y": -4974
+  },
+  {
+   "id": 98,
+   "nome": "Santa Maria Goretti",
+   "curto": "Maria Goretti",
+   "zona": "NOR",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -29.9985,
+   "lon": -51.189,
+   "x": -867,
+   "y": -6798
+  },
+  {
+   "id": 99,
+   "nome": "Anchieta (distrito industrial)",
+   "curto": "Anchieta",
+   "zona": "NOR",
+   "tipo": "industrial",
+   "aglomeracao_base": 1,
+   "etiquetas": [
+    "ESC"
+   ],
+   "lat": -29.9842,
+   "lon": -51.18,
+   "x": 0,
+   "y": -8379
+  },
+  {
+   "id": 100,
+   "nome": "Parque Santa Fé",
+   "curto": "Parque Santa Fé",
+   "zona": "NOR",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -29.9765,
+   "lon": -51.1185,
+   "x": 5925,
+   "y": -9230
+  },
+  {
+   "id": 101,
+   "nome": "Costa e Silva",
+   "curto": "Costa e Silva",
+   "zona": "NOR",
+   "tipo": "residencial",
+   "aglomeracao_base": 2,
+   "etiquetas": [],
+   "lat": -30.0118,
+   "lon": -51.1205,
+   "x": 5733,
+   "y": -5328
+  },
+  {
+   "id": 102,
+   "nome": "Pedra Redonda",
+   "curto": "Pedra Redonda",
+   "zona": "SUL",
+   "tipo": "nobre",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.1238,
+   "lon": -51.247,
+   "x": -6455,
+   "y": 7052
+  },
+  {
+   "id": 103,
+   "nome": "Jardim Isabel",
+   "curto": "Jardim Isabel",
+   "zona": "SUL",
+   "tipo": "residencial",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.1345,
+   "lon": -51.217,
+   "x": -3565,
+   "y": 8235
+  },
+  {
+   "id": 104,
+   "nome": "Campo Novo",
+   "curto": "Campo Novo",
+   "zona": "SUL",
+   "tipo": "residencial",
+   "aglomeracao_base": 1,
+   "etiquetas": [],
+   "lat": -30.1525,
+   "lon": -51.214,
+   "x": -3276,
+   "y": 10225
+  },
+  {
+   "id": 105,
+   "nome": "Extrema",
+   "curto": "Extrema",
+   "zona": "EXT",
+   "tipo": "rural",
+   "aglomeracao_base": 0,
+   "etiquetas": [
+    "ESC"
+   ],
+   "lat": -30.223,
+   "lon": -51.144,
+   "x": 3469,
+   "y": 18018
+  }
+ ],
+ "conexoes": {
+  "a_pe": [
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    8
+   ],
+   [
+    1,
+    23
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    2,
+    7
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    3,
+    5
+   ],
+   [
+    4,
+    5
+   ],
+   [
+    4,
+    6
+   ],
+   [
+    5,
+    6
+   ],
+   [
+    6,
+    11
+   ],
+   [
+    6,
+    12
+   ],
+   [
+    7,
+    10
+   ],
+   [
+    7,
+    11
+   ],
+   [
+    7,
+    23
+   ],
+   [
+    8,
+    9
+   ],
+   [
+    8,
+    23
+   ],
+   [
+    8,
+    26
+   ],
+   [
+    8,
+    47
+   ],
+   [
+    9,
+    26
+   ],
+   [
+    9,
+    27
+   ],
+   [
+    9,
+    48
+   ],
+   [
+    10,
+    11
+   ],
+   [
+    10,
+    13
+   ],
+   [
+    10,
+    18
+   ],
+   [
+    10,
+    22
+   ],
+   [
+    10,
+    23
+   ],
+   [
+    11,
+    12
+   ],
+   [
+    11,
+    13
+   ],
+   [
+    12,
+    13
+   ],
+   [
+    12,
+    14
+   ],
+   [
+    13,
+    14
+   ],
+   [
+    13,
+    16
+   ],
+   [
+    13,
+    18
+   ],
+   [
+    14,
+    15
+   ],
+   [
+    14,
+    16
+   ],
+   [
+    15,
+    21
+   ],
+   [
+    15,
+    69
+   ],
+   [
+    16,
+    17
+   ],
+   [
+    16,
+    18
+   ],
+   [
+    16,
+    21
+   ],
+   [
+    17,
+    18
+   ],
+   [
+    17,
+    19
+   ],
+   [
+    17,
+    20
+   ],
+   [
+    17,
+    40
+   ],
+   [
+    17,
+    95
+   ],
+   [
+    18,
+    22
+   ],
+   [
+    18,
+    25
+   ],
+   [
+    18,
+    95
+   ],
+   [
+    19,
+    20
+   ],
+   [
+    19,
+    40
+   ],
+   [
+    19,
+    73
+   ],
+   [
+    19,
+    74
+   ],
+   [
+    19,
+    96
+   ],
+   [
+    20,
+    21
+   ],
+   [
+    20,
+    71
+   ],
+   [
+    20,
+    74
+   ],
+   [
+    21,
+    69
+   ],
+   [
+    22,
+    23
+   ],
+   [
+    22,
+    24
+   ],
+   [
+    22,
+    25
+   ],
+   [
+    23,
+    24
+   ],
+   [
+    24,
+    25
+   ],
+   [
+    24,
+    26
+   ],
+   [
+    25,
+    30
+   ],
+   [
+    25,
+    95
+   ],
+   [
+    26,
+    27
+   ],
+   [
+    27,
+    28
+   ],
+   [
+    28,
+    29
+   ],
+   [
+    28,
+    32
+   ],
+   [
+    28,
+    53
+   ],
+   [
+    29,
+    30
+   ],
+   [
+    29,
+    32
+   ],
+   [
+    30,
+    31
+   ],
+   [
+    30,
+    33
+   ],
+   [
+    31,
+    37
+   ],
+   [
+    31,
+    38
+   ],
+   [
+    31,
+    95
+   ],
+   [
+    32,
+    36
+   ],
+   [
+    32,
+    53
+   ],
+   [
+    32,
+    56
+   ],
+   [
+    33,
+    34
+   ],
+   [
+    33,
+    35
+   ],
+   [
+    33,
+    37
+   ],
+   [
+    33,
+    42
+   ],
+   [
+    34,
+    35
+   ],
+   [
+    34,
+    36
+   ],
+   [
+    34,
+    97
+   ],
+   [
+    35,
+    42
+   ],
+   [
+    35,
+    43
+   ],
+   [
+    35,
+    64
+   ],
+   [
+    35,
+    97
+   ],
+   [
+    36,
+    56
+   ],
+   [
+    36,
+    57
+   ],
+   [
+    36,
+    97
+   ],
+   [
+    37,
+    38
+   ],
+   [
+    37,
+    39
+   ],
+   [
+    37,
+    42
+   ],
+   [
+    38,
+    39
+   ],
+   [
+    38,
+    40
+   ],
+   [
+    38,
+    95
+   ],
+   [
+    38,
+    96
+   ],
+   [
+    39,
+    41
+   ],
+   [
+    39,
+    42
+   ],
+   [
+    39,
+    96
+   ],
+   [
+    40,
+    95
+   ],
+   [
+    40,
+    96
+   ],
+   [
+    41,
+    42
+   ],
+   [
+    41,
+    43
+   ],
+   [
+    41,
+    44
+   ],
+   [
+    42,
+    43
+   ],
+   [
+    43,
+    44
+   ],
+   [
+    43,
+    65
+   ],
+   [
+    44,
+    45
+   ],
+   [
+    45,
+    46
+   ],
+   [
+    47,
+    48
+   ],
+   [
+    47,
+    49
+   ],
+   [
+    47,
+    50
+   ],
+   [
+    48,
+    50
+   ],
+   [
+    48,
+    53
+   ],
+   [
+    49,
+    66
+   ],
+   [
+    50,
+    51
+   ],
+   [
+    50,
+    53
+   ],
+   [
+    50,
+    98
+   ],
+   [
+    51,
+    52
+   ],
+   [
+    51,
+    98
+   ],
+   [
+    51,
+    99
+   ],
+   [
+    52,
+    55
+   ],
+   [
+    52,
+    99
+   ],
+   [
+    53,
+    56
+   ],
+   [
+    53,
+    98
+   ],
+   [
+    54,
+    55
+   ],
+   [
+    54,
+    56
+   ],
+   [
+    54,
+    57
+   ],
+   [
+    54,
+    59
+   ],
+   [
+    54,
+    98
+   ],
+   [
+    54,
+    99
+   ],
+   [
+    55,
+    59
+   ],
+   [
+    55,
+    99
+   ],
+   [
+    56,
+    57
+   ],
+   [
+    56,
+    98
+   ],
+   [
+    57,
+    58
+   ],
+   [
+    57,
+    59
+   ],
+   [
+    57,
+    97
+   ],
+   [
+    58,
+    59
+   ],
+   [
+    58,
+    60
+   ],
+   [
+    58,
+    64
+   ],
+   [
+    58,
+    97
+   ],
+   [
+    58,
+    101
+   ],
+   [
+    59,
+    60
+   ],
+   [
+    60,
+    61
+   ],
+   [
+    60,
+    100
+   ],
+   [
+    61,
+    62
+   ],
+   [
+    61,
+    101
+   ],
+   [
+    62,
+    63
+   ],
+   [
+    62,
+    65
+   ],
+   [
+    62,
+    100
+   ],
+   [
+    63,
+    100
+   ],
+   [
+    64,
+    97
+   ],
+   [
+    64,
+    101
+   ],
+   [
+    65,
+    101
+   ],
+   [
+    66,
+    67
+   ],
+   [
+    66,
+    68
+   ],
+   [
+    69,
+    70
+   ],
+   [
+    69,
+    71
+   ],
+   [
+    70,
+    71
+   ],
+   [
+    70,
+    72
+   ],
+   [
+    71,
+    72
+   ],
+   [
+    71,
+    74
+   ],
+   [
+    71,
+    80
+   ],
+   [
+    72,
+    78
+   ],
+   [
+    72,
+    80
+   ],
+   [
+    73,
+    74
+   ],
+   [
+    73,
+    75
+   ],
+   [
+    73,
+    76
+   ],
+   [
+    73,
+    96
+   ],
+   [
+    74,
+    76
+   ],
+   [
+    74,
+    80
+   ],
+   [
+    75,
+    76
+   ],
+   [
+    75,
+    77
+   ],
+   [
+    75,
+    84
+   ],
+   [
+    75,
+    96
+   ],
+   [
+    76,
+    80
+   ],
+   [
+    76,
+    84
+   ],
+   [
+    77,
+    84
+   ],
+   [
+    77,
+    96
+   ],
+   [
+    78,
+    79
+   ],
+   [
+    79,
+    80
+   ],
+   [
+    79,
+    81
+   ],
+   [
+    79,
+    102
+   ],
+   [
+    80,
+    81
+   ],
+   [
+    81,
+    82
+   ],
+   [
+    81,
+    83
+   ],
+   [
+    81,
+    103
+   ],
+   [
+    82,
+    85
+   ],
+   [
+    82,
+    102
+   ],
+   [
+    82,
+    103
+   ],
+   [
+    83,
+    84
+   ],
+   [
+    83,
+    86
+   ],
+   [
+    83,
+    103
+   ],
+   [
+    84,
+    87
+   ],
+   [
+    85,
+    88
+   ],
+   [
+    85,
+    104
+   ],
+   [
+    86,
+    103
+   ],
+   [
+    86,
+    104
+   ],
+   [
+    88,
+    89
+   ],
+   [
+    88,
+    104
+   ],
+   [
+    89,
+    90
+   ],
+   [
+    90,
+    91
+   ],
+   [
+    90,
+    105
+   ],
+   [
+    91,
+    92
+   ],
+   [
+    91,
+    105
+   ],
+   [
+    92,
+    93
+   ],
+   [
+    92,
+    105
+   ],
+   [
+    93,
+    94
+   ],
+   [
+    93,
+    105
+   ],
+   [
+    98,
+    99
+   ],
+   [
+    103,
+    104
+   ]
+  ],
+  "barco": {
+   "rodadas": [
+    2,
+    16
+   ],
+   "arestas": [
+    [
+     3,
+     67
+    ],
+    [
+     5,
+     67
+    ],
+    [
+     5,
+     82
+    ],
+    [
+     82,
+     90
+    ],
+    [
+     66,
+     67
+    ],
+    [
+     3,
+     68
+    ]
+   ]
+  },
+  "trensurb": {
+   "rodadas": [
+    1,
+    18
+   ],
+   "estacoes": [
+    1,
+    8,
+    48,
+    50,
+    54,
+    55
+   ]
+  },
+  "onibus": {
+   "rodadas": [
+    1,
+    18
+   ],
+   "corujao_rodadas": [
+    19,
+    23
+   ],
+   "linhas": [
+    {
+     "id": "L1",
+     "nome": "Assis Brasil",
+     "corujao": true,
+     "paradas": [
+      1,
+      8,
+      9,
+      53,
+      56,
+      57,
+      58,
+      60,
+      61,
+      63
+     ]
+    },
+    {
+     "id": "L2",
+     "nome": "Protásio Alves",
+     "corujao": false,
+     "paradas": [
+      1,
+      23,
+      24,
+      30,
+      31,
+      33,
+      35,
+      42,
+      43,
+      65
+     ]
+    },
+    {
+     "id": "L3",
+     "nome": "Bento Gonçalves",
+     "corujao": true,
+     "paradas": [
+      1,
+      7,
+      22,
+      25,
+      40,
+      39,
+      41,
+      45,
+      46
+     ]
+    },
+    {
+     "id": "L4",
+     "nome": "Ipiranga",
+     "corujao": false,
+     "paradas": [
+      13,
+      16,
+      18,
+      95,
+      38,
+      39,
+      41,
+      43
+     ]
+    },
+    {
+     "id": "L5",
+     "nome": "Zona Sul / Orla",
+     "corujao": true,
+     "paradas": [
+      1,
+      6,
+      12,
+      14,
+      15,
+      69,
+      70,
+      72,
+      78,
+      79,
+      102,
+      82,
+      85,
+      88,
+      90
+     ]
+    },
+    {
+     "id": "L6",
+     "nome": "Cavalhada / Restinga",
+     "corujao": false,
+     "paradas": [
+      1,
+      10,
+      17,
+      19,
+      20,
+      74,
+      76,
+      80,
+      83,
+      86,
+      87
+     ]
+    },
+    {
+     "id": "L7",
+     "nome": "Farrapos / Arena",
+     "corujao": false,
+     "paradas": [
+      1,
+      8,
+      48,
+      47,
+      50,
+      51,
+      52,
+      99,
+      55
+     ]
+    },
+    {
+     "id": "L8",
+     "nome": "Independência / Moinhos",
+     "corujao": false,
+     "paradas": [
+      7,
+      26,
+      27,
+      28,
+      29,
+      32,
+      53,
+      98,
+      99
+     ]
+    },
+    {
+     "id": "L9",
+     "nome": "Oscar Pereira / Belém Velho",
+     "corujao": false,
+     "paradas": [
+      17,
+      73,
+      77,
+      84,
+      87
+     ]
+    },
+    {
+     "id": "L10",
+     "nome": "Lotação Extremo Sul",
+     "corujao": false,
+     "paradas": [
+      87,
+      91,
+      90,
+      92,
+      105,
+      93,
+      94
+     ]
+    },
+    {
+     "id": "L11",
+     "nome": "Nilo Peçanha / Sertório",
+     "corujao": false,
+     "paradas": [
+      34,
+      36,
+      97,
+      59,
+      54,
+      60,
+      100,
+      62
+     ]
+    },
+    {
+     "id": "L12",
+     "nome": "III Perimetral",
+     "corujao": true,
+     "paradas": [
+      54,
+      56,
+      36,
+      34,
+      33,
+      37,
+      96,
+      73,
+      74,
+      71,
+      70
+     ]
+    },
+    {
+     "id": "L13",
+     "nome": "Ilhas",
+     "corujao": false,
+     "paradas": [
+      1,
+      8,
+      47,
+      49,
+      66,
+      68,
+      67
+     ]
+    },
+    {
+     "id": "L14",
+     "nome": "Transversal Norte",
+     "corujao": false,
+     "paradas": [
+      56,
+      97,
+      64,
+      101,
+      65
+     ]
+    },
+    {
+     "id": "L15",
+     "nome": "Juca Batista",
+     "corujao": false,
+     "paradas": [
+      80,
+      83,
+      103,
+      104,
+      88,
+      89,
+      90
+     ]
+    },
+    {
+     "id": "L16",
+     "nome": "Lomba / Restinga",
+     "corujao": false,
+     "paradas": [
+      45,
+      46,
+      84,
+      87
+     ]
+    }
+   ]
+  },
+  "bike": {
+   "rodadas": [
+    1,
+    18
+   ],
+   "estacoes": [
+    1,
+    2,
+    4,
+    6,
+    7,
+    9,
+    10,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    22,
+    23,
+    24,
+    26,
+    27,
+    28,
+    30,
+    31,
+    95
+   ]
+  }
+ },
+ "janelas_extracao": {
+  "A": [
+   9,
+   10
+  ],
+  "B": [
+   13,
+   14
+  ],
+  "C": [
+   17,
+   18
+  ],
+  "D": [
+   21,
+   22
+  ]
+ },
+ "pontos_extracao": [
+  3,
+  8,
+  49,
+  54,
+  67,
+  90
+ ],
+ "contatos_candidatos": [
+  2,
+  4,
+  10,
+  16,
+  22,
+  27,
+  30,
+  37,
+  39,
+  55,
+  66,
+  69,
+  79,
+  94
+ ],
+ "contatos_sorteados": 8,
+ "inicio_detetives": {
+  "fixo": 18,
+  "opcoes": [
+   1,
+   22,
+   54,
+   70,
+   34,
+   56
+  ]
+ },
+ "relatorio": {
+  "locais": 105,
+  "ligacoes_a_pe": 220,
+  "comprimento_medio_m": 1634,
+  "maior_ligacao_m": 4693,
+  "diametro_em_ligacoes": 20,
+  "mercado_ate": {
+   "Aeroporto": 5,
+   "Arena": 5,
+   "Beira-Rio": 5,
+   "Restinga": 9,
+   "Belém Novo": 13,
+   "Lami": 15,
+   "Rubem Berta": 9
+  }
+ }
+}
