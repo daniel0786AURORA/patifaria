@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createGame, addPlayer, act, tick, view, opcoesEspiao, opcoesDetetive, acoesEspiao, type Game} from '../src/sombra/rules/engine.ts';
+import {createGame, addPlayer, act, tick, view, opcoesEspiao, opcoesDetetive, acoesEspiao, aplicarCarta, mods, EVENTO, ITEM, BALANCO, type Game} from '../src/sombra/rules/engine.ts';
 import {sortearPlano, rng} from '../src/sombra/rules/plan.ts';
-import {LOCAL, EXTRACOES, JANELAS, VIZ, alcance} from '../src/sombra/rules/map.ts';
+import {LOCAL, EXTRACOES, JANELAS, VIZ, IDS, HQ, tem, alcance} from '../src/sombra/rules/map.ts';
 
 const tok = (n:number) => n.toString(16).padStart(64, '0');
 function mesa(jogadores = 4, seed = 1): {g:Game;host:string;toks:string[]} {
@@ -53,15 +53,15 @@ test('informação secreta não vaza para a TV nem para os detetives', () => {
   const vs = view(g, st); assert.equal(vs.espiao!.loc, s.loc); assert.equal(vs.equipe, null);
 });
 
-test('movimento do espião: a pé até 2 ligações e nunca para em detetive', () => {
+test('movimento do espião: a pé dentro do alcance e nunca para em detetive', () => {
   const {g, host, toks} = mesa(2, 3); act(g, host, {action: 'iniciar'});
   const st = spyTok(g, toks); act(g, st, {action: 'preparar', perfil: 'corredor', local: g.spy!.opcoesInicio[0]});
   const o = opcoesEspiao(g); const ocup = new Set(g.dets.map(d => d.loc));
-  const dois = alcance(g.spy!.loc, 2);
+  const dois = alcance(g.spy!.loc, BALANCO.peAlcance);
   assert.ok(o.pe.length > 0);
   for (const d of o.pe) { assert.ok(dois.has(d.local)); assert.ok(!ocup.has(d.local)); }
   for (const k of Object.values(o)) for (const d of k) assert.ok(!ocup.has(d.local) || d.local === g.spy!.loc);
-  const longe = [...alcance(g.spy!.loc, 6)].find(([, d]) => d >= 4)![0];
+  const longe = [...alcance(g.spy!.loc, 8)].find(([, d]) => d > BALANCO.peAlcance + 1)![0];
   assert.throws(() => act(g, st, {action: 'mover', modo: 'pe', local: longe}), /não é possível/);
 });
 
@@ -128,4 +128,88 @@ test('tempo esgotado avança as fases sozinho', () => {
   tick(g, Date.now() + 1e7); assert.equal(g.phase, 'espiao');
   tick(g, Date.now() + 1e7); assert.equal(g.phase, 'detetives');
   tick(g, Date.now() + 1e7); assert.ok(g.phase === 'espiao' || g.phase === 'fim'); assert.ok(g.round >= 2 || g.phase === 'fim');
+});
+
+// ------------------------------------------------------------------ cobertura de cartas, itens e ações
+function emJogo(seed = 5, jogadores = 3) {
+  const {g, host, toks} = mesa(jogadores, seed); act(g, host, {action: 'iniciar'});
+  const st = spyTok(g, toks); act(g, st, {action: 'preparar', perfil: 'sombra', local: g.spy!.opcoesInicio[0]});
+  const det = toks.find(t => t !== st)!; return {g, host, toks, st, det};
+}
+const paraDetetives = (g:Game, st:string) => { const o = opcoesEspiao(g); const k = (Object.keys(o) as (keyof typeof o)[]).find(m => o[m].length)!; act(g, st, {action: 'mover', modo: k, local: o[k][0].local}); act(g, st, {action: 'agir', acao: 'passar'}); };
+
+test('todas as cartas de evento aplicam sem erro e a rodada segue', () => {
+  for (const id of Object.keys(EVENTO)) {
+    const {g, toks} = emJogo(17);
+    const ev = EVENTO[id]; g.round = ev.rodadas?.[0] ?? ev.rodadas_validas?.[0] ?? 6;
+    if (ev.rodadas) { g.agenda = [{id, rodadas: ev.rodadas}]; aplicarCarta(g, id, true); } else aplicarCarta(g, id);
+    mods(g); opcoesEspiao(g); g.dets.forEach((_, i) => opcoesDetetive(g, i));
+    for (const t of toks) JSON.stringify(view(g, t));
+    tick(g, Date.now() + 1e7); tick(g, Date.now() + 1e7); tick(g, Date.now() + 1e7);
+    assert.ok(['espiao', 'detetives', 'fim'].includes(g.phase), id);
+  }
+});
+
+test('todos os itens podem ser comprados e usados', () => {
+  for (const item of Object.keys(ITEM)) {
+    const {g, st, det} = emJogo(23); paraDetetives(g, st);
+    const i = g.dets.findIndex(d => d.loc === HQ); g.equipe.orcamento = 20;
+    act(g, det, {action: 'det', i, acao: 'comprar', item});
+    assert.ok(g.equipe.estoque.some(x => x.item === item), item);
+    const d = g.dets[i];
+    if (item === 'grampo') { d.loc = 1; const cand = (globalThis as any).CAND ?? null; void cand;
+      const c = IDS.find(x => tem(x, 'CON'))!; d.loc = c; act(g, det, {action: 'det', i, acao: 'grampo'}); assert.ok(g.equipe.grampos.includes(c)); continue; }
+    act(g, det, {action: 'det', i, acao: 'usar', item, zona: LOCAL[d.loc].zona, local: item === 'cones' ? VIZ[d.loc][0] : 1});
+    assert.ok(!g.equipe.estoque.some(x => x.item === item), 'não consumiu ' + item);
+  }
+});
+
+test('ações do espião: recolher, sacar, disfarce, falsa, informante e emergência', () => {
+  const {g, st} = emJogo(31);
+  const c = g.contatos[0]; g.spy!.loc = VIZ[c.local].find(v => !g.dets.some(d => d.loc === v))!;
+  act(g, st, {action: 'mover', modo: 'pe', local: c.local}); act(g, st, {action: 'agir', acao: 'recolher'});
+  assert.equal(c.status, 'recolhido'); assert.equal(g.fila.length, 1);
+  const prox = (acao:string, onde:(id:number)=>boolean) => {
+    tick(g, Date.now() + 1e7); assert.equal(g.phase, 'espiao');
+    const alvo = IDS.find(x => onde(x) && !g.dets.some(d => d.loc === x) && VIZ[x].some(v => !g.dets.some(d => d.loc === v)))!;
+    g.spy!.loc = VIZ[alvo].find(v => !g.dets.some(d => d.loc === v))!; g.spy!.dinheiro = 20;
+    act(g, st, {action: 'mover', modo: 'pe', local: alvo}); act(g, st, {action: 'agir', acao});
+  };
+  prox('sacar', x => tem(x, 'ATM')); assert.ok(g.alertaBancario);
+  prox('disfarce', x => tem(x, 'LOJ')); assert.ok(g.spy!.disfarce > 0);
+  prox('falsa', x => true); assert.ok(g.fila.some(x => x.falsa));
+  prox('informante', x => LOCAL[x].aglomeracao_base >= 3);
+  g.contatos.forEach(x => { if (x.pista.tipo === 'CREDENCIAL') x.status = 'recolhido'; }); g.spy!.credenciais = 0;
+  prox('emergencia', x => tem(x, 'EMERGENCIA')); assert.equal(g.spy!.credenciais, 1);
+});
+
+test('Hora H certa termina com fuga; duas erradas queimam a rede', () => {
+  const {g, st} = emJogo(41); const ext = g.plano!.extracao; const [a] = JANELAS[g.plano!.janela];
+  g.round = a; g.dets.forEach((d, k) => d.loc = [34, 1, 13, 60][k] === ext ? 13 : [34, 1, 13, 60][k]);
+  g.spy!.loc = VIZ[ext].find(v => !g.dets.some(d => d.loc === v))!; g.spy!.credenciais = 1;
+  act(g, st, {action: 'mover', modo: 'pe', local: ext}); act(g, st, {action: 'agir', acao: 'horaH'});
+  assert.ok(g.horaH); tick(g, Date.now() + 1e7); assert.equal(g.winner, 'espiao');
+  const b = emJogo(43); const e2 = EXTRACOES.find(e => e !== b.g.plano!.extracao)!; b.g.round = 9; b.g.spy!.credenciais = 2;
+  for (let k = 0; k < 2; k++) { b.g.phase = 'espiao'; b.g.spy!.moveu = false; b.g.spy!.agiu = false; b.g.spy!.movimentos = 1;
+    b.g.dets.forEach(d => { if (d.loc === e2 || VIZ[e2].includes(d.loc)) d.loc = 13; });
+    b.g.spy!.loc = VIZ[e2][0]; act(b.g, b.st, {action: 'mover', modo: 'pe', local: e2}); act(b.g, b.st, {action: 'agir', acao: 'horaH'}); }
+  assert.equal(b.g.winner, 'detetives');
+});
+
+test('acusação certa ativa o plano B; janela perdida é remarcada', () => {
+  const {g, st, det} = emJogo(47); paraDetetives(g, st);
+  const i = g.dets.findIndex(d => d.loc === HQ); const antigo = {e: g.plano!.extracao, j: g.plano!.janela};
+  act(g, det, {action: 'det', i, acao: 'acusar', extracao: antigo.e, janela: antigo.j});
+  assert.notEqual(g.phase, 'fim'); assert.ok(g.spy!.planoB); assert.notEqual(g.plano!.extracao, antigo.e);
+  const h = emJogo(53); h.g.plano!.janela = 'A'; h.g.round = 10; h.g.phase = 'detetives'; tick(h.g, Date.now() + 1e7);
+  assert.equal(h.g.plano!.janela, 'B'); assert.equal(h.g.spy!.remarcada, 'B');
+});
+
+test('pontos de contato: a TV vê os 14 candidatos, não quais são os 8 verdadeiros', () => {
+  const {g, host, st, det} = emJogo(59);
+  const tv = view(g, host); assert.equal(tv.pub.contatos.length, 14);
+  paraDetetives(g, st);
+  const i = 0; const vazio = (tv.pub.contatos as {local:number}[]).map(c => c.local).find(l => !g.contatos.some(c => c.local === l))!;
+  g.dets[i].loc = vazio; act(g, det, {action: 'det', i, acao: 'periciar'});
+  assert.equal(g.equipe.vistoriados[vazio], 'vazio'); assert.equal(g.equipe.pistas.length, 0);
 });

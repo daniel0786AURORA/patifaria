@@ -20,10 +20,10 @@ const EXTRACOES: number[] = Object.values(LOCAIS as Any).filter((n:Any) => n.eti
 const TICKET: Record<string, string> = {pe: 'PÉ', bike: 'BIKE', onibus: 'ÔNI', trem: 'TREM', app: 'APP', barco: 'BARCO', esconder: 'ESC'};
 const MODO: Record<string, string> = {pe: 'A pé', bike: 'Bike', onibus: 'Ônibus', trem: 'Trensurb', app: 'Aplicativo', barco: 'Barco', esconder: 'Esconder-se', viatura: 'Viatura', apoio: 'Apoio grátis'};
 const ACAO: Record<string, [string, string]> = {
-  investigar: ['Investigar rastro', 'O espião passou por aqui?'], interrogar: ['Interrogar testemunhas', 'Ele está a até 2 ligações?'], periciar: ['Periciar envelope', 'O time lê a pista'],
+  investigar: ['Investigar rastro', 'O espião passou por aqui?'], interrogar: ['Interrogar testemunhas', 'Ele está a até 2 ligações?'], periciar: ['Vasculhar ponto de contato', 'Se houver envelope, o time lê a pista'],
   confiscar: ['Confiscar envelope', 'Tira a pista do espião'], interceptar: ['Interceptar transmissão', 'Decifrar uma mensagem da rede'], abordar: ['Abordar', 'Prende se ele estiver aqui'],
   bloqueio: ['Montar blitz', 'Fecha a passagem de veículos'], grampo: ['Instalar grampo', 'Pega o espião se recolher aqui'], comprar: ['Comprar item', 'Usa o orçamento do time'],
-  usar: ['Usar item', 'Do estoque do time'], transferir: ['Passar 1 PA', 'Para outro detetive'], acusar: ['Acusação de Plano', 'Acertou: vitória. Errou: perde orçamento'],
+  usar: ['Usar item', 'Do estoque do time'], transferir: ['Passar 1 PA', 'Para outro detetive'], acusar: ['Acusação de Plano', 'Acertou: a rede troca de plano. Errou: perde orçamento'],
 };
 const ACAO_ESPIAO: Record<string, [string, string]> = {
   recolher: ['Recolher envelope', 'Pista nova, mas gera uma transmissão'], sacar: ['Sacar dinheiro', '+R$ 4, alerta bancário na próxima rodada'], disfarce: ['Trocar disfarce', 'Exposição −2 e proteção contra 1 alerta'],
@@ -216,6 +216,8 @@ function Espiao({g, mesa}:{g:Any;mesa:Any}) {
   else if (aba === 'caderno') corpo = <><div className="muted" style={{fontSize: 13}}>Suas anotações ficam só neste celular. Toque para marcar ✗, ? ou ✓.</div><Grade marcas={caderno} marcar={(k, v) => setCaderno(c => ({...c, [k]: v}))}/>
     <div className="lbl">Pistas que você tem</div>{s.pistas.length ? s.pistas.map((p:Any, i:number) => <div key={i} className="pista"><b>{p.tipo}</b>{p.texto}</div>) : <div className="muted">Nenhuma ainda. Recolha envelopes nos pontos de contato.</div>}</>;
   else corpo = <>
+    {s.remarcada && !s.planoB && <div className="card" style={{borderColor: 'var(--amber)'}}><div className="lbl">Fuga remarcada</div>A rede remarcou para a janela {s.remarcada} ({JTXT[s.remarcada]}), no mesmo lugar.</div>}
+    {s.planoB && <div className="card" style={{borderColor: 'var(--hot)'}}><div className="lbl">Plano B da rede</div>Fuga por <b>{nm(s.planoB.extracao)}</b>, janela {s.planoB.janela} ({JTXT[s.planoB.janela]}).</div>}
     <div className="grid2"><div className="card"><div className="lbl">Dinheiro</div><b style={{fontSize: 26}}>R$ {s.dinheiro}</b></div><div className="card"><div className="lbl">Senhas</div><b style={{fontSize: 26}}>{s.credenciais}</b></div></div>
     <div className="card"><div className="lbl">Aqui</div>{nm(s.loc)} · lotação {s.aqui.agl} · denúncia {s.aqui.risco}%{s.disfarce ? ` · disfarce por ${s.disfarce} rodada(s)` : ''}</div>
     <div className="lbl">Pontos de contato</div>{s.contatos.map((c:Any) => <div key={c.local} className="act" style={{minHeight: 40}}><span>{nm(c.local)}</span><small>{c.status === 'fechado' ? 'envelope esperando' : c.status === 'caiu' ? 'caiu' : 'recolhido'}</small></div>)}
@@ -280,7 +282,7 @@ function Detetive({g, mesa}:{g:Any;mesa:Any}) {
     <Grade marcas={eq?.dossie ?? {}} marcar={(k, v) => send('dossie', {chave: k, valor: v})}/>
     <div className="lbl">Pistas da força-tarefa · orçamento {eq?.orcamento ?? 0} créditos</div>
     {eq?.pistas.length ? eq.pistas.map((p:Any, i:number) => <div key={i} className="pista"><b>{p.tipo} · {p.fonte}{p.zona ? ` · zona ${ZONAS[p.zona]}` : ''}{p.duvidosa ? ' · ⚠ duvidosa' : ''}</b>{p.texto}</div>) : <div className="muted">Nada ainda. Perícia em envelopes e interceptação revelam pistas.</div>}
-    <div className="lbl">Pontos de contato</div>{eq?.contatos.map((c:Any) => <div key={c.local} className="act" style={{minHeight: 40}}><span>{nm(c.local)}</span><small>{c.confiscado ? 'confiscado' : c.lida ? 'lido' : 'fechado'}{c.grampo ? ' · grampo' : ''}</small></div>)}
+    <div className="lbl">Possíveis pontos de contato (só 8 têm envelope)</div>{eq?.contatos.map((c:Any) => <div key={c.local} className="act" style={{minHeight: 40}}><span>{nm(c.local)}</span><small>{({desconhecido: 'não vistoriado', vazio: 'vazio', retirado: 'envelope já retirado', lido: 'envelope lido', confiscado: 'confiscado'} as Any)[c.situacao]}{c.grampo ? ' · grampo' : ''}</small></div>)}
     {eq?.estoque.length > 0 && <><div className="lbl">Estoque</div><div className="chips">{eq.estoque.map((e:Any, i:number) => <span key={i} className="chip">{ITENS[e.item].nome}{e.desde > pub.round ? ' (chegando)' : ''}</span>)}</div></>}</>;
   else corpo = <><form style={{display: 'flex', gap: 8}} onSubmit={e => { e.preventDefault(); if (msg.trim()) { send('chat', {texto: msg}); setMsg(''); } }}>
       <input className="input" value={msg} onChange={e => setMsg(e.target.value)} placeholder="Mensagem para o time" maxLength={200}/><button className="btn blue">Enviar</button></form>

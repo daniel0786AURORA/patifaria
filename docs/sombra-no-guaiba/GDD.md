@@ -370,7 +370,7 @@ O espião escolhe **um** modo de deslocamento por rodada:
 
 | Modo | Alcance | Custo | Bilhete público | Restrições |
 |---|---|---|---|---|
-| **A pé** | até 2 ligações | grátis | 🚶 A pé | — |
+| **A pé** | até 3 ligações | grátis | 🚶 A pé | — |
 | **Bike** | até 4 ligações, de uma estação de bike a outra | R$ 1 | 🚲 Bike | Só na região central (Centro, Cidade Baixa, Bom Fim, Moinhos), rodadas 1–18 |
 | **Ônibus** | até 5 paradas na mesma linha | R$ 1 | 🚌 Ônibus | Precisa começar numa parada da linha; horários de operação; a linha usada não é mostrada |
 | **Trensurb** | qualquer número de estações | R$ 1 | 🚆 Trensurb | Rodadas 1–18 |
@@ -378,7 +378,7 @@ O espião escolhe **um** modo de deslocamento por rodada:
 | **Barco** | 1 travessia | R$ 2 | ⛴️ Barco | Rodadas 2–16; bloqueado por *Chuva Forte* e *Minuano* |
 | **Esconder-se** | permanece no local | grátis | 🕳️ Escondido | Só em local com esconderijo ou Agl efetiva ≤ 1; máx. 2 rodadas seguidas |
 
-Andando 2 ligações (cerca de 1 a 3 km) por rodada, o espião cruza o Centro numa hora, mas leva o dia inteiro para ir do Mercado ao Lami. Para longas distâncias ele precisa de transporte, que custa dinheiro e aparece no Painel de Bilhetes.
+Andando até 3 ligações (cerca de 2 a 5 km) por rodada, o espião cruza o Centro numa hora, mas leva o dia inteiro para ir do Mercado ao Lami. Para longas distâncias ele precisa de transporte, que custa dinheiro e aparece no Painel de Bilhetes.
 
 **Regras de movimento:**
 
@@ -554,7 +554,7 @@ O time sempre controla **4 detetives** (5 com 6 jogadores). Com menos jogadores,
 | Ação | PA | Efeito |
 |---|---|---|
 | A pé | 1 | 1 ligação |
-| Viatura | 2 | até 4 ligações (+1 PA no rush no Centro e na Zona Norte, e para entrar em zona quente; eventos de trânsito podem bloquear) |
+| Viatura | 2 | até 3 ligações, 1 vez por rodada (+1 PA no rush no Centro e na Zona Norte, e para entrar em zona quente; eventos de trânsito podem bloquear) |
 | Transporte público | 1 | até 5 paradas de ônibus ou qualquer trecho de Trensurb, respeitando horários |
 | Barco (Patrulha Fluvial) | 2 | 1 travessia de barco (precisa do item *Lancha* ativo; ignora horário) |
 
@@ -758,6 +758,27 @@ Uma carta por rodada a partir da rodada 2. Cartas com horário válido que saem 
 - **Horário e transporte** criam um quebra-cabeça logístico: uma extração no Aeroporto às 2h exige App (rastreável) ou o Corujão L1 até o 30 e depois a pé.
 
 ---
+
+## 13.1 Regras revisadas pela simulação (novembro de 2026)
+
+Com jogadores automáticos (`scripts/sombra-sim.ts`), as regras originais davam **100% de vitória aos detetives**, com partidas acabando na rodada 6. As mudanças abaixo valem sobre o resto do documento e já estão no código (`BALANCO` em `src/sombra/rules/engine.ts`):
+
+| Regra | Antes | Agora | Por quê |
+|---|---|---|---|
+| Pontos de contato | 8 locais públicos | O mapa mostra os **14 candidatos**; só o espião sabe quais 8 têm envelope. Vasculhar um vazio gasta os PA | Detetives liam os envelopes antes do espião |
+| Confiscar envelope | +1 PA | **Removido**: os detetives podem ler, não apagar | Sem pistas, o espião não tinha como vencer |
+| Acusação certa | Vitória imediata | **Plano B**: a rede sorteia outro ponto e outra janela (≥ 3 rodadas à frente) e avisa o espião. Sem janela possível, os detetives vencem | Encerrava o jogo cedo demais |
+| Janela perdida | Derrota certa | A rede **remarca para a janela seguinte**, no mesmo lugar, e avisa só o espião | Partidas viravam jogo morto |
+| Posição exata por câmera ou denúncia | Revelada na hora | Chega à central **no fim da rodada**; a denúncia mostra a zona na hora | Detetives prendiam na mesma rodada, sem chance de reação |
+| Investigar rastro | Mostrava se o espião "ainda não saiu" | Só mostra **passagens de rodadas anteriores** | Equivalia a dizer onde ele estava |
+| Interceptar | Revelava conteúdo e zona | Sem **Decodificador**, revela só a zona de origem | Detetives decifravam 100% do plano |
+| Interrogar | 1 PA, raio 2 | **2 PA, raio 1** (Investigadora de Rua: grátis, raio 2), 1 vez por detetive por rodada | Era a principal fonte de capturas |
+| Viatura | 2 PA, até 4 ligações, sem limite | 2 PA, **até 3 ligações, 1 vez por rodada** (Agente Tático: 4) | Detetives eram 4× mais rápidos |
+| Abordar | Sem limite | **1 vez por detetive por rodada**; durante a Hora H, no máximo 50% de chance | — |
+| A pé (espião) | até 2 ligações | **até 3 ligações** (cerca de 5 km/h) | — |
+| Dinheiro do espião | R$ 10 | R$ 10 **+ R$ 1 por rodada** | Para conseguir usar transporte |
+
+**Resultado nas simulações** (200 partidas por configuração): vitória do espião passou de 0% para cerca de 23%; duração média de 6 para 19 rodadas; o espião recolhe em média 4 dos 8 envelopes. O detetive automático rastreia matematicamente todas as posições possíveis do espião, o que pessoas não fazem, e o espião automático planeja rotas mal; por isso esse número tende a ser menor do que em partidas reais. O próximo ajuste deve vir de partidas com pessoas.
 
 ## 14. Formato de jogo: tela compartilhada + celulares
 

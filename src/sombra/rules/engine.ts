@@ -15,14 +15,16 @@ export const EVENTO: Record<string, CartaEvento> = Object.fromEntries([...CARTAS
 export const ITEM: Record<string, Item> = Object.fromEntries(CARTAS.itens.map(i => [i.id, i]));
 const ORDEM_PAPEIS: Papel[] = ['delegada', 'perito', 'analista', 'tatico', 'rua'];
 const DENUNCIA = [0, 5, 10, 20, 30, 40];
-const ABORDAGEM = [100, 100, 100, 85, 70, 55];
+/** Parâmetros de equilíbrio (ajustados com scripts/sombra-sim.ts). */
+export const BALANCO = {viaturaAlcance: 3, viaturaPorRodada: 1, interrogarRaio: 1, interrogarCusto: 2, interrogarPorRodada: 1, abordarPorRodada: 1, confiscar: false, rendaEspiao: 1,
+  dinheiroInicial: 10, conteudoSoComDecodificador: true, horaHMaxAbordagem: 50, peAlcance: 3, abordagem: [100, 100, 100, 85, 70, 55]};
 export const TEMPO = {preparo: 120_000, espiao: 90_000, detetives: 150_000};
 
 type Player = {id:string;secret:string;name:string;side:'espiao'|'detetive'|null;seen:number};
-type Det = {papel:Papel;owner:string;loc:number;pa:number;bloqueio:boolean;encerrou:boolean;k9:number;escuta:boolean;transferiu:boolean;interrogouGratis:boolean;investigou:number[]};
+type Det = {papel:Papel;owner:string;loc:number;pa:number;bloqueio:boolean;encerrou:boolean;k9:number;escuta:boolean;transferiu:boolean;interrogouGratis:boolean;investigou:number[];viaturas?:number;abordagens?:number;interrogacoes?:number};
 type Spy = {owner:string;loc:number;dinheiro:number;exposicao:number;perfil:string;credenciais:number;pistas:Pista[];disfarce:number;escudo:boolean;
   escondido:number;falsas:number;falhas:number;denunciaIgnorada:boolean;deveMover:boolean;app:{rodada:number;de:number;para:number}|null;
-  movimentos:number;moveu:boolean;agiu:boolean;transporteGratis:boolean;appGratis:boolean;opcoesInicio:number[]};
+  movimentos:number;moveu:boolean;agiu:boolean;transporteGratis:boolean;appGratis:boolean;opcoesInicio:number[];planoB?:boolean;remarcada?:string};
 type Contato = {local:number;pista:Pista;status:'fechado'|'recolhido'|'confiscado';lida:boolean;grampo:boolean;extra?:boolean};
 type Transmissao = {n:number;rodada:number;tipo:string;pista:Pista;zona:string;falsa:boolean;tentativas:number;decifrada:boolean;expirada:boolean;bonus:number};
 type Rastro = {rodada:number;local:number;saiu?:Modo;acao?:string;proximo?:number};
@@ -32,12 +34,12 @@ export type Aviso = {id:number;rodada:number;texto:string;tom:'info'|'alerta'|'p
 type PistaEquipe = {fonte:string;tipo:string;texto:string;elimina?:string[];zona?:string;duvidosa?:boolean;rodada:number};
 type Equipe = {orcamento:number;estoque:{item:string;desde:number}[];dossie:Record<string,string>;chat:{autor:string;texto:string;at:number}[];pistas:PistaEquipe[];
   acusou:boolean;retratos:{zona:string;ate:number}[];ceic:{zona:string;ate:number}[];cones:{local:number;ate:number}[];lancha:number;decodificador:boolean;
-  interrogarGratis:number;bloqueiosGratis:number;bloqueiosGratisAte:number;movimentoGratis:string[]|null};
+  interrogarGratis:number;bloqueiosGratis:number;bloqueiosGratisAte:number;movimentoGratis:string[]|null;grampos:number[];vistoriados:Record<number,string>};
 export type Game = {
   kind:'sombra';code:string;revision:number;host:string;players:Player[];phase:'lobby'|'preparo'|'espiao'|'detetives'|'fim';round:number;rs:number;
   plano:Plano|null;contatos:Contato[];dets:Det[];spy:Spy|null;agenda:{id:string;rodadas:[number,number]}[];baralho:string[];descarte:string[];ativos:Ativo[];carta:string|null;
   fila:Transmissao[];bilhetes:{rodada:number;modo:Modo}[];rastro:Rastro[];revelacoes:Revelacao[];equipe:Equipe;avisos:Aviso[];
-  horaH:{local:number;rodada:number}|null;alertaBancario:{zona:string;rodada:number}|null;cancelarRevelacao:boolean;interceptBloqueado:boolean;
+  horaH:{local:number;rodada:number}|null;pendentes?:{local:number;motivo:string}[];alertaBancario:{zona:string;rodada:number}|null;cancelarRevelacao:boolean;interceptBloqueado:boolean;
   deadline:number|null;winner:'espiao'|'detetives'|null;motivo:string;requests:string[];espiaoEscolhido:string|null;
 };
 
@@ -61,7 +63,7 @@ export function createGame(code:string, hostToken:string, seed = randomInt(2 ** 
     horaH: null, alertaBancario: null, cancelarRevelacao: false, interceptBloqueado: false, deadline: null, winner: null, motivo: '', requests: [], espiaoEscolhido: null};
 }
 const equipeNova = (): Equipe => ({orcamento: 8, estoque: [], dossie: {}, chat: [], pistas: [], acusou: false, retratos: [], ceic: [], cones: [], lancha: 0, decodificador: false,
-  interrogarGratis: 0, bloqueiosGratis: 0, bloqueiosGratisAte: 0, movimentoGratis: null});
+  interrogarGratis: 0, bloqueiosGratis: 0, bloqueiosGratisAte: 0, movimentoGratis: null, grampos: [], vistoriados: {}});
 export function addPlayer(g:Game, name:string, token:string) {
   const n = name.trim().replace(/\s+/g, ' ').slice(0, 18); if (n.length < 2) fail('Escolha um apelido com pelo menos 2 letras.');
   if (g.phase !== 'lobby') fail('A partida já começou.'); if (g.players.length >= 6) fail('A mesa está cheia (6 jogadores).');
@@ -89,7 +91,7 @@ function iniciar(g:Game) {
   const ocup = new Set(g.dets.map(d => d.loc));
   const longe = IDS.filter(i => ![...ocup].some(o => (alcance(o, 2).has(i) || o === i)) && !tem(i, 'CON') && !extracaoMeio(i) && LOCAL[i].zona !== 'ILH');
   const opcoes = shuffle(R(g), longe).slice(0, 3);
-  g.spy = {owner: spyP.id, loc: opcoes[0], dinheiro: 10 + (g.players.length >= 6 ? 4 : 0), exposicao: 0, perfil: '', credenciais: 0, pistas: [], disfarce: 0, escudo: false, escondido: 0,
+  g.spy = {owner: spyP.id, loc: opcoes[0], dinheiro: BALANCO.dinheiroInicial + (g.players.length >= 6 ? 4 : 0), exposicao: 0, perfil: '', credenciais: 0, pistas: [], disfarce: 0, escudo: false, escondido: 0,
     falsas: 2 + (g.players.length >= 6 ? 1 : 0), falhas: 0, denunciaIgnorada: false, deveMover: false, app: null, movimentos: 1, moveu: false, agiu: false, transporteGratis: false, appGratis: false, opcoesInicio: opcoes};
   g.phase = 'preparo'; g.deadline = Date.now() + TEMPO.preparo;
   aviso(g, `${spyP.name} é o espião. A força-tarefa se posiciona.`, 'alerta');
@@ -151,7 +153,7 @@ export function mods(g:Game): Mods {
   return m;
 }
 /** Sorteia o que a carta precisa sortear e aplica os efeitos imediatos. */
-function aplicarCarta(g:Game, id:string, agenda = false) {
+export function aplicarCarta(g:Game, id:string, agenda = false) {
   const ev = EVENTO[id]; const a: Ativo = {id, de: g.round, ate: g.round + Math.max(1, ev.duracao ?? 1) - 1};
   for (const e of ev.efeitos) {
     if (e.sorteio === 1 || e.um_local) { const pool = e.um_local ? IDS.filter(i => tem(i, 'CAM')) : e.locais; a.escolha = pool[Math.floor(rnd(g) * pool.length)]; }
@@ -170,7 +172,7 @@ function aplicarCarta(g:Game, id:string, agenda = false) {
       case 'movimento_detetive': t.movimentoGratis = e.zonas; break;
       case 'contato_extra': { const onde = g.contatos.filter(c => c.pista.tipo === 'ONDE' && c.status === 'fechado'); const livres = g.plano!.naoSorteados.filter(l => !g.contatos.some(c => c.local === l));
         if (onde.length && livres.length) { const c = onde[Math.floor(rnd(g) * onde.length)]; const l = livres[Math.floor(rnd(g) * livres.length)];
-          g.contatos.push({local: l, pista: c.pista, status: 'fechado', lida: false, grampo: false, extra: true}); aviso(g, `Um novo ponto de contato apareceu: ${nome(l)}.`, 'alerta', 'todos', {local: l}); } break; }
+          g.contatos.push({local: l, pista: c.pista, status: 'fechado', lida: false, grampo: false, extra: true}); aviso(g, `A rede deixou uma cópia de pista em ${nome(l)}.`, 'bom', 'espiao'); aviso(g, 'A rede movimentou um envelope pela cidade.', 'alerta'); } break; }
       case 'interceptar_bonus': { const t0 = g.fila.find(x => !x.decifrada && !x.expirada); if (t0) t0.bonus += e.valor; break; }
     }
   }
@@ -245,7 +247,7 @@ export function opcoesEspiao(g:Game): Record<Modo, Destino[]> {
     out[k].push({local, custo, risco: chanceDenuncia(g, local, false, m), linha});
   };
   if (terra) {
-    for (const [y] of alcance(from, 2, y => !ocup.has(y) && !fech.has(y))) push('pe', y, 0);
+    for (const [y] of alcance(from, BALANCO.peAlcance, y => !ocup.has(y) && !fech.has(y))) push('pe', y, 0);
     if (aberto(g, 'bike', m) && BIKE.has(from)) for (const [y] of alcance(from, 4, y => BIKE_ZONAS.has(LOCAL[y].zona) && !ocup.has(y) && !fech.has(y))) if (BIKE.has(y)) push('bike', y, 1);
     const gratis = s.perfil === 'corredor' && !s.transporteGratis;
     for (const l of LINHAS) {
@@ -278,6 +280,7 @@ const semSaida = (o:Record<Modo, Destino[]>) => Object.values(o).every(v => !v.l
 function comecarRodada(g:Game) {
   g.round++; g.carta = null; g.interceptBloqueado = false;
   const s = g.spy!, t = g.equipe;
+  if (g.round > 1) s.dinheiro += BALANCO.rendaEspiao;
   s.movimentos = 1; s.moveu = false; s.agiu = false; s.transporteGratis = false; s.appGratis = false;
   t.interrogarGratis = 0; t.movimentoGratis = null;
   if (t.bloqueiosGratisAte < g.round) t.bloqueiosGratis = 0;
@@ -286,6 +289,8 @@ function comecarRodada(g:Game) {
   g.phase = 'espiao'; g.deadline = Date.now() + TEMPO.espiao;
   if (semSaida(opcoesEspiao(g))) fimDeJogo(g, 'detetives', `O espião ficou encurralado em ${nome(s.loc)}.`);
 }
+/** Posição exata que só chega à central no fim da rodada (o espião se move antes de a polícia agir). */
+function atrasar(g:Game, motivo:string) { (g.pendentes ??= []).push({local: g.spy!.loc, motivo}); }
 function revelar(g:Game, motivo:string, exato:boolean) {
   const s = g.spy!; const r: Revelacao = {rodada: g.round, motivo, ...(exato ? {local: s.loc} : {zona: LOCAL[s.loc].zona})};
   g.revelacoes.push(r);
@@ -297,24 +302,27 @@ function fimTurnoEspiao(g:Game) {
     if (chance(g, chanceDenuncia(g, id, esc, m))) {
       if (s.perfil === 'sombra' && !s.denunciaIgnorada) { s.denunciaIgnorada = true; aviso(g, 'Alguém te reconheceu, mas não ligou para a polícia.', 'alerta', 'espiao'); }
       else if (s.escudo) { s.escudo = false; aviso(g, 'Um transeunte desconfiou, mas o disfarce funcionou.', 'alerta', 'espiao'); }
-      else { revelar(g, 'Denúncia de transeunte', s.exposicao >= 7); s.exposicao = Math.min(10, s.exposicao + 1); }
+      else { revelar(g, 'Denúncia de transeunte', false); if (s.exposicao >= 7) atrasar(g, 'Denúncia confirmada'); s.exposicao = Math.min(10, s.exposicao + 1); }
     }
     if (chance(g, chanceCamera(g, id, m))) {
       if (s.escudo) { s.escudo = false; aviso(g, 'Uma câmera te filmou, mas o disfarce enganou o reconhecimento facial.', 'alerta', 'espiao'); }
-      else revelar(g, 'Alerta de câmera CEIC', true);
+      else { atrasar(g, 'Imagens da câmera CEIC'); aviso(g, 'Uma câmera te filmou. A central vai ver as imagens no fim da hora.', 'perigo', 'espiao'); }
     }
     if (LOCAL[id].tipo === 'quente' && !m.silencio.has(id) && chance(g, 15 + m.assalto) && s.dinheiro > 0) { s.dinheiro = Math.max(0, s.dinheiro - 2); aviso(g, 'Você foi assaltado e perdeu R$ 2.', 'perigo', 'espiao'); }
     if (s.exposicao >= 10) revelar(g, 'Caçada total', false);
   }
   if (s.disfarce > 0) s.disfarce--;
   s.deveMover = false;
-  for (const d of g.dets) { d.pa = 4; d.encerrou = false; d.transferiu = false; d.interrogouGratis = false; d.investigou = []; }
+  for (const d of g.dets) { d.pa = 4; d.encerrou = false; d.transferiu = false; d.interrogouGratis = false; d.investigou = []; d.viaturas = 0; d.abordagens = 0; d.interrogacoes = 0; }
   g.phase = 'detetives'; g.deadline = Date.now() + TEMPO.detetives;
 }
 function fechamento(g:Game) {
   if (g.phase === 'fim') return;
   const s = g.spy!, t = g.equipe;
   if (g.horaH) { fimDeJogo(g, 'espiao', `O espião embarcou em ${nome(g.horaH.local)} e fugiu de Porto Alegre.`); return; }
+  for (const p of g.pendentes ?? []) { g.revelacoes.push({rodada: g.round, local: p.local, motivo: p.motivo});
+    aviso(g, `${p.motivo}: o espião foi visto em ${nome(p.local)} às ${String(hora(g.round)).padStart(2, '0')}h.`, 'perigo', 'todos', {local: p.local}); }
+  g.pendentes = [];
   if (MAPA.rodadas.revelacoes.includes(g.round)) {
     if (g.cancelarRevelacao) { g.cancelarRevelacao = false; aviso(g, 'A revelação programada foi cancelada.', 'info'); }
     else revelar(g, 'Revelação programada', true);
@@ -325,8 +333,12 @@ function fechamento(g:Game) {
   g.ativos = g.ativos.filter(a => a.ate > g.round);
   t.retratos = t.retratos.filter(x => x.ate > g.round); t.ceic = t.ceic.filter(x => x.ate > g.round); t.cones = t.cones.filter(x => x.ate > g.round);
   t.orcamento += 2;
+  // janela perdida: a rede remarca para a próxima e avisa só o espião
+  const jp = g.plano!.janela; if (g.round === JANELAS[jp][1]) { const prox = Object.keys(JANELAS).find(j => JANELAS[j][0] > g.round);
+    if (prox) { g.plano!.janela = prox; s.remarcada = prox; aviso(g, `A janela passou. A rede remarcou a fuga para a janela ${prox} (${String(hora(JANELAS[prox][0])).padStart(2, '0')}h), no mesmo lugar.`, 'alerta', 'espiao');
+      aviso(g, 'Movimentação estranha nas frequências da rede.', 'info'); } }
   if (g.round >= MAPA.rodadas.total) { fimDeJogo(g, 'detetives', 'Amanheceu. O espião não conseguiu sair da cidade a tempo.'); return; }
-  void s; comecarRodada(g);
+  comecarRodada(g);
 }
 function fimDeJogo(g:Game, quem:'espiao'|'detetives', motivo:string) {
   g.phase = 'fim'; g.winner = quem; g.motivo = motivo; g.deadline = null;
@@ -377,8 +389,8 @@ function agirEspiao(g:Game, acao:AcaoEspiao) {
     case 'recolher': {
       const c = g.contatos.find(x => x.local === id && x.status === 'fechado')!; c.status = 'recolhido'; s.pistas.push(c.pista); s.exposicao = Math.min(10, s.exposicao + 1); ult.acao = 'recolheu um envelope';
       if (c.pista.tipo === 'CREDENCIAL') { s.credenciais++; s.dinheiro += c.pista.dinheiro ?? 2; }
-      for (const o of g.contatos) if (o !== c && o.extra && o.pista === c.pista) o.status = 'recolhido';
-      if (c.grampo) { t.pistas.push({fonte: `Grampo em ${nome(id)}`, tipo: c.pista.tipo, texto: c.pista.texto, elimina: c.pista.elimina, rodada: g.round});
+      for (const o of g.contatos) if (o !== c && o.status === 'fechado' && o.pista.tipo === c.pista.tipo && o.pista.texto === c.pista.texto) o.status = 'recolhido';
+      if (t.grampos.includes(id)) { t.pistas.push({fonte: `Grampo em ${nome(id)}`, tipo: c.pista.tipo, texto: c.pista.texto, elimina: c.pista.elimina, rodada: g.round});
         revelar(g, `Grampo em ${nome(id)}`, true); }
       else { const n = g.fila.length + 1; g.fila.push({n, rodada: g.round, tipo: c.pista.tipo, pista: c.pista, zona: LOCAL[id].zona, falsa: false, tentativas: 0, decifrada: false, expirada: false, bonus: 0});
         aviso(g, `Transmissão #${n} captada: a rede confirmou uma pista do tipo ${c.pista.tipo}.`, 'alerta'); }
@@ -390,7 +402,7 @@ function agirEspiao(g:Game, acao:AcaoEspiao) {
       g.fila.push({n, rodada: g.round, tipo: 'ONDE', pista: pistaFalsa(R(g), g.plano!.extracao), zona: z, falsa: true, tentativas: 0, decifrada: false, expirada: false, bonus: 0});
       aviso(g, `Transmissão #${n} captada: a rede confirmou uma pista do tipo ONDE.`, 'alerta'); break; }
     case 'informante': { s.dinheiro -= 2; const perto = new Set([id, ...alcance(id, 2).keys()]);
-      const gr = g.contatos.filter(c => c.grampo && perto.has(c.local)).map(c => nome(c.local)); const bl = g.dets.filter(d => d.bloqueio && perto.has(d.loc)).map(d => nome(d.loc));
+      const gr = t.grampos.filter(l => perto.has(l)).map(l => nome(l)); const bl = g.dets.filter(d => d.bloqueio && perto.has(d.loc)).map(d => nome(d.loc));
       aviso(g, `Informante: ${gr.length ? 'grampos em ' + gr.join(', ') : 'nenhum grampo por perto'}; ${bl.length ? 'blitz em ' + bl.join(', ') : 'nenhuma blitz por perto'}.`, 'info', 'espiao'); break; }
     case 'emergencia': s.credenciais++; s.exposicao = Math.min(10, s.exposicao + 3); revelar(g, 'Contato de emergência', false); break;
     case 'horaH': {
@@ -424,7 +436,7 @@ export function opcoesDetetive(g:Game, i:number): {mover:{modo:string;local:numb
   const fech = m.locaisFechados;
   if (!fech.has(here)) {
     for (const y of VIZ[here]) if (!fech.has(y)) add('pe', y, 1);
-    for (const [y] of alcance(here, d.papel === 'tatico' ? 5 : 4, y => !fech.has(y) && !m.viaturaProibida.has(y))) if (!m.viaturaProibida.has(here)) add('viatura', y, custoViatura(g, d, y, m));
+    if ((d.viaturas ?? 0) < BALANCO.viaturaPorRodada) for (const [y] of alcance(here, BALANCO.viaturaAlcance + (d.papel === 'tatico' ? 1 : 0), y => !fech.has(y) && !m.viaturaProibida.has(y))) if (!m.viaturaProibida.has(here)) add('viatura', y, custoViatura(g, d, y, m));
     for (const l of LINHAS) { const k = l.paradas.indexOf(here); if (k < 0 || !aberto(g, 'onibus', m, l.id)) continue;
       for (let j = Math.max(0, k - 5); j <= Math.min(l.paradas.length - 1, k + 5); j++) if (!fech.has(l.paradas[j])) add('onibus', l.paradas[j], 1); }
     if (TREM.includes(here) && aberto(g, 'trem', m)) TREM.forEach(y => add('trem', y, 1));
@@ -433,29 +445,30 @@ export function opcoesDetetive(g:Game, i:number): {mover:{modo:string;local:numb
   if (t.movimentoGratis) IDS.filter(y => t.movimentoGratis!.includes(LOCAL[y].zona)).forEach(y => add('apoio', y, 0));
   mover.sort((a, b) => a.custo - b.custo);
   const c = g.contatos.find(x => x.local === here && x.status === 'fechado');
+  const candidato = MAPA.contatos_candidatos.includes(here); const visto = t.vistoriados[here];
   const podeInterceptar = here === HQ || tem(here, 'ANT') || d.escuta;
   const custoInt = d.papel === 'analista' ? 1 : d.papel === 'tatico' ? 3 : 2;
   const a = agl(g, here, m); const quente = LOCAL[here].tipo === 'quente' && !m.silencio.has(here);
   const estoque = t.estoque.filter(x => x.desde <= g.round);
   const acoes: OpcaoDet[] = [
     {acao: 'investigar', custo: 1, ok: !d.investigou.includes(here), motivo: 'Já investigado nesta rodada.'},
-    {acao: 'interrogar', custo: alcanceGratis(g, d) ? 0 : 1, ok: a >= 2 && !quente, motivo: quente ? 'Ninguém fala com a polícia aqui.' : 'Pouca gente na rua para interrogar.'},
-    {acao: 'periciar', custo: d.papel === 'perito' ? 1 : 2, ok: !!c && !c.lida, motivo: c ? 'Este envelope já foi lido.' : 'Não há envelope aqui.'},
-    {acao: 'confiscar', custo: 1, ok: !!c && c.lida, motivo: 'Precisa periciar o envelope antes.'},
+    {acao: 'interrogar', custo: alcanceGratis(g, d) ? 0 : BALANCO.interrogarCusto, ok: a >= 2 && !quente && (d.interrogacoes ?? 0) < BALANCO.interrogarPorRodada, motivo: quente ? 'Ninguém fala com a polícia aqui.' : a < 2 ? 'Pouca gente na rua para interrogar.' : 'Já interrogou nesta rodada.'},
+    {acao: 'periciar', custo: d.papel === 'perito' ? 1 : 2, ok: candidato && !visto, motivo: candidato ? 'Este local já foi vistoriado.' : 'Só num possível ponto de contato.'},
+    {acao: 'confiscar', custo: 2, ok: BALANCO.confiscar && !!c && c.lida, motivo: 'Precisa periciar um envelope aqui antes.'},
     {acao: 'interceptar', custo: custoInt, ok: podeInterceptar && !g.interceptBloqueado && g.fila.some(x => !x.decifrada && !x.expirada),
       motivo: !podeInterceptar ? 'Só no Palácio, nos morros com antenas ou com Escuta Móvel.' : 'Nenhuma transmissão para decifrar.',
       alvos: g.fila.filter(x => !x.decifrada && !x.expirada).map(x => ({n: x.n, texto: `#${x.n} · ${x.tipo} · ${chanceInterceptar(g, d, x)}%`}))},
-    {acao: 'abordar', custo: d.papel === 'tatico' ? 1 : 2, ok: d.papel !== 'analista', motivo: 'A Analista não aborda.'},
+    {acao: 'abordar', custo: d.papel === 'tatico' ? 1 : 2, ok: d.papel !== 'analista' && (d.abordagens ?? 0) < BALANCO.abordarPorRodada, motivo: d.papel === 'analista' ? 'A Analista não aborda.' : 'Já abordou nesta rodada.'},
     {acao: 'bloqueio', custo: t.bloqueiosGratis > 0 ? 0 : 2, ok: !d.bloqueio, motivo: 'Já há uma blitz sua aqui.'},
-    {acao: 'grampo', custo: 1, ok: !!c && !c.grampo && estoque.some(x => x.item === 'grampo'), motivo: c ? 'Precisa de um Grampo no estoque.' : 'Só num ponto de contato.'},
+    {acao: 'grampo', custo: 1, ok: candidato && !t.grampos.includes(here) && estoque.some(x => x.item === 'grampo'), motivo: candidato ? 'Precisa de um Grampo no estoque.' : 'Só num possível ponto de contato.'},
     {acao: 'comprar', custo: 1, ok: true, alvos: CARTAS.itens.map(it => ({item: it.id, custo: Math.max(0, it.custo - (d.papel === 'delegada' ? 1 : 0)), texto: it.nome}))},
     {acao: 'usar', custo: 0, ok: estoque.length > 0, motivo: 'Estoque vazio.', alvos: [...new Set(estoque.map(x => x.item))].map(it => ({item: it, texto: ITEM[it].nome}))},
     {acao: 'transferir', custo: 1, ok: d.papel === 'delegada' && !d.transferiu && g.dets.length > 1, motivo: 'Só a Delegada, 1 vez por rodada.'},
     {acao: 'acusar', custo: d.papel === 'delegada' ? 2 : 3, ok: !t.acusou && (here === HQ || d.papel === 'delegada'), motivo: t.acusou ? 'O time já acusou.' : 'Só no Palácio da Polícia.'},
   ];
-  return {mover, acoes: acoes.map(x => ({...x, ok: x.ok && x.custo <= d.pa, motivo: !x.ok ? x.motivo : x.custo > d.pa ? 'PA insuficiente.' : undefined}))};
+  return {mover, acoes: acoes.filter(x => x.acao !== 'confiscar' || BALANCO.confiscar).map(x => ({...x, ok: x.ok && x.custo <= d.pa, motivo: !x.ok ? x.motivo : x.custo > d.pa ? 'PA insuficiente.' : undefined}))};
 }
-const alcanceGratis = (g:Game, d:Det) => d.papel === 'rua' && !d.interrogouGratis ? 3 : g.equipe.interrogarGratis;
+const alcanceGratis = (g:Game, d:Det) => d.papel === 'rua' && !d.interrogouGratis ? BALANCO.interrogarRaio + 1 : g.equipe.interrogarGratis;
 const chanceInterceptar = (g:Game, d:Det, x:Transmissao) => Math.min(95, 40 + 15 * x.tentativas + (g.equipe.decodificador ? 20 : 0) + (d.papel === 'analista' ? 15 : 0) - (g.spy!.perfil === 'criptografo' ? 15 : 0) + x.bonus);
 type CorpoDet = {i:number;acao:string;local?:number;n?:number;item?:string;zona?:string;extracao?:number;janela?:string;alvo?:number};
 function agirDetetive(g:Game, p:Player, b:CorpoDet) {
@@ -464,14 +477,14 @@ function agirDetetive(g:Game, p:Player, b:CorpoDet) {
   const t = g.equipe, s = g.spy!, m = mods(g), quem = `${p.name} (${papelNome(d.papel)})`;
   if (b.acao === 'mover') {
     const op = opcoesDetetive(g, b.i).mover.find(x => x.local === Number(b.local)); if (!op) fail('Não dá para ir até lá.');
-    d.pa -= op!.custo; d.loc = op!.local; d.bloqueio = false; if (op!.modo === 'apoio') t.movimentoGratis = null; return;
+    d.pa -= op!.custo; d.loc = op!.local; d.bloqueio = false; if (op!.modo === 'viatura') d.viaturas = (d.viaturas ?? 0) + 1; if (op!.modo === 'apoio') t.movimentoGratis = null; return;
   }
   const op = opcoesDetetive(g, b.i).acoes.find(x => x.acao === b.acao); if (!op) fail('Ação desconhecida.'); if (!op!.ok) fail(op!.motivo ?? 'Ação indisponível.');
   const here = d.loc; let custo = op!.custo;
   switch (b.acao) {
     case 'investigar': {
       d.investigou.push(here); const k9 = d.k9 > 0; const alcanceR = m.chuva ? 4 : k9 ? 12 : 8; if (k9) d.k9--;
-      const r = [...g.rastro].reverse().find(x => x.local === here && g.round - x.rodada < alcanceR);
+      const r = [...g.rastro].reverse().find(x => x.local === here && x.rodada < g.round && g.round - x.rodada < alcanceR);
       if (!r) aviso(g, `${quem} investigou ${nome(here)}: nenhum sinal do espião nas últimas ${alcanceR} rodadas.`, 'info', 'todos', {local: here});
       else {
         const prox = r.proximo && r.proximo !== here && (k9 || (d.papel === 'perito' && g.round - r.rodada <= 3)) ? ` Seguiu para ${nome(r.proximo)}.` : '';
@@ -480,23 +493,32 @@ function agirDetetive(g:Game, p:Player, b:CorpoDet) {
       break;
     }
     case 'interrogar': {
-      const gr = alcanceGratis(g, d); const R2 = gr || 2;
+      d.interrogacoes = (d.interrogacoes ?? 0) + 1; const gr = alcanceGratis(g, d); const R2 = gr || BALANCO.interrogarRaio;
       if (gr) { if (d.papel === 'rua') d.interrogouGratis = true; else t.interrogarGratis = 0; }
       const perto = s.loc === here || alcance(here, R2).has(s.loc);
       aviso(g, `${quem} interrogou testemunhas em ${nome(here)}: ${perto ? `SIM, o espião está a até ${R2} ligações.` : `não, ninguém viu o espião a até ${R2} ligações.`}`, perto ? 'perigo' : 'info', 'todos', {local: here}); break;
     }
-    case 'periciar': { const c = g.contatos.find(x => x.local === here && x.status === 'fechado')!; c.lida = true;
+    case 'periciar': {
+      aviso(g, `A força-tarefa vasculha ${nome(here)}.`, 'info', 'todos', {local: here});
+      const c = g.contatos.find(x => x.local === here && x.status === 'fechado'); const antigo = g.contatos.find(x => x.local === here);
+      if (!c) { t.vistoriados[here] = antigo ? 'retirado' : 'vazio';
+        aviso(g, antigo ? `${quem} achou o esconderijo de um envelope em ${nome(here)}, mas ele já foi retirado.` : `${quem} vasculhou ${nome(here)}: nenhum envelope aqui.`, antigo ? 'alerta' : 'info', 'equipe'); break; }
+      c.lida = true; t.vistoriados[here] = 'lido';
       t.pistas.push({fonte: `Envelope em ${nome(here)}`, tipo: c.pista.tipo, texto: c.pista.texto, elimina: c.pista.elimina, rodada: g.round});
-      aviso(g, `${quem} periciou o envelope em ${nome(here)}: ${c.pista.texto}`, 'bom', 'equipe'); aviso(g, `A força-tarefa vasculha ${nome(here)}.`, 'info', 'todos', {local: here}); break; }
-    case 'confiscar': { const c = g.contatos.find(x => x.local === here && x.status === 'fechado')!; c.status = 'confiscado';
+      aviso(g, `${quem} periciou o envelope em ${nome(here)}: ${c.pista.texto}`, 'bom', 'equipe'); break; }
+    case 'confiscar': { const c = g.contatos.find(x => x.local === here && x.status === 'fechado')!; c.status = 'confiscado'; t.vistoriados[here] = 'confiscado';
       aviso(g, `${quem} confiscou o envelope de ${nome(here)}.`, 'bom', 'equipe'); aviso(g, `A rede avisa: o contato em ${nome(here)} caiu.`, 'perigo', 'espiao'); break; }
     case 'interceptar': {
       const x = g.fila.find(y => y.n === b.n && !y.decifrada && !y.expirada); if (!x) fail('Escolha uma transmissão ativa.');
       if (chance(g, chanceInterceptar(g, d, x!))) {
         x!.decifrada = true; t.orcamento += 2;
         const duvidosa = x!.falsa && t.decodificador && chance(g, 50);
-        t.pistas.push({fonte: `Transmissão #${x!.n}`, tipo: x!.pista.tipo, texto: x!.pista.texto, elimina: x!.pista.elimina, zona: x!.zona, duvidosa, rodada: g.round});
-        aviso(g, `${quem} decifrou a transmissão #${x!.n}: “${x!.pista.texto}” Enviada da zona ${zonaNome(x!.zona)} na rodada ${x!.rodada}.${duvidosa ? ' ⚠ Autenticidade duvidosa.' : ''}`, 'bom', 'equipe');
+        if (BALANCO.conteudoSoComDecodificador && !t.decodificador) {
+          aviso(g, `${quem} rastreou a transmissão #${x!.n} (${x!.tipo}): foi enviada da zona ${zonaNome(x!.zona)} na rodada ${x!.rodada}. Sem o Decodificador, o conteúdo segue cifrado.`, 'bom', 'equipe');
+        } else {
+          t.pistas.push({fonte: `Transmissão #${x!.n}`, tipo: x!.pista.tipo, texto: x!.pista.texto, elimina: x!.pista.elimina, zona: x!.zona, duvidosa, rodada: g.round});
+          aviso(g, `${quem} decifrou a transmissão #${x!.n}: “${x!.pista.texto}” Enviada da zona ${zonaNome(x!.zona)} na rodada ${x!.rodada}.${duvidosa ? ' ⚠ Autenticidade duvidosa.' : ''}`, 'bom', 'equipe');
+        }
         aviso(g, `A força-tarefa decifrou a transmissão #${x!.n}.`, 'alerta', 'todos');
       } else { x!.tentativas++; aviso(g, `${quem} não conseguiu decifrar a transmissão #${x!.n}.`, 'info', 'todos'); }
       break;
@@ -504,11 +526,12 @@ function agirDetetive(g:Game, p:Player, b:CorpoDet) {
     case 'abordar': {
       if (s.loc !== here) { aviso(g, `${quem} fez uma abordagem em ${nome(here)}: ninguém suspeito.`, 'info', 'todos', {local: here}); break; }
       const nivel = Math.max(0, agl(g, here, m) - (d.papel === 'tatico' ? 1 : 0));
-      if (chance(g, ABORDAGEM[nivel])) { d.pa -= custo; fimDeJogo(g, 'detetives', `${quem} prendeu o espião em ${nome(here)}.`); return; }
+      d.abordagens = (d.abordagens ?? 0) + 1;
+      if (chance(g, g.horaH ? Math.min(BALANCO.horaHMaxAbordagem, BALANCO.abordagem[nivel]) : BALANCO.abordagem[nivel])) { d.pa -= custo; fimDeJogo(g, 'detetives', `${quem} prendeu o espião em ${nome(here)}.`); return; }
       s.exposicao = Math.min(10, s.exposicao + 2); s.deveMover = true; revelar(g, `O espião escapou de uma abordagem de ${quem}`, true); break;
     }
     case 'bloqueio': d.bloqueio = true; if (t.bloqueiosGratis > 0 && custo === 0) t.bloqueiosGratis--; aviso(g, `Blitz montada em ${nome(here)}.`, 'info', 'todos', {local: here}); break;
-    case 'grampo': { const c = g.contatos.find(x => x.local === here && x.status === 'fechado')!; c.grampo = true; usarEstoque(g, 'grampo'); aviso(g, `${quem} instalou um grampo em ${nome(here)}.`, 'bom', 'equipe'); break; }
+    case 'grampo': { t.grampos.push(here); usarEstoque(g, 'grampo'); aviso(g, `${quem} instalou um grampo em ${nome(here)}.`, 'bom', 'equipe'); break; }
     case 'comprar': {
       const it = ITEM[b.item ?? '']; if (!it) fail('Item desconhecido.'); const preco = Math.max(0, it.custo - (d.papel === 'delegada' ? 1 : 0));
       if (t.orcamento < preco) fail('Orçamento insuficiente.'); t.orcamento -= preco;
@@ -520,11 +543,22 @@ function agirDetetive(g:Game, p:Player, b:CorpoDet) {
     case 'acusar': {
       if (!EXTRACOES.includes(b.extracao ?? -1) || !(b.janela! in JANELAS)) fail('Escolha o ponto de extração e a janela.');
       t.acusou = true;
-      if (b.extracao === g.plano!.extracao && b.janela === g.plano!.janela) { d.pa -= custo; fimDeJogo(g, 'detetives', `A força-tarefa descobriu o plano: ${nome(b.extracao!)}, janela ${b.janela}. A rede abortou a fuga.`); return; }
+      if (b.extracao === g.plano!.extracao && b.janela === g.plano!.janela) { d.pa -= custo; planoB(g); return; }
       t.orcamento = 0; g.cancelarRevelacao = true; aviso(g, `Acusação errada (${nome(b.extracao!)}, janela ${b.janela}). O orçamento foi zerado e a próxima revelação foi cancelada.`, 'perigo'); break;
     }
   }
   d.pa -= custo;
+}
+/** Acusação certa: a rede abandona o plano e manda um plano B ao espião. Sem janela possível, a fuga acabou. */
+function planoB(g:Game) {
+  const p = g.plano!, s = g.spy!;
+  const janelas = Object.keys(JANELAS).filter(j => j !== p.janela && JANELAS[j][0] >= g.round + 3);
+  if (!janelas.length) { fimDeJogo(g, 'detetives', `A força-tarefa descobriu o plano (${nome(p.extracao)}, janela ${p.janela}) e não sobrou tempo para um plano B.`); return; }
+  const outros = EXTRACOES.filter(e => e !== p.extracao);
+  p.extracao = outros[Math.floor(rnd(g) * outros.length)]; p.janela = janelas[Math.floor(rnd(g) * janelas.length)];
+  s.exposicao = Math.min(10, s.exposicao + 2); s.credenciais = Math.max(1, s.credenciais); s.planoB = true;
+  aviso(g, 'A acusação estava CERTA. A rede abortou o plano original e ativou um plano B. A caçada continua.', 'bom');
+  aviso(g, `Plano B da rede: fuga por ${nome(p.extracao)}, janela ${p.janela} (${String(hora(JANELAS[p.janela][0])).padStart(2, '0')}h). Você recebeu uma senha nova.`, 'perigo', 'espiao');
 }
 function usarEstoque(g:Game, item:string) { const k = g.equipe.estoque.findIndex(x => x.item === item && x.desde <= g.round); if (k < 0) fail('Item fora do estoque.'); g.equipe.estoque.splice(k, 1); }
 function usarItem(g:Game, d:Det, b:CorpoDet, quem:string): number {
@@ -535,7 +569,7 @@ function usarItem(g:Game, d:Det, b:CorpoDet, quem:string): number {
     case 'retrato': if (!zona) fail('Escolha a zona.'); t.retratos.push({zona: zona!, ate: g.round + 3}); aviso(g, `Retrato falado espalhado na zona ${zonaNome(zona!)}.`, 'info', 'todos', {zona}); break;
     case 'ceic': if (!zona) fail('Escolha a zona.'); t.ceic.push({zona: zona!, ate: g.round + 2}); aviso(g, `${quem} ativou o monitoramento CEIC.`, 'info', 'equipe'); break;
     case 'k9': d.k9 = 3; break;
-    case 'escuta': d.escuta = true; break;
+    case 'escuta-movel': d.escuta = true; break;
     case 'decodificador': t.decodificador = true; break;
     case 'drone': { if (d.pa < 1) fail('O drone precisa de 1 PA.'); const l = b.local; if (!l || !LOCAL[l]) fail('Escolha o local.');
       const sim = s.loc === l || VIZ[l!].includes(s.loc); aviso(g, `Drone sobre ${nome(l!)}: ${sim ? 'SINAL! O espião está ali ou num vizinho.' : 'nada.'}`, sim ? 'perigo' : 'info', 'todos', {local: l}); usarEstoque(g, item); return 1; }
@@ -608,7 +642,7 @@ export function view(g:Game, token:string|null) {
     agl: m ? Object.fromEntries(IDS.map(i => [i, agl(g, i, m)])) : {},
     eventos: {agenda: g.agenda, ativos: g.ativos.filter(a => a.ate >= g.round), carta: g.carta},
     fila: g.fila.map(x => ({n: x.n, rodada: x.rodada, tipo: x.tipo, tentativas: x.tentativas, decifrada: x.decifrada, expirada: x.expirada})),
-    contatos: g.contatos.map(c => ({local: c.local})), retratos: g.equipe.retratos.map(r => r.zona),
+    contatos: MAPA.contatos_candidatos.map(local => ({local})), retratos: g.equipe.retratos.map(r => r.zona),
     avisos: g.avisos.filter(a => a.para === 'todos').slice(-30),
     fechados: m ? [...m.locaisFechados] : [], winner: g.winner, motivo: g.motivo,
     final: fim && g.spy ? {plano: g.plano, rastro: g.rastro, espiao: g.spy.loc, pistas: g.contatos.map(c => ({local: c.local, tipo: c.pista.tipo, texto: c.pista.texto, status: c.status}))} : null,
@@ -618,7 +652,7 @@ export function view(g:Game, token:string|null) {
   if (side === 'detetive' && g.phase !== 'lobby') {
     const t = g.equipe;
     equipe = {orcamento: t.orcamento, estoque: t.estoque, dossie: t.dossie, chat: t.chat.slice(-40), pistas: t.pistas, acusou: t.acusou, decodificador: t.decodificador, lancha: t.lancha === g.round,
-      contatos: g.contatos.map(c => ({local: c.local, lida: c.lida, grampo: c.grampo, confiscado: c.status === 'confiscado', pista: c.lida ? c.pista : null})),
+      contatos: MAPA.contatos_candidatos.map(l => ({local: l, situacao: t.vistoriados[l] ?? 'desconhecido', grampo: t.grampos.includes(l)})),
       avisos: g.avisos.filter(a => a.para === 'equipe').slice(-30), interrogarGratis: t.interrogarGratis, bloqueiosGratis: t.bloqueiosGratis,
       meus: g.phase === 'detetives' ? g.dets.map((d, i) => d.owner === p!.id && !d.encerrou ? {i, ...opcoesDetetive(g, i)} : null).filter(Boolean) : []};
   }
@@ -626,6 +660,8 @@ export function view(g:Game, token:string|null) {
     const s = g.spy;
     espiao = {loc: s.loc, dinheiro: s.dinheiro, credenciais: s.credenciais, pistas: s.pistas, disfarce: s.disfarce, escudo: s.escudo, escondido: s.escondido, falsas: s.falsas,
       movimentos: s.movimentos, moveu: s.moveu, agiu: s.agiu, perfil: s.perfil, opcoesInicio: g.phase === 'preparo' ? s.opcoesInicio : [],
+      remarcada: s.remarcada ?? null,
+      planoB: s.planoB ? {extracao: g.plano!.extracao, janela: g.plano!.janela} : null,
       opcoes: g.phase === 'espiao' && s.movimentos > 0 ? opcoesEspiao(g) : null, acoes: g.phase === 'espiao' && s.moveu && !s.agiu ? acoesEspiao(g) : null,
       contatos: g.contatos.map(c => ({local: c.local, status: c.status === 'confiscado' ? 'caiu' : c.status === 'recolhido' ? 'recolhido' : 'fechado'})),
       avisos: g.avisos.filter(a => a.para === 'espiao').slice(-30), aqui: {agl: agl(g, s.loc, m!), risco: chanceDenuncia(g, s.loc, false, m!)}};
