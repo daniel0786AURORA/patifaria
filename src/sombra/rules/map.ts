@@ -1,5 +1,5 @@
 // Dados do tabuleiro e consultas de movimento. Público: pode ser usado pelo servidor e pelo navegador.
-import mapaJson from '../../../docs/sombra-no-guaiba/mapa.json';
+import {mapa as mapaJson} from './dados.js';
 
 export type Zona = string;
 export type TipoArea = 'comercial'|'boemio'|'nobre'|'residencial'|'universitario'|'industrial'|'quente'|'lazer'|'rural'|'ilha';

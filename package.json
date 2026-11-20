@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node --import tsx scripts/dev.ts",
-    "build": "tsc --noEmit && vite build",
+    "build": "node scripts/sombra-dados.mjs && tsc --noEmit && vite build",
     "test": "node --import tsx --test tests/*.test.ts",
     "preview": "vite preview"
   },

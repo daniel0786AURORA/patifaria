@@ -1,6 +1,6 @@
 // Motor de regras de Sombra no Guaíba. Roda SOMENTE no servidor: guarda o plano e a rota secreta.
 import {createHash, randomInt} from 'node:crypto';
-import cartasJson from '../../../docs/sombra-no-guaiba/cartas.json';
+import {cartas as cartasJson} from './dados.js';
 import {MAPA, LOCAL, IDS, VIZ, AGUA, BIKE, BIKE_ZONAS, TREM, LINHAS, EXTRACOES, JANELAS, HQ, tem, hora, periodo, alcance, extracaoMeio} from './map.js';
 import {sortearPlano, pistaFalsa, shuffle, type Pista, type Plano, type Rng} from './plan.js';
 
