@@ -20,10 +20,10 @@ const EXTRACOES: number[] = Object.values(LOCAIS as Any).filter((n:Any) => n.eti
 const TICKET: Record<string, string> = {pe: 'PÉ', bike: 'BIKE', onibus: 'ÔNI', trem: 'TREM', app: 'APP', barco: 'BARCO', esconder: 'ESC'};
 const MODO: Record<string, string> = {pe: 'A pé', bike: 'Bike', onibus: 'Ônibus', trem: 'Trensurb', app: 'Aplicativo', barco: 'Barco', esconder: 'Esconder-se', viatura: 'Viatura', apoio: 'Apoio grátis'};
 const ACAO: Record<string, [string, string]> = {
-  investigar: ['Investigar rastro', 'O espião passou por aqui?'], interrogar: ['Interrogar testemunhas', 'Ele está a até 2 ligações?'], periciar: ['Vasculhar ponto de contato', 'Se houver envelope, o time lê a pista'],
-  confiscar: ['Confiscar envelope', 'Tira a pista do espião'], interceptar: ['Interceptar transmissão', 'Decifrar uma mensagem da rede'], abordar: ['Abordar', 'Prende se ele estiver aqui'],
+  investigar: ['Investigar rastro', 'O espião passou por aqui?'], interrogar: ['Interrogar testemunhas', 'O espião está aqui ou num lugar vizinho?'], periciar: ['Vasculhar ponto de contato', 'Se houver envelope, o time lê a pista'],
+  confiscar: ['Confiscar envelope', 'Tira a pista do espião'], interceptar: ['Interceptar transmissão', 'Decifrar uma mensagem da rede'], abordar: ['Abordar (prender)', 'Se o espião estiver aqui, você vence'],
   bloqueio: ['Montar blitz', 'Fecha a passagem de veículos'], grampo: ['Instalar grampo', 'Pega o espião se recolher aqui'], comprar: ['Comprar item', 'Usa o orçamento do time'],
-  usar: ['Usar item', 'Do estoque do time'], transferir: ['Passar 1 PA', 'Para outro detetive'], acusar: ['Acusação de Plano', 'Acertou: a rede troca de plano. Errou: perde orçamento'],
+  usar: ['Usar item', 'Do estoque do time'], transferir: ['Dar 1 ponto', 'Para outro detetive usar na vez dele'], acusar: ['Acusação de Plano', 'Acertou: a rede troca de plano. Errou: perde orçamento'],
 };
 const ACAO_ESPIAO: Record<string, [string, string]> = {
   recolher: ['Recolher envelope', 'Pista nova, mas gera uma transmissão'], sacar: ['Sacar dinheiro', '+R$ 4, alerta bancário na próxima rodada'], disfarce: ['Trocar disfarce', 'Exposição −2 e proteção contra 1 alerta'],
@@ -65,6 +65,24 @@ function Home() {
   </div></main>;
 }
 
+// ------------------------------------------------------------------ vez, dado e jogadores (TV e celulares)
+function quemJoga(pub:Any): {nome:string;papel:string;espiao:boolean}|null {
+  if (pub.phase === 'espiao' || pub.phase === 'preparo') { const p = pub.players.find((x:Any) => x.side === 'espiao'); return p ? {nome: p.name, papel: 'Espião', espiao: true} : null; }
+  if (pub.phase === 'detetives' && pub.vez != null) { const d = pub.dets[pub.vez]; return {nome: d.dono, papel: PAPEL[d.papel].nome, espiao: false}; }
+  return null;
+}
+const dadoAgora = (pub:Any) => pub.phase === 'detetives' && pub.dado && pub.dado.det === pub.vez && pub.dado.rodada === pub.round ? pub.dado.valor : null;
+function Dado({valor, grande}:{valor:number;grande?:boolean}) { return <div key={valor + '-' + Date.now()} className={'dado anim' + (grande ? ' grande' : '')} aria-label={`Dado: ${valor}`}>{valor}</div>; }
+function Jogadores({pub}:{pub:Any}) {
+  const q = quemJoga(pub);
+  return <div className="jog">{pub.players.map((p:Any) => {
+    const meus = pub.dets.map((d:Any, i:number) => ({d, i})).filter((x:Any) => x.d.owner === p.id);
+    const agora = q && q.nome === p.name;
+    return <div key={p.id} className={agora ? 'agora' : ''}><span>{agora ? '▶ ' : ''}{p.name}</span>
+      <span style={{display: 'flex', gap: 4}}>{p.side === 'espiao' ? <span className="tag esp">ESPIÃO</span> : meus.map((x:Any) => <span key={x.i} className="tag">{PAPEL[x.d.papel].letra}{pub.vez === x.i && x.d.rolou ? ` · ${x.d.pa} pts` : ''}</span>)}</span></div>;
+  })}</div>;
+}
+
 // ------------------------------------------------------------------ TV
 function Qr({text}:{text:string}) { const svg = useMemo(() => { const q = qrcode(0, 'M'); q.addData(text); q.make(); return q.createSvgTag({cellSize: 4, margin: 1, scalable: true}); }, [text]); return <div className="qr" dangerouslySetInnerHTML={{__html: svg}}/>; }
 function Tempo({deadline, offset}:{deadline:number|null;offset:number}) { const now = useAgora(offset); if (!deadline) return null; const s = Math.max(0, Math.ceil((deadline - now) / 1000)); return <span className={'timer' + (s <= 15 ? ' low' : '')}>{Math.floor(s / 60)}:{String(s % 60).padStart(2, '0')}</span>; }
@@ -82,6 +100,7 @@ function LobbyTV({pub, send, error}:{pub:Any;send:Any;error:string}) {
     <div style={{display: 'grid', gap: 18}}>
       <div className="eyebrow">Porto Alegre · 06h · o espião está na cidade</div><h1>Sombra no <span>Guaíba</span></h1>
       <p className="muted" style={{fontSize: 20, margin: 0}}>Aponte a câmera do celular para o QR code ou entre em <b style={{color: 'var(--paper)'}}>{location.host}/sombra</b> com o código abaixo. De 2 a 6 jogadores.</p>
+      <div className="ajuda" style={{fontSize: 17}}><b>Como funciona:</b> um jogador é o <b>espião</b> e se move escondido pela cidade, juntando pistas para fugir. Os outros são <b>detetives</b>: cada um, na sua vez, <b>rola o dado</b> e gasta os pontos andando pelo mapa e investigando. Pega o espião quem chegar no mesmo lugar e <b>abordar</b>. Ele vence se fugir no lugar e na hora certos.</div>
       <div className="plist">
         {pub.players.map((p:Any) => <div className="pl" key={p.id}><span>{p.name}</span>
           <button className={pub.espiaoEscolhido === p.id ? 'on' : ''} onClick={() => send('escolherEspiao', {player: pub.espiaoEscolhido === p.id ? '' : p.id})}>{pub.espiaoEscolhido === p.id ? 'Espião' : 'Fazer espião'}</button></div>)}
@@ -118,7 +137,10 @@ function TVJogo({pub, send, offset, error}:{pub:Any;send:Any;offset:number;error
     <div className="tv-map">
       <Board pub={pub} view={foco} extra={{}}/>
       {pub.horaH && !pub.final && <div className="banner perigo">🚨 EXTRAÇÃO EM ANDAMENTO EM {nm(pub.horaH.local).toUpperCase()}</div>}
-      {!pub.horaH && banner && <div className="banner">{banner}</div>}
+      {!pub.horaH && !pub.final && (() => { const q = quemJoga(pub); const v = dadoAgora(pub); if (!q) return banner && <div className="banner">{banner}</div>;
+        return <div className="vezbanner"><div>Vez de {q.nome} <span style={{color: q.espiao ? 'var(--hot)' : 'var(--cop)'}}>· {q.papel}</span>
+          <div style={{font: '600 16px var(--f-body)', color: 'var(--muted)'}}>{q.espiao ? 'O espião está se movendo em segredo. Não olhem o celular dele.' : v ? `Tirou ${v} no dado: ${v} pontos para gastar.` : 'Esperando rolar o dado no celular…'}</div></div>
+          {v ? <Dado valor={v} grande/> : null}</div>; })()}
       {pub.final && <div className="final">
         <div className="eyebrow">Fim de jogo · rodada {pub.round}</div>
         <h2 style={{color: pub.winner === 'espiao' ? 'var(--hot)' : 'var(--cop)'}}>{pub.winner === 'espiao' ? 'O espião escapou' : 'A força-tarefa venceu'}</h2>
@@ -133,7 +155,7 @@ function TVJogo({pub, send, offset, error}:{pub:Any;send:Any;offset:number;error
         <div className="clock"><b>{hora(pub.round)}</b><span>Rodada {pub.round} de 24</span><Tempo deadline={pub.deadline} offset={offset}/></div>
         <div className="windows">{Object.entries(JAN).map(([k, [a, b]]) => <div key={k} className={pub.round >= a && pub.round <= b ? 'on' : ''}>{k} {JTXT[k]}</div>)}</div>
       </div>
-      <div className={'phase' + (pub.phase === 'detetives' ? ' det' : '')}>{pub.phase === 'espiao' ? 'Turno do espião' : pub.phase === 'detetives' ? 'Turno dos detetives' : pub.phase === 'preparo' ? 'Preparação' : 'Fim de jogo'}</div>
+      <div><div className="lbl">Jogadores</div><Jogadores pub={pub}/></div>
       {(carta || agendaAgora.length > 0) && <div className="card">
         {agendaAgora.map((a:Any) => <div key={a.id} style={{marginBottom: 6}}><div className="lbl">Agenda · até {hora(a.rodadas[1] + 1)}</div><div className="ev-title">{EVENTOS[a.id].nome}</div><div style={{fontSize: 14}}>{EVENTOS[a.id].texto}</div></div>)}
         {carta && <div><div className="lbl">Carta da rodada</div><div className="ev-title" style={{color: 'var(--paper)'}}>{carta.nome}</div><div style={{fontSize: 14}}>{carta.texto}</div></div>}
@@ -150,7 +172,7 @@ function TVJogo({pub, send, offset, error}:{pub:Any;send:Any;offset:number;error
       <div style={{display: 'grid', gap: 8}}>
         <div><div className="lbl">Exposição do espião{pub.espiao?.perfil ? ` · ${CARTAS.perfis_espiao.find((p:Any) => p.id === pub.espiao.perfil)?.nome}` : ''}</div>
           <div className="expo-bar">{Array.from({length: 10}, (_, i) => <i key={i} className={(i < (pub.espiao?.exposicao ?? 0) ? 'on' : '') + (i >= 6 ? ' hi' : '')}/>)}</div></div>
-        <div><div className="lbl">Detetives · PA</div><div className="cops">{pub.dets.map((d:Any, i:number) => <div key={i} className={'cop' + (d.encerrou ? ' done' : '')}><b>{PAPEL[d.papel].letra}</b><span className="pa">{'●'.repeat(Math.max(0, d.pa))}{'○'.repeat(Math.max(0, 4 - d.pa))}</span></div>)}</div></div>
+        <div><div className="lbl">Detetives · pontos na rodada</div><div className="cops">{pub.dets.map((d:Any, i:number) => <div key={i} className={'cop' + (d.encerrou ? ' done' : '')}><b>{PAPEL[d.papel].letra}</b><span className="pa">{d.encerrou ? 'jogou' : d.rolou ? `${d.pa} pts` : '—'}</span></div>)}</div></div>
       </div>
       <div><div className="lbl">Bilhetes do espião · como ele se moveu</div>
         <div className="tickets">{Array.from({length: 24}, (_, k) => { const r = k + 1; const ts = pub.bilhetes.filter((b:Any) => b.rodada === r);
@@ -186,52 +208,138 @@ function Feed({avisos}:{avisos:Any[]}) { return <div className="feed" style={{ga
 // --- espião
 function Espiao({g, mesa}:{g:Any;mesa:Any}) {
   const pub = g.pub, s = g.espiao, send = mesa.send;
-  const [aba, setAba] = useState('mover'); const [modo, setModo] = useState('pe'); const [olho, setOlho] = useState(false);
+  const [aba, setAba] = useState('jogar'); const [verMapa, setVerMapa] = useState(false); const [alvo, setAlvo] = useState<number|null>(null);
   const [perfil, setPerfil] = useState('sombra'); const [inicio, setInicio] = useState<number|null>(null);
   const [caderno, setCaderno] = useState<Record<string, string>>(() => { try { return JSON.parse(store.get('sombra:caderno:' + pub.code) || '{}'); } catch { return {}; } });
   useEffect(() => store.set('sombra:caderno:' + pub.code, JSON.stringify(caderno)), [caderno]);
+  useEffect(() => setAlvo(null), [pub.round, s.moveu]);
   const minhaVez = pub.phase === 'espiao' && !s.agiu;
-  const modos = s.opcoes ? Object.keys(s.opcoes).filter(k => s.opcoes[k].length) : [];
-  useEffect(() => { if (modos.length && !modos.includes(modo)) setModo(modos[0]); }, [modos.join()]);
-  const segurar = {onPointerDown: () => setOlho(true), onPointerUp: () => setOlho(false), onPointerLeave: () => setOlho(false), onPointerCancel: () => setOlho(false), onContextMenu: (e:Any) => e.preventDefault()};
+  // todas as formas de chegar em cada lugar
+  const porLugar: Record<number, {modo:string;custo:number;risco:number;linha?:string}[]> = {};
+  if (s.opcoes && s.movimentos > 0) for (const m of Object.keys(s.opcoes)) for (const d of s.opcoes[m]) (porLugar[d.local] ??= []).push({modo: m, ...d});
+  const destinos = Object.keys(porLugar).map(Number);
+  const rotulos = Object.fromEntries(destinos.filter(l => l !== s.loc).map(l => { const r = Math.min(...porLugar[l].map(x => x.risco)); return [l, r + '%']; }));
+  const esc = s.opcoes?.esconder?.[0];
   let corpo: React.ReactNode;
   if (pub.phase === 'fim') corpo = <Fim pub={pub} voce="espiao"/>;
   else if (pub.phase === 'preparo') corpo = <>
-    <h2>Escolha seu perfil</h2>
+    <div className="ajuda"><b>Você é o ESPIÃO.</b> Ninguém sabe onde você está. Recolha envelopes com pistas para descobrir <b>onde</b> e <b>quando</b> é a sua fuga, chegue lá na hora certa e declare a <b>Hora H</b>. Se um detetive te abordar, você perde.</div>
+    <h2>1. Escolha seu estilo</h2>
     {CARTAS.perfis_espiao.map((p:Any) => <button key={p.id} className={'act' + (perfil === p.id ? ' sel' : '')} onClick={() => setPerfil(p.id)}><div><b>{p.nome}</b><small>{p.texto}</small></div></button>)}
-    <h2>Onde você começa?</h2><div className="muted" style={{fontSize: 13}}>Ninguém além de você vê isto.</div>
+    <h2>2. Onde você começa?</h2>
     {s.opcoesInicio.map((l:number) => <button key={l} className={'act' + (inicio === l ? ' sel' : '')} onClick={() => setInicio(l)}><div>{nm(l)}<small>{ZONAS[(LOCAIS as Any)[l].zona]}</small></div></button>)}
-    <button className="btn" disabled={!inicio} onClick={() => send('preparar', {perfil, local: inicio})}>Sumir na cidade</button></>;
-  else if (aba === 'mover') corpo = !minhaVez ? <div className="waiting"><b>{pub.phase === 'detetives' ? 'A força-tarefa está agindo' : 'Aguarde'}</b><span>Rodada {pub.round} · {hora(pub.round)}. Fique de olho na TV.</span><Feed avisos={[...pub.avisos.slice(-4), ...s.avisos.slice(-4)]}/></div> : <>
+    <button className="btn enorme" disabled={!inicio} onClick={() => send('preparar', {perfil, local: inicio})}>Começar a fuga</button></>;
+  else if (aba === 'jogar') corpo = !minhaVez ? <>
+      <Turno pub={pub} meuId={g.me.id}/>
+      <div className="ajuda">Na sua vez você: <b>1)</b> escolhe para onde ir no mapa, <b>2)</b> faz uma ação no lugar onde chegou. Os detetives só veem <b>como</b> você se moveu (a pé, ônibus…), nunca <b>para onde</b>.</div>
+      <Feed avisos={[...pub.avisos.slice(-5), ...s.avisos.slice(-3)]}/></> : <>
+    <div className="turno minha"><div><b>SUA VEZ</b><small>Você está em {nm(s.loc)} · R$ {s.dinheiro}</small></div><Tempo deadline={pub.deadline} offset={mesa.offset}/></div>
     {s.opcoes && s.movimentos > 0 && <>
-      <div className="lbl">{s.moveu ? 'Movimento extra (opcional)' : 'Como você vai se mover?'}</div>
-      <div className="chips">{modos.map(k => <button key={k} className={'chip' + (modo === k ? ' on' : '')} onClick={() => setModo(k)}>{MODO[k]}</button>)}</div>
-      {(s.opcoes[modo] ?? []).slice().sort((a:Any, b:Any) => a.risco - b.risco).map((d:Any) => <button key={d.local + modo} className="act" onClick={() => send('mover', {modo, local: d.local})}>
-        <div>{modo === 'esconder' ? 'Ficar escondido aqui' : nm(d.local)}<small>{d.linha ? `linha ${d.linha} · ` : ''}{d.custo ? `R$ ${d.custo}` : 'grátis'}{(LOCAIS as Any)[d.local].etiquetas.includes('CON') ? ' · contato' : ''}{(LOCAIS as Any)[d.local].etiquetas.some((t:string) => t.startsWith('EXT')) ? ' · extração' : ''}</small></div>
-        <span className="risk" style={{color: d.risco < 12 ? '#8fbf8f' : d.risco < 25 ? '#c9b46a' : '#d08a5a'}}>{d.risco}%</span></button>)}
+      <div className="lbl">{s.moveu ? 'Movimento extra (opcional)' : 'Passo 1: para onde você vai?'}</div>
+      {!verMapa ? <button className="btn sec" onClick={() => setVerMapa(true)}>👁 Mostrar meu mapa (cuidado com quem está olhando)</button> : <>
+        <div className="mini-map" style={{height: '50vh'}}><Board pub={pub} extra={{espiao: s.loc, destaques: destinos, rotulos, selecionado: alvo ?? undefined}} view={minBox(bboxOf([s.loc], 2600), 7000, 9000)} onSelect={id => porLugar[id] && setAlvo(id)}/></div>
+        <small className="muted">Toque num lugar aceso. O número é a chance de alguém te denunciar lá.</small>
+        <button className="btn sec" onClick={() => setVerMapa(false)}>Esconder mapa</button></>}
+      {alvo != null && porLugar[alvo] && <div className="sheet"><b>{alvo === s.loc ? 'Ficar aqui' : `Ir para ${nm(alvo)}`}</b>
+        {porLugar[alvo].map(o => <button key={o.modo + (o.linha ?? '')} className="act" onClick={() => send('mover', {modo: o.modo, local: alvo})}>
+          <div>{MODO[o.modo]}{o.linha ? ` (linha ${o.linha})` : ''}<small>{o.custo ? `R$ ${o.custo}` : 'grátis'} · risco {o.risco}%</small></div></button>)}
+        <button className="btn sec" onClick={() => setAlvo(null)}>Cancelar</button></div>}
+      {esc && <button className="act" onClick={() => send('mover', {modo: 'esconder', local: s.loc})}><div>Ficar escondido onde estou<small>risco {esc.risco}%</small></div></button>}
+      <details><summary className="muted">Ver lista de lugares</summary><div style={{display: 'grid', gap: 6, marginTop: 8}}>
+        {destinos.filter(l => l !== s.loc).sort((a, b) => nm(a).localeCompare(nm(b))).map(l => <button key={l} className="act" onClick={() => setAlvo(l)}><span>{nm(l)}</span><small>{porLugar[l].map(o => MODO[o.modo]).join(', ')}</small></button>)}</div></details>
     </>}
-    {s.acoes && <><div className="lbl">O que fazer em {nm(s.loc)}?</div>
-      {s.acoes.map((a:Any) => <button key={a.acao} className="act" disabled={!a.ok} onClick={() => { if (a.acao !== 'horaH' || confirm('Declarar a Hora H aqui e agora?') !== false) send('agir', {acao: a.acao}); }}>
-        <div>{ACAO_ESPIAO[a.acao][0]}<small>{a.ok ? ACAO_ESPIAO[a.acao][1] : a.motivo}</small></div>{a.custo ? <span className="risk">R$ {a.custo}</span> : null}</button>)}</>}
+    {s.acoes && <><div className="lbl">Passo 2: o que fazer em {nm(s.loc)}?</div>
+      {s.acoes.filter((a:Any) => a.ok).map((a:Any) => <button key={a.acao} className={'act' + (a.acao === 'horaH' ? ' sel' : '')} onClick={() => { if (a.acao !== 'horaH' || confirm('Declarar a Hora H aqui e agora? Se o lugar ou a hora estiverem errados, você perde uma senha e é revelado.')) send('agir', {acao: a.acao}); }}>
+        <div>{ACAO_ESPIAO[a.acao][0]}<small>{ACAO_ESPIAO[a.acao][1]}</small></div>{a.custo ? <span className="risk">R$ {a.custo}</span> : null}</button>)}</>}
   </>;
-  else if (aba === 'mapa') corpo = <><div className="eye" {...segurar}>{olho ? `Você está em ${nm(s.loc)}` : 'Segure aqui para ver o mapa'}</div>
-    <div className="mini-map" style={{visibility: olho ? 'visible' : 'hidden'}}><Board pub={pub} extra={{espiao: s.loc, destaques: s.opcoes ? Object.values(s.opcoes).flat().map((d:Any) => d.local) : []}} view={minBox(bboxOf([s.loc], 2500), 7000, 9000)}/></div></>;
-  else if (aba === 'caderno') corpo = <><div className="muted" style={{fontSize: 13}}>Suas anotações ficam só neste celular. Toque para marcar ✗, ? ou ✓.</div><Grade marcas={caderno} marcar={(k, v) => setCaderno(c => ({...c, [k]: v}))}/>
-    <div className="lbl">Pistas que você tem</div>{s.pistas.length ? s.pistas.map((p:Any, i:number) => <div key={i} className="pista"><b>{p.tipo}</b>{p.texto}</div>) : <div className="muted">Nenhuma ainda. Recolha envelopes nos pontos de contato.</div>}</>;
-  else corpo = <>
-    {s.remarcada && !s.planoB && <div className="card" style={{borderColor: 'var(--amber)'}}><div className="lbl">Fuga remarcada</div>A rede remarcou para a janela {s.remarcada} ({JTXT[s.remarcada]}), no mesmo lugar.</div>}
+  else if (aba === 'pistas') corpo = <>
     {s.planoB && <div className="card" style={{borderColor: 'var(--hot)'}}><div className="lbl">Plano B da rede</div>Fuga por <b>{nm(s.planoB.extracao)}</b>, janela {s.planoB.janela} ({JTXT[s.planoB.janela]}).</div>}
+    {s.remarcada && !s.planoB && <div className="card" style={{borderColor: 'var(--amber)'}}><div className="lbl">Fuga remarcada</div>A rede remarcou para a janela {s.remarcada} ({JTXT[s.remarcada]}), no mesmo lugar.</div>}
+    <div className="ajuda">Cada pista elimina lugares ou horários. Marque aqui o que já descartou (✗). Sobrando 1 lugar e 1 horário, vá até lá e declare a <b>Hora H</b>.</div>
+    <Grade marcas={caderno} marcar={(k, v) => setCaderno(c => ({...c, [k]: v}))}/>
+    <div className="lbl">Suas pistas</div>{s.pistas.length ? s.pistas.map((p:Any, i:number) => <div key={i} className="pista"><b>{p.tipo}</b>{p.texto}</div>) : <div className="muted">Nenhuma ainda. Vá até um ponto de contato (envelope no mapa) e escolha "Recolher envelope".</div>}
+    <div className="lbl">Pontos de contato com envelope</div>{s.contatos.map((c:Any) => <div key={c.local} className="act" style={{minHeight: 40}}><span>{nm(c.local)}</span><small>{c.status === 'fechado' ? 'esperando você' : c.status === 'caiu' ? 'caiu' : 'recolhido'}</small></div>)}</>;
+  else corpo = <>
     <div className="grid2"><div className="card"><div className="lbl">Dinheiro</div><b style={{fontSize: 26}}>R$ {s.dinheiro}</b></div><div className="card"><div className="lbl">Senhas</div><b style={{fontSize: 26}}>{s.credenciais}</b></div></div>
-    <div className="card"><div className="lbl">Aqui</div>{nm(s.loc)} · lotação {s.aqui.agl} · denúncia {s.aqui.risco}%{s.disfarce ? ` · disfarce por ${s.disfarce} rodada(s)` : ''}</div>
-    <div className="lbl">Pontos de contato</div>{s.contatos.map((c:Any) => <div key={c.local} className="act" style={{minHeight: 40}}><span>{nm(c.local)}</span><small>{c.status === 'fechado' ? 'envelope esperando' : c.status === 'caiu' ? 'caiu' : 'recolhido'}</small></div>)}
+    <div className="card"><div className="lbl">Onde você está</div>{nm(s.loc)} · chance de denúncia {s.aqui.risco}%{s.disfarce ? ` · disfarçado por ${s.disfarce} rodada(s)` : ''}</div>
     <div className="lbl">Avisos só para você</div><Feed avisos={s.avisos}/></>;
   return <main className="phone spy">
-    <div className="ph-top"><div className="row"><b style={{color: '#d8c9a3'}}>Espião</b><span style={{font: '500 13px var(--f-mono)'}}>R$ {s.dinheiro} · {s.credenciais} senha{s.credenciais === 1 ? '' : 's'}</span></div>
-      <div className="row"><span className="eyebrow" style={{color: '#6d6555'}}>{pub.phase === 'preparo' ? 'Preparação · ninguém vê sua escolha' : `${hora(pub.round)} · rodada ${pub.round}${minhaVez ? ' · sua vez' : ''}`}</span><Tempo deadline={pub.deadline} offset={mesa.offset}/></div></div>
+    <div className="ph-top"><div className="row"><b style={{color: '#d8c9a3'}}>Você é o espião</b><span style={{font: '500 13px var(--f-mono)'}}>R$ {s.dinheiro} · {s.credenciais} senha{s.credenciais === 1 ? '' : 's'}</span></div>
+      <span className="eyebrow" style={{color: '#6d6555'}}>{pub.phase === 'preparo' ? 'Preparação' : `${hora(pub.round)} · rodada ${pub.round} de 24`}</span></div>
     <div className="ph-body">{corpo}{mesa.error && <div className="err">{mesa.error}</div>}</div>
-    {pub.phase !== 'preparo' && <nav className="ph-tabs">{[['mover', 'Mover'], ['mapa', 'Mapa'], ['caderno', 'Caderno'], ['bolso', 'Bolso']].map(([k, t]) => <button key={k} className={aba === k ? 'on' : ''} onClick={() => setAba(k)}>{t}</button>)}</nav>}
+    {pub.phase !== 'preparo' && <nav className="ph-tabs" style={{gridTemplateColumns: 'repeat(3,1fr)'}}>{[['jogar', 'Jogar'], ['pistas', 'Pistas'], ['bolso', 'Bolso']].map(([k, t]) => <button key={k} className={aba === k ? 'on' : ''} onClick={() => setAba(k)}>{t}</button>)}</nav>}
   </main>;
 }
+function Turno({pub, meuId}:{pub:Any;meuId:string}) {
+  const q = quemJoga(pub); const v = dadoAgora(pub);
+  if (!q) return <div className="turno"><div><b>{pub.phase === 'fim' ? 'Fim de jogo' : 'Aguarde'}</b></div></div>;
+  const eu = pub.players.find((p:Any) => p.id === meuId)?.name === q.nome;
+  return <div className={'turno' + (eu ? ' minha' : '')}><div><b>{eu ? 'SUA VEZ' : `Vez de ${q.nome}`}</b><small>{q.papel}{v ? ` · tirou ${v} no dado` : q.espiao ? ' · movendo em segredo' : ' · vai rolar o dado'}</small></div>{v ? <Dado valor={v}/> : null}</div>;
+}
+
+// --- detetive
+function Detetive({g, mesa}:{g:Any;mesa:Any}) {
+  const pub = g.pub, eq = g.equipe, send = mesa.send, me = g.me;
+  const [aba, setAba] = useState('jogar'); const [alvo, setAlvo] = useState<number|null>(null); const [sub, setSub] = useState<string|null>(null);
+  const [msg, setMsg] = useState(''); const [ext, setExt] = useState<number|null>(null); const [jan, setJan] = useState<string|null>(null);
+  const vez = pub.vez; const det = vez != null ? pub.dets[vez] : null;
+  const minhaVez = pub.phase === 'detetives' && det && det.owner === me.id;
+  const op = eq?.meus?.[0];
+  useEffect(() => { setAlvo(null); setSub(null); }, [vez, pub.round, det?.loc]);
+  const fazer = (acao:string, extra:Any = {}) => send('det', {i: vez, acao, ...extra}).then((ok:boolean) => { if (ok) { setSub(null); setAlvo(null); } });
+  const meusIdx = pub.dets.map((d:Any, i:number) => d.owner === me.id ? i : -1).filter((i:number) => i >= 0);
+  const avisos = [...pub.avisos, ...(eq?.avisos ?? [])].sort((a:Any, b:Any) => a.id - b.id);
+  const rotulos = op ? Object.fromEntries(op.mover.map((m:Any) => [m.local, String(m.custo)])) : {};
+  const moverPara = (id:number) => op?.mover.find((m:Any) => m.local === id);
+  let corpo: React.ReactNode;
+  if (pub.phase === 'fim') corpo = <Fim pub={pub} voce="detetive"/>;
+  else if (aba === 'jogar') corpo = !minhaVez ? <>
+      <Turno pub={pub} meuId={me.id}/>
+      <div className="ajuda"><b>Você é DETETIVE</b> ({meusIdx.map((i:number) => PAPEL[pub.dets[i].papel].nome).join(' e ')}). Na sua vez: <b>role o dado</b>, o número é quantos pontos você tem. Gaste andando pelo mapa e fazendo ações. Para prender o espião, esteja no mesmo lugar que ele e use <b>Abordar</b>.</div>
+      <div className="mini-map" style={{height: '38vh'}}><Board pub={pub} extra={{meus: meusIdx}} view={minBox(bboxOf(pub.dets.map((d:Any) => d.loc), 2500), 9000, 9000)}/></div>
+      <Feed avisos={avisos}/></> : !det.rolou ? <>
+    <div className="turno minha"><div><b>SUA VEZ</b><small>{PAPEL[det.papel].nome} em {nm(det.loc)}</small></div><Tempo deadline={pub.deadline} offset={mesa.offset}/></div>
+    <button className="btn enorme" onClick={() => send('rolar', {i: vez})}>🎲 Rolar o dado</button>
+    <div className="ajuda">O número que cair é quantos pontos você tem para gastar nesta rodada. Todo mundo vê o resultado na TV.</div></> : <>
+    <div className="turno minha"><div><b>{PAPEL[det.papel].nome} · {nm(det.loc)}</b><small>Tirou {pub.dado?.valor} no dado</small></div><Tempo deadline={pub.deadline} offset={mesa.offset}/></div>
+    <div className="pontos">Você tem {det.pa} ponto{det.pa === 1 ? '' : 's'} {Array.from({length: Math.max(det.pa, 1)}, (_, i) => <i key={i} className={i < det.pa ? '' : 'off'}/>)}</div>
+    <div className="lbl">Andar: toque num lugar aceso (o número é o custo em pontos)</div>
+    <div className="mini-map" style={{height: '46vh'}}><Board pub={pub} extra={{meus: meusIdx, destaques: op?.mover.map((m:Any) => m.local) ?? [], rotulos, selecionado: alvo ?? undefined}}
+      view={minBox(bboxOf([det.loc], 2600), 8000, 9000)} onSelect={id => moverPara(id) && setAlvo(id)}/></div>
+    {alvo != null && moverPara(alvo) && <div className="sheet"><b>Ir para {nm(alvo)}</b>
+      <button className="btn blue" onClick={() => fazer('mover', {local: alvo})}>{MODO[moverPara(alvo).modo]} · {moverPara(alvo).custo} ponto{moverPara(alvo).custo === 1 ? '' : 's'}</button>
+      <button className="btn sec" onClick={() => setAlvo(null)}>Cancelar</button></div>}
+    <div className="lbl">Fazer aqui em {nm(det.loc)}</div>
+    {op?.acoes.filter((a:Any) => a.ok).map((a:Any) => <React.Fragment key={a.acao}>
+      <button className={'act' + (sub === a.acao ? ' sel' : '')} onClick={() => ['interceptar', 'comprar', 'usar', 'transferir', 'acusar'].includes(a.acao) ? setSub(sub === a.acao ? null : a.acao) : fazer(a.acao)}>
+        <div>{ACAO[a.acao][0]}<small>{ACAO[a.acao][1]}</small></div><span className="cost">{a.custo} pt{a.custo === 1 ? '' : 's'}</span></button>
+      {sub === a.acao && a.acao === 'interceptar' && a.alvos.map((t:Any) => <button key={t.n} className="act" onClick={() => fazer('interceptar', {n: t.n})}><span>Mensagem {t.texto.split(' · ')[0]}</span><span className="cost">{t.texto.split(' · ').slice(1).join(' · ')}</span></button>)}
+      {sub === a.acao && a.acao === 'comprar' && a.alvos.map((t:Any) => <button key={t.item} className="act" disabled={t.custo > eq.orcamento} onClick={() => fazer('comprar', {item: t.item})}><div>{t.texto}<small>{ITENS[t.item].texto}</small></div><span className="cost">{t.custo} créd.</span></button>)}
+      {sub === a.acao && a.acao === 'usar' && <UsarItem alvos={a.alvos} det={det} fazer={fazer}/>}
+      {sub === a.acao && a.acao === 'transferir' && <div className="chips">{pub.dets.map((d:Any, i:number) => i !== vez && <button key={i} className="chip" onClick={() => fazer('transferir', {alvo: i})}>{PAPEL[d.papel].nome} ({d.dono})</button>)}</div>}
+      {sub === a.acao && a.acao === 'acusar' && <div className="card" style={{display: 'grid', gap: 8}}>
+        <div className="chips">{EXTRACOES.map(e => <button key={e} className={'chip' + (ext === e ? ' on' : '')} onClick={() => setExt(e)}>{nm(e)}</button>)}</div>
+        <div className="chips">{Object.keys(JAN).map(j => <button key={j} className={'chip' + (jan === j ? ' on' : '')} onClick={() => setJan(j)}>{j} · {JTXT[j]}</button>)}</div>
+        <button className="btn" disabled={!ext || !jan} onClick={() => fazer('acusar', {extracao: ext, janela: jan})}>Acusar: {ext ? nm(ext) : '?'}, janela {jan ?? '?'}</button></div>}
+    </React.Fragment>)}
+    <button className="btn enorme blue" onClick={() => send('encerrar', {})}>Terminar minha vez</button>
+    <Feed avisos={avisos}/></>;
+  else if (aba === 'pistas') corpo = <><div className="ajuda">O espião foge por 1 de 6 lugares, em 1 de 4 horários. Marque o que o time já descartou. Estas marcações aparecem só nos celulares dos detetives.</div>
+    <Grade marcas={eq?.dossie ?? {}} marcar={(k, v) => send('dossie', {chave: k, valor: v})}/>
+    <div className="lbl">Pistas da força-tarefa · orçamento {eq?.orcamento ?? 0} créditos</div>
+    {eq?.pistas.length ? eq.pistas.map((p:Any, i:number) => <div key={i} className="pista"><b>{p.tipo} · {p.fonte}{p.zona ? ` · zona ${ZONAS[p.zona]}` : ''}{p.duvidosa ? ' · ⚠ duvidosa' : ''}</b>{p.texto}</div>) : <div className="muted">Nada ainda. Vasculhe pontos de contato (envelope no mapa) e intercepte mensagens no Palácio da Polícia.</div>}
+    <div className="lbl">Possíveis pontos de contato (só 8 têm envelope)</div>{eq?.contatos.map((c:Any) => <div key={c.local} className="act" style={{minHeight: 40}}><span>{nm(c.local)}</span><small>{({desconhecido: 'não vistoriado', vazio: 'vazio', retirado: 'já retirado', lido: 'lido', confiscado: 'confiscado'} as Any)[c.situacao]}{c.grampo ? ' · grampo' : ''}</small></div>)}</>;
+  else corpo = <><form style={{display: 'flex', gap: 8}} onSubmit={e => { e.preventDefault(); if (msg.trim()) { send('chat', {texto: msg}); setMsg(''); } }}>
+      <input className="input" value={msg} onChange={e => setMsg(e.target.value)} placeholder="Mensagem para o time" maxLength={200}/><button className="btn blue">Enviar</button></form>
+    <div className="chat">{[...(eq?.chat ?? [])].reverse().map((m:Any, i:number) => <div key={i} className="msg"><b>{m.autor}:</b> {m.texto}</div>)}</div>
+    <div className="lbl">Quem está jogando</div><Jogadores pub={pub}/></>;
+  return <main className="phone">
+    <div className="ph-top"><div className="row"><b>Você é detetive</b><span className="eyebrow">{hora(pub.round)} · rodada {pub.round} de 24</span></div></div>
+    <div className="ph-body">{corpo}{mesa.error && <div className="err">{mesa.error}</div>}</div>
+    <nav className="ph-tabs" style={{gridTemplateColumns: 'repeat(3,1fr)'}}>{[['jogar', 'Jogar'], ['pistas', 'Pistas'], ['time', 'Time']].map(([k, t]) => <button key={k} className={aba === k ? 'on' : ''} onClick={() => setAba(k)}>{t}</button>)}</nav>
+  </main>;
+}
+
 function Grade({marcas, marcar}:{marcas:Record<string, string>;marcar:(k:string, v:string)=>void}) {
   const prox: Record<string, string> = {'': 'x', x: 'q', q: 'v', v: ''}; const sim: Record<string, string> = {x: '✗', q: '?', v: '✓'};
   return <div className="dossie"><div/>{Object.keys(JAN).map(j => <div key={j}><b>{j}</b><br/><small>{JTXT[j]}</small></div>)}
@@ -239,66 +347,6 @@ function Grade({marcas, marcar}:{marcas:Record<string, string>;marcar:(k:string,
       {Object.keys(JAN).map(j => { const k = `${e}:${j}`; const v = marcas[k] ?? ''; return <button key={k} className={v} onClick={() => marcar(k, prox[v])} aria-label={`${nm(e)} janela ${j}`}>{sim[v] ?? ''}</button>; })}</React.Fragment>)}</div>;
 }
 
-// --- detetive
-function Detetive({g, mesa}:{g:Any;mesa:Any}) {
-  const pub = g.pub, eq = g.equipe, send = mesa.send, me = g.me;
-  const [aba, setAba] = useState('acoes'); const [ativo, setAtivo] = useState<number|null>(null); const [sub, setSub] = useState<string|null>(null);
-  const [modo, setModo] = useState('pe'); const [msg, setMsg] = useState(''); const [ext, setExt] = useState<number|null>(null); const [jan, setJan] = useState<string|null>(null);
-  const meusIdx = pub.dets.map((d:Any, i:number) => d.owner === me.id ? i : -1).filter((i:number) => i >= 0);
-  const meus = eq?.meus ?? [];
-  const atual = meus.find((m:Any) => m.i === ativo) ?? meus[0];
-  useEffect(() => { if (atual && atual.i !== ativo) setAtivo(atual.i); }, [atual?.i]);
-  useEffect(() => setSub(null), [ativo, pub.round]);
-  const det = atual ? pub.dets[atual.i] : null;
-  const fazer = (acao:string, extra:Any = {}) => send('det', {i: atual.i, acao, ...extra}).then((ok:boolean) => { if (ok) setSub(null); });
-  const modos = atual ? [...new Set(atual.mover.map((m:Any) => m.modo))] as string[] : [];
-  useEffect(() => { if (modos.length && !modos.includes(modo)) setModo(modos[0]); }, [modos.join()]);
-  const avisos = [...pub.avisos, ...(eq?.avisos ?? [])].sort((a:Any, b:Any) => a.id - b.id);
-  let corpo: React.ReactNode;
-  if (pub.phase === 'fim') corpo = <Fim pub={pub} voce="detetive"/>;
-  else if (aba === 'acoes') corpo = pub.phase !== 'detetives' || !atual ? <div className="waiting"><b>{pub.phase === 'espiao' ? 'O espião está se movendo' : pub.phase === 'preparo' ? 'O espião está se escondendo' : 'Você já encerrou a rodada'}</b>
-      <span>Rodada {pub.round} · {hora(pub.round)}. Combine com o time pelo chat (o espião ouve o que vocês falam alto).</span><Feed avisos={avisos}/></div> : <>
-    <div className="card"><b>{PAPEL[det.papel].nome}</b> em <b>{nm(det.loc)}</b> · {det.pa} PA<br/><small className="muted">{PAPEL[det.papel].texto}</small></div>
-    <div className="lbl">Mover</div>
-    <div className="chips">{modos.map(k => <button key={k} className={'chip' + (modo === k ? ' on' : '')} onClick={() => setModo(k)}>{MODO[k]}</button>)}</div>
-    <div style={{display: 'grid', gap: 6, maxHeight: 260, overflow: 'auto'}}>{atual.mover.filter((m:Any) => m.modo === modo).sort((a:Any, b:Any) => a.custo - b.custo || nm(a.local).localeCompare(nm(b.local))).map((m:Any) =>
-      <button key={m.local} className="act" style={{minHeight: 44}} onClick={() => fazer('mover', {local: m.local})}><span>{nm(m.local)}</span><span className="cost">{m.custo} PA</span></button>)}</div>
-    <div className="lbl">Ações em {nm(det.loc)}</div>
-    {atual.acoes.map((a:Any) => <React.Fragment key={a.acao}>
-      <button className={'act' + (sub === a.acao ? ' sel' : '')} disabled={!a.ok} onClick={() => ['interceptar', 'comprar', 'usar', 'transferir', 'acusar'].includes(a.acao) ? setSub(sub === a.acao ? null : a.acao) : fazer(a.acao)}>
-        <div>{ACAO[a.acao][0]}<small>{a.ok ? ACAO[a.acao][1] : a.motivo}</small></div><span className="cost">{a.custo} PA</span></button>
-      {sub === a.acao && a.acao === 'interceptar' && a.alvos.map((t:Any) => <button key={t.n} className="act" onClick={() => fazer('interceptar', {n: t.n})}><span>Transmissão {t.texto.split(' · ')[0]}</span><span className="cost">{t.texto.split(' · ').slice(1).join(' · ')}</span></button>)}
-      {sub === a.acao && a.acao === 'comprar' && a.alvos.map((t:Any) => <button key={t.item} className="act" disabled={t.custo > eq.orcamento} onClick={() => fazer('comprar', {item: t.item})}><div>{t.texto}<small>{ITENS[t.item].texto}</small></div><span className="cost">{t.custo} créd.</span></button>)}
-      {sub === a.acao && a.acao === 'usar' && <UsarItem alvos={a.alvos} det={det} fazer={fazer}/>}
-      {sub === a.acao && a.acao === 'transferir' && <div className="chips">{pub.dets.map((d:Any, i:number) => i !== atual.i && <button key={i} className="chip" onClick={() => fazer('transferir', {alvo: i})}>{PAPEL[d.papel].nome}</button>)}</div>}
-      {sub === a.acao && a.acao === 'acusar' && <div className="card" style={{display: 'grid', gap: 8}}>
-        <div className="chips">{EXTRACOES.map(e => <button key={e} className={'chip' + (ext === e ? ' on' : '')} onClick={() => setExt(e)}>{nm(e)}</button>)}</div>
-        <div className="chips">{Object.keys(JAN).map(j => <button key={j} className={'chip' + (jan === j ? ' on' : '')} onClick={() => setJan(j)}>{j} · {JTXT[j]}</button>)}</div>
-        <button className="btn" disabled={!ext || !jan} onClick={() => fazer('acusar', {extracao: ext, janela: jan})}>Acusar: {ext ? nm(ext) : '?'}, janela {jan ?? '?'}</button></div>}
-    </React.Fragment>)}
-    <div className="grid2"><button className="btn sec" onClick={() => send('encerrar', {i: atual.i})}>Encerrar {PAPEL[det.papel].letra}</button><button className="btn blue" onClick={() => send('encerrar', {})}>Encerrar todos os meus</button></div>
-    <Feed avisos={avisos}/></>;
-  else if (aba === 'mapa') corpo = <div className="mini-map" style={{height: '68vh'}}><Board pub={pub}
-    extra={{meus: meusIdx, ativo: atual?.i, destaques: atual ? atual.mover.map((m:Any) => m.local) : null}} view={det ? minBox(bboxOf([det.loc], 2500), 8000, 10000) : VIEWS.tv}
-    onSelect={id => { const m = atual?.mover.find((x:Any) => x.local === id); if (m && confirm(`Mover ${PAPEL[det.papel].letra} para ${nm(id)} (${MODO[m.modo]}, ${m.custo} PA)?`) !== false) fazer('mover', {local: id}); }}/></div>;
-  else if (aba === 'dossie') corpo = <><div className="muted" style={{fontSize: 13}}>Marcações compartilhadas com o time. Nunca aparecem na TV.</div>
-    <Grade marcas={eq?.dossie ?? {}} marcar={(k, v) => send('dossie', {chave: k, valor: v})}/>
-    <div className="lbl">Pistas da força-tarefa · orçamento {eq?.orcamento ?? 0} créditos</div>
-    {eq?.pistas.length ? eq.pistas.map((p:Any, i:number) => <div key={i} className="pista"><b>{p.tipo} · {p.fonte}{p.zona ? ` · zona ${ZONAS[p.zona]}` : ''}{p.duvidosa ? ' · ⚠ duvidosa' : ''}</b>{p.texto}</div>) : <div className="muted">Nada ainda. Perícia em envelopes e interceptação revelam pistas.</div>}
-    <div className="lbl">Possíveis pontos de contato (só 8 têm envelope)</div>{eq?.contatos.map((c:Any) => <div key={c.local} className="act" style={{minHeight: 40}}><span>{nm(c.local)}</span><small>{({desconhecido: 'não vistoriado', vazio: 'vazio', retirado: 'envelope já retirado', lido: 'envelope lido', confiscado: 'confiscado'} as Any)[c.situacao]}{c.grampo ? ' · grampo' : ''}</small></div>)}
-    {eq?.estoque.length > 0 && <><div className="lbl">Estoque</div><div className="chips">{eq.estoque.map((e:Any, i:number) => <span key={i} className="chip">{ITENS[e.item].nome}{e.desde > pub.round ? ' (chegando)' : ''}</span>)}</div></>}</>;
-  else corpo = <><form style={{display: 'flex', gap: 8}} onSubmit={e => { e.preventDefault(); if (msg.trim()) { send('chat', {texto: msg}); setMsg(''); } }}>
-      <input className="input" value={msg} onChange={e => setMsg(e.target.value)} placeholder="Mensagem para o time" maxLength={200}/><button className="btn blue">Enviar</button></form>
-    <div className="chips">{['Vou cobrir o Centro', 'Intercepta a última!', 'Cuidado: pode ser falsa', 'Blitz na ponte?'].map(t => <button key={t} className="chip" onClick={() => send('chat', {texto: t})}>{t}</button>)}</div>
-    <div className="chat">{[...(eq?.chat ?? [])].reverse().map((m:Any, i:number) => <div key={i} className="msg"><b>{m.autor}:</b> {m.texto}</div>)}</div></>;
-  return <main className="phone">
-    <div className="ph-top"><div className="row"><b>Força-tarefa</b><Tempo deadline={pub.deadline} offset={mesa.offset}/></div>
-      <div className="chips">{meusIdx.map((i:number) => { const d = pub.dets[i]; return <button key={i} className={'chip' + (atual?.i === i ? ' on' : '')} disabled={!meus.some((m:Any) => m.i === i)} onClick={() => setAtivo(i)}>{PAPEL[d.papel].letra} · {nm(d.loc)} · {d.pa} PA</button>; })}</div>
-      <span className="eyebrow">{hora(pub.round)} · rodada {pub.round} · {pub.phase === 'detetives' ? 'sua vez' : 'aguarde'}</span></div>
-    <div className="ph-body">{corpo}{mesa.error && <div className="err">{mesa.error}</div>}</div>
-    <nav className="ph-tabs">{[['acoes', 'Ações'], ['mapa', 'Mapa'], ['dossie', 'Dossiê'], ['equipe', 'Equipe']].map(([k, t]) => <button key={k} className={aba === k ? 'on' : ''} onClick={() => setAba(k)}>{t}</button>)}</nav>
-  </main>;
-}
 function UsarItem({alvos, det, fazer}:{alvos:Any[];det:Any;fazer:Any}) {
   const [item, setItem] = useState<string|null>(null); const [local, setLocal] = useState<number|''>(''); const [zona, setZona] = useState(Object.keys(ZONAS)[0]);
   const precisaZona = ['retrato', 'ceic'].includes(item ?? ''); const precisaLocal = ['drone', 'helicoptero', 'cones'].includes(item ?? '');

@@ -89,12 +89,12 @@ function jogarPartida(seed:number, jogadores = 4) {
       act(g, st, {action: 'agir', acao: pref.acao}); continue;
     }
     if (g.phase === 'detetives') {
-      const livres = g.dets.map((d, i) => ({d, i})).filter(x => !x.d.encerrou);
-      const {d, i} = livres[0]; const dt = toks.find(t => (view(g, t).me as any).id === d.owner)!;
+      const i = g.vez!; const d = g.dets[i]; const dt = toks.find(t => (view(g, t).me as any).id === d.owner)!;
+      if (!d.rolou) { act(g, dt, {action: 'rolar', i}); assert.ok(d.pa >= 1 && d.pa <= 7); continue; }
       const o = opcoesDetetive(g, i); const ok = o.acoes.filter(a => a.ok);
       const roll = r();
       try {
-        if (d.pa <= 0 || roll < 0.08) act(g, dt, {action: 'encerrar', i});
+        if (d.pa <= 0 || roll < 0.08) act(g, dt, {action: 'encerrar'});
         else if (roll < 0.5 && o.mover.length) act(g, dt, {action: 'det', i, acao: 'mover', local: pick(o.mover).local});
         else if (ok.length) {
           const a = pick(ok);
@@ -104,8 +104,8 @@ function jogarPartida(seed:number, jogadores = 4) {
           else if (a.acao === 'transferir') act(g, dt, {action: 'det', i, acao: a.acao, alvo: (i + 1) % g.dets.length});
           else if (a.acao === 'acusar') act(g, dt, {action: 'det', i, acao: a.acao, extracao: pick(EXTRACOES), janela: pick(Object.keys(JANELAS))});
           else act(g, dt, {action: 'det', i, acao: a.acao});
-        } else act(g, dt, {action: 'encerrar', i});
-      } catch (e) { if (!/insuficiente|Orçamento|PA|Escolha|vizinho|estoque|chuva|Item|grampo/i.test((e as Error).message)) throw e; act(g, dt, {action: 'encerrar', i}); }
+        } else act(g, dt, {action: 'encerrar'});
+      } catch (e) { if (!/insuficiente|Orçamento|PA|Escolha|vizinho|estoque|chuva|Item|grampo/i.test((e as Error).message)) throw e; act(g, dt, {action: 'encerrar'}); }
       continue;
     }
     if (!tick(g, Date.now() + 1e7)) throw new Error('travou na fase ' + g.phase);
@@ -127,7 +127,8 @@ test('tempo esgotado avança as fases sozinho', () => {
   const {g, host} = mesa(3, 11); act(g, host, {action: 'iniciar'});
   tick(g, Date.now() + 1e7); assert.equal(g.phase, 'espiao');
   tick(g, Date.now() + 1e7); assert.equal(g.phase, 'detetives');
-  tick(g, Date.now() + 1e7); assert.ok(g.phase === 'espiao' || g.phase === 'fim'); assert.ok(g.round >= 2 || g.phase === 'fim');
+  for (let k = 0; k < 6 && g.phase === 'detetives'; k++) tick(g, Date.now() + 1e7);
+  assert.ok(g.phase === 'espiao' || g.phase === 'fim'); assert.ok(g.round >= 2 || g.phase === 'fim');
 });
 
 // ------------------------------------------------------------------ cobertura de cartas, itens e ações
@@ -136,6 +137,8 @@ function emJogo(seed = 5, jogadores = 3) {
   const st = spyTok(g, toks); act(g, st, {action: 'preparar', perfil: 'sombra', local: g.spy!.opcoesInicio[0]});
   const det = toks.find(t => t !== st)!; return {g, host, toks, st, det};
 }
+const rodarDetetives = (g:Game) => { for (let k = 0; k < 8 && g.phase === 'detetives'; k++) tick(g, Date.now() + 1e7); };
+const suaVez = (g:Game, tok:string, i:number) => { g.vez = i; g.dets[i].rolou = false; g.dets[i].pa = 0; act(g, tok, {action: 'rolar', i}); g.dets[i].pa = 6; };
 const paraDetetives = (g:Game, st:string) => { const o = opcoesEspiao(g); const k = (Object.keys(o) as (keyof typeof o)[]).find(m => o[m].length)!; act(g, st, {action: 'mover', modo: k, local: o[k][0].local}); act(g, st, {action: 'agir', acao: 'passar'}); };
 
 test('todas as cartas de evento aplicam sem erro e a rodada segue', () => {
@@ -153,7 +156,7 @@ test('todas as cartas de evento aplicam sem erro e a rodada segue', () => {
 test('todos os itens podem ser comprados e usados', () => {
   for (const item of Object.keys(ITEM)) {
     const {g, st, det} = emJogo(23); paraDetetives(g, st);
-    const i = g.dets.findIndex(d => d.loc === HQ); g.equipe.orcamento = 20;
+    const i = g.dets.findIndex(d => d.loc === HQ); g.equipe.orcamento = 20; suaVez(g, det, i);
     act(g, det, {action: 'det', i, acao: 'comprar', item});
     assert.ok(g.equipe.estoque.some(x => x.item === item), item);
     const d = g.dets[i];
@@ -170,7 +173,7 @@ test('ações do espião: recolher, sacar, disfarce, falsa, informante e emergê
   act(g, st, {action: 'mover', modo: 'pe', local: c.local}); act(g, st, {action: 'agir', acao: 'recolher'});
   assert.equal(c.status, 'recolhido'); assert.equal(g.fila.length, 1);
   const prox = (acao:string, onde:(id:number)=>boolean) => {
-    tick(g, Date.now() + 1e7); assert.equal(g.phase, 'espiao');
+    rodarDetetives(g); assert.equal(g.phase, 'espiao');
     const alvo = IDS.find(x => onde(x) && !g.dets.some(d => d.loc === x) && VIZ[x].some(v => !g.dets.some(d => d.loc === v)))!;
     g.spy!.loc = VIZ[alvo].find(v => !g.dets.some(d => d.loc === v))!; g.spy!.dinheiro = 20;
     act(g, st, {action: 'mover', modo: 'pe', local: alvo}); act(g, st, {action: 'agir', acao});
@@ -188,7 +191,7 @@ test('Hora H certa termina com fuga; duas erradas queimam a rede', () => {
   g.round = a; g.dets.forEach((d, k) => d.loc = [34, 1, 13, 60][k] === ext ? 13 : [34, 1, 13, 60][k]);
   g.spy!.loc = VIZ[ext].find(v => !g.dets.some(d => d.loc === v))!; g.spy!.credenciais = 1;
   act(g, st, {action: 'mover', modo: 'pe', local: ext}); act(g, st, {action: 'agir', acao: 'horaH'});
-  assert.ok(g.horaH); tick(g, Date.now() + 1e7); assert.equal(g.winner, 'espiao');
+  assert.ok(g.horaH); rodarDetetives(g); assert.equal(g.winner, 'espiao');
   const b = emJogo(43); const e2 = EXTRACOES.find(e => e !== b.g.plano!.extracao)!; b.g.round = 9; b.g.spy!.credenciais = 2;
   for (let k = 0; k < 2; k++) { b.g.phase = 'espiao'; b.g.spy!.moveu = false; b.g.spy!.agiu = false; b.g.spy!.movimentos = 1;
     b.g.dets.forEach(d => { if (d.loc === e2 || VIZ[e2].includes(d.loc)) d.loc = 13; });
@@ -198,10 +201,10 @@ test('Hora H certa termina com fuga; duas erradas queimam a rede', () => {
 
 test('acusação certa ativa o plano B; janela perdida é remarcada', () => {
   const {g, st, det} = emJogo(47); paraDetetives(g, st);
-  const i = g.dets.findIndex(d => d.loc === HQ); const antigo = {e: g.plano!.extracao, j: g.plano!.janela};
+  const i = g.dets.findIndex(d => d.loc === HQ); const antigo = {e: g.plano!.extracao, j: g.plano!.janela}; suaVez(g, det, i);
   act(g, det, {action: 'det', i, acao: 'acusar', extracao: antigo.e, janela: antigo.j});
   assert.notEqual(g.phase, 'fim'); assert.ok(g.spy!.planoB); assert.notEqual(g.plano!.extracao, antigo.e);
-  const h = emJogo(53); h.g.plano!.janela = 'A'; h.g.round = 10; h.g.phase = 'detetives'; tick(h.g, Date.now() + 1e7);
+  const h = emJogo(53); h.g.plano!.janela = 'A'; h.g.round = 10; h.g.phase = 'detetives'; h.g.vez = 0; h.g.deadline = 1; rodarDetetives(h.g);
   assert.equal(h.g.plano!.janela, 'B'); assert.equal(h.g.spy!.remarcada, 'B');
 });
 
@@ -210,6 +213,20 @@ test('pontos de contato: a TV vê os 14 candidatos, não quais são os 8 verdade
   const tv = view(g, host); assert.equal(tv.pub.contatos.length, 14);
   paraDetetives(g, st);
   const i = 0; const vazio = (tv.pub.contatos as {local:number}[]).map(c => c.local).find(l => !g.contatos.some(c => c.local === l))!;
-  g.dets[i].loc = vazio; act(g, det, {action: 'det', i, acao: 'periciar'});
+  g.dets[i].loc = vazio; suaVez(g, det, i); act(g, det, {action: 'det', i, acao: 'periciar'});
   assert.equal(g.equipe.vistoriados[vazio], 'vazio'); assert.equal(g.equipe.pistas.length, 0);
+});
+
+test('turno dos detetives: um de cada vez, com dado público de 1 a 6', () => {
+  const {g, toks, st} = emJogo(61, 3); paraDetetives(g, st);
+  assert.equal(g.vez, 0); const dono = (i:number) => toks.find(t => (view(g, t).me as any).id === g.dets[i].owner)!;
+  assert.throws(() => act(g, dono(1), {action: 'rolar', i: 1}), /vez/);
+  assert.throws(() => act(g, dono(0), {action: 'det', i: 0, acao: 'investigar'}), /dado/);
+  act(g, dono(0), {action: 'rolar', i: 0});
+  const v = g.dado!.valor; assert.ok(v >= 1 && v <= 6); assert.equal(g.dets[0].pa, v);
+  for (const t of toks) assert.equal(view(g, t).pub.dado!.valor, v);
+  assert.throws(() => act(g, dono(0), {action: 'rolar', i: 0}), /já rolou/);
+  act(g, dono(0), {action: 'encerrar'}); assert.equal(g.vez, 1);
+  for (let i = 1; i < g.dets.length; i++) { act(g, dono(i), {action: 'rolar', i}); act(g, dono(i), {action: 'encerrar'}); }
+  assert.ok(g.phase === 'espiao' || g.phase === 'fim');
 });

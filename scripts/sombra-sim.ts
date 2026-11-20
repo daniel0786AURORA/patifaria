@@ -100,6 +100,7 @@ function jogarDetetives(g:Game, toks:Record<string, string>, crenca:Crenca, r:()
   const janelaAgora = jan.some(j => g.round >= JANELAS[j][0] - 1 && g.round <= JANELAS[j][1]);
   for (let i = 0; i < g.dets.length && g.phase === 'detetives'; i++) {
     const d = g.dets[i]; const t = toks[d.owner];
+    if (g.vez !== i) continue; act(g, t, {action: 'rolar', i}); inc('dado', d.pa);
     for (let passos = 0; passos < 8 && g.phase === 'detetives' && !d.encerrou && d.pa > 0; passos++) {
       const o = opcoesDetetive(g, i); const ok = Object.fromEntries(o.acoes.map(a => [a.acao, a]));
       const faz = (acao:string, extra:Record<string, unknown> = {}) => { act(g, t, {action: 'det', i, acao, ...extra}); inc('det_' + acao); };
@@ -141,7 +142,7 @@ function jogarDetetives(g:Game, toks:Record<string, string>, crenca:Crenca, r:()
       if (melhor && melhor.n < atual * 3 - 0.5) { act(g, t, {action: 'det', i, acao: 'mover', local: melhor.l}); inc('det_mover'); continue; }
       break;
     }
-    if (g.phase === 'detetives' && !g.dets[i].encerrou) act(g, t, {action: 'encerrar', i});
+    if (g.phase === 'detetives' && g.vez === i) act(g, t, {action: 'encerrar'});
   }
   return crenca;
 }

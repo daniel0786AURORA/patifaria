@@ -222,15 +222,20 @@ export function createBoard(svg, {onSelect, interativo = true} = {}) {
     (pub.cones || []).forEach(c => { const b = el('g', {transform: 'translate(-20 22)'}, pieceGroup(c.local)); for (let k = 0; k < 4; k++) el('rect', {x: k * 10, width: 10, height: 7, fill: k % 2 ? '#fff' : '#f08a24'}, b); });
     (pub.dets || []).forEach((d, i) => { const inner = pieceGroup(d.loc); const same = pub.dets.filter((x, j) => j < i && x.loc === d.loc).length;
       const dx = [24, -26, 26, -24, 0][same], dy = [-30, -30, 30, 30, -44][same];
-      el('line', {x1: 0, y1: 0, x2: dx, y2: dy, stroke: 'var(--cop)', 'stroke-width': 2.4}, inner);
-      el('circle', {cx: dx, cy: dy, r: 13.5, fill: extra.meus?.includes(i) ? '#ffd166' : 'var(--cop)', stroke: '#06111d', 'stroke-width': 2.5, class: extra.ativo === i ? 'det-ativo' : ''}, inner);
-      const t = el('text', {x: dx, y: dy + 6, 'text-anchor': 'middle', class: 'g-coptext'}, inner); t.textContent = LETRA[d.papel];
+      const vez = pub.vez === i;
+      el('line', {x1: 0, y1: 0, x2: dx, y2: dy, stroke: 'var(--cop)', 'stroke-width': 3}, inner);
+      if (vez) el('circle', {cx: dx, cy: dy, r: 24, class: 'g-vez'}, inner);
+      el('circle', {cx: dx, cy: dy, r: 17, fill: extra.meus?.includes(i) ? '#ffd166' : 'var(--cop)', stroke: '#06111d', 'stroke-width': 3}, inner);
+      const t = el('text', {x: dx, y: dy + 7, 'text-anchor': 'middle', class: 'g-coptext'}, inner); t.textContent = LETRA[d.papel];
+      if (d.dono) { const nt = el('text', {x: dx, y: dy - 23, 'text-anchor': 'middle', class: 'g-copnome'}, inner); nt.textContent = d.dono.split(' ')[0]; }
       if (d.bloqueio) { const b = el('g', {transform: 'translate(-20 20)'}, inner); for (let k = 0; k < 4; k++) el('rect', {x: k * 10, width: 10, height: 7, fill: k % 2 ? '#fff' : 'var(--hot)'}, b); } });
     if (pub.horaH) { const inner = pieceGroup(pub.horaH.local); el('circle', {r: 40, class: 'g-horah'}, inner); const t = el('text', {y: -48, 'text-anchor': 'middle', class: 'g-seen'}, inner); t.textContent = 'HORA H'; }
     if (extra.espiao) { const inner = pieceGroup(extra.espiao); el('circle', {r: 15, class: 'g-spy'}, inner); const t = el('text', {y: 5, 'text-anchor': 'middle', class: 'g-spytxt'}, inner); t.textContent = '?'; }
     if (pub.final) { const r = pub.final.rastro; const ids = r.map(x => x.local); el('path', {d: 'M' + ids.map(i => `${N[i].x} ${N[i].y}`).join(' L'), class: 'g-route', 'vector-effect': 'non-scaling-stroke'}, g.route);
       r.forEach((x, k) => { if (k && x.local === r[k - 1].local) return; const inner = pieceGroup(x.local); el('circle', {r: 10, class: 'g-step'}, inner); const t = el('text', {y: 4, 'text-anchor': 'middle', class: 'g-steptxt'}, inner); t.textContent = x.rodada; });
       const inner = pieceGroup(pub.final.plano.extracao); el('circle', {r: 26, class: 'g-horah'}, inner); }
+    for (const [id, txt] of Object.entries(extra.rotulos || {})) { const inner = pieceGroup(+id); el('rect', {x: -16, y: 13, width: 32, height: 18, rx: 9, class: 'g-rotulo'}, inner);
+      const t = el('text', {x: 0, y: 26.5, 'text-anchor': 'middle', class: 'g-rotulotxt'}, inner); t.textContent = txt; }
     const destaque = extra.destaques ? new Set(extra.destaques) : null;
     for (const id in nodeEls) { nodeEls[id].classList.toggle('dim', !!destaque && !destaque.has(+id) && +id !== extra.selecionado); nodeEls[id].classList.toggle('alvo', !!destaque && destaque.has(+id)); nodeEls[id].classList.toggle('sel', +id === extra.selecionado); }
     apply();
