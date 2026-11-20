@@ -5,7 +5,9 @@ import {createGame, addPlayer, act, tick, view, hash, type Game} from '../src/so
 const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 // Sem Supabase configurado (desenvolvimento local), as mesas ficam na memória do processo.
 const memoria = new Map<string, {state:Game;at:number}>();
-const usarMemoria = () => !process.env.SUPABASE_URL && !process.env.VERCEL;
+// Também cai para a memória quando o Supabase não está configurado ou não responde (modo de teste).
+let semBanco = false;
+const usarMemoria = () => semBanco || !process.env.SUPABASE_URL || !process.env.SUPABASE_PUBLISHABLE_KEY || !process.env.GAME_BACKEND_KEY;
 
 async function rpc(operation:'get'|'create'|'save', code:string, state:Game|null = null, revision = -1): Promise<any> {
   if (usarMemoria()) {
@@ -15,15 +17,14 @@ async function rpc(operation:'get'|'create'|'save', code:string, state:Game|null
     if (operation === 'create') { if (atual) return false; memoria.set(code, {state: structuredClone(state!), at: agora}); return true; }
     if (!atual || atual.state.revision !== revision) return false; memoria.set(code, {state: structuredClone(state!), at: agora}); return true;
   }
-  const url = process.env.SUPABASE_URL, key = process.env.SUPABASE_PUBLISHABLE_KEY, backend = process.env.GAME_BACKEND_KEY;
-  if (!url || !key || !backend) throw new Error('A mesa está em manutenção. Tente novamente em instantes.');
+  const url = process.env.SUPABASE_URL!.trim().replace(/\/+$/, ''), key = process.env.SUPABASE_PUBLISHABLE_KEY!, backend = process.env.GAME_BACKEND_KEY!;
   let res: Response;
   try {
     res = await fetch(`${url}/rest/v1/rpc/patifaria_storage`, {method: 'POST', headers: {apikey: key, 'Content-Type': 'application/json'},
       body: JSON.stringify({backend_key: backend, operation, room_code: code, new_state: state, expected_revision: revision}), signal: AbortSignal.timeout(12000)});
   } catch (e) {
-    console.error('storage: conexão falhou', e);
-    throw new Error('Não foi possível conectar ao banco de dados (Supabase). Confira se o projeto está ativo no supabase.com e se SUPABASE_URL está certo na Vercel.');
+    console.error('storage: Supabase não respondeu; usando a memória do servidor', e);
+    semBanco = true; return rpc(operation, code, state, revision);
   }
   if (!res.ok) { console.error('storage', res.status, await res.text().catch(() => ''));
     throw new Error(res.status === 401 || res.status === 403 || res.status === 404 ? `O banco de dados recusou o acesso (erro ${res.status}). Confira as variáveis do Supabase na Vercel.` : 'Não foi possível acessar a mesa. Tente novamente.'); }
