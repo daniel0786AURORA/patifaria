@@ -17,9 +17,16 @@ async function rpc(operation:'get'|'create'|'save', code:string, state:Game|null
   }
   const url = process.env.SUPABASE_URL, key = process.env.SUPABASE_PUBLISHABLE_KEY, backend = process.env.GAME_BACKEND_KEY;
   if (!url || !key || !backend) throw new Error('A mesa está em manutenção. Tente novamente em instantes.');
-  const res = await fetch(`${url}/rest/v1/rpc/patifaria_storage`, {method: 'POST', headers: {apikey: key, 'Content-Type': 'application/json'},
-    body: JSON.stringify({backend_key: backend, operation, room_code: code, new_state: state, expected_revision: revision}), signal: AbortSignal.timeout(12000)});
-  if (!res.ok) { console.error('storage', res.status); throw new Error('Não foi possível acessar a mesa. Tente novamente.'); }
+  let res: Response;
+  try {
+    res = await fetch(`${url}/rest/v1/rpc/patifaria_storage`, {method: 'POST', headers: {apikey: key, 'Content-Type': 'application/json'},
+      body: JSON.stringify({backend_key: backend, operation, room_code: code, new_state: state, expected_revision: revision}), signal: AbortSignal.timeout(12000)});
+  } catch (e) {
+    console.error('storage: conexão falhou', e);
+    throw new Error('Não foi possível conectar ao banco de dados (Supabase). Confira se o projeto está ativo no supabase.com e se SUPABASE_URL está certo na Vercel.');
+  }
+  if (!res.ok) { console.error('storage', res.status, await res.text().catch(() => ''));
+    throw new Error(res.status === 401 || res.status === 403 || res.status === 404 ? `O banco de dados recusou o acesso (erro ${res.status}). Confira as variáveis do Supabase na Vercel.` : 'Não foi possível acessar a mesa. Tente novamente.'); }
   return await res.json();
 }
 
